@@ -32,7 +32,7 @@
       if (neighbor.isWall || visitedNodes.includes(neighbor)) {
         continue;
       }
-      let tempG = current.g + h(current,neighbor);
+      let tempG = current.g + distance(current,neighbor);
       
       if (tempG < neighbor.g || !openSet.includes(neighbor)) {
         neighbor.g = tempG;
@@ -54,15 +54,12 @@
  * @param {Object} nodeB - the second node
  * @returns 
  */
-function h(nodeA,nodeB){
+function distance(nodeA,nodeB){
   let Acol = nodeA.col;
   let Bcol = nodeB.col;
   let Arow = nodeA.row;
   let Brow = nodeB.row;
-  let col = Math.pow(Acol-Bcol,2);
-  let row = Math.pow(Arow-Brow,2);
-
-  return Math.sqrt(col+row);
+  return Math.sqrt(Math.pow(Acol-Bcol,2)+Math.pow(Arow-Brow,2));
 }
 
 function getPath(endNode) {
