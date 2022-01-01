@@ -14,12 +14,12 @@ const Node = (props) => {
   } = props;
 
   const name = isStart
-    ? "bg-sky-300"
+    ? "bg-emerald-400"
     : isEnd
-    ? "bg-pink-300"
+    ? "bg-pink-400"
     : isWall
     ? "bg-gray-400"
-    : "transition ease-in-out delay-150 hover:scale-125 duration-300 hover:bg-orange-300";
+    : "hover:bg-orange-300";
 
   return (
     <div
@@ -27,7 +27,7 @@ const Node = (props) => {
       className={`node ${name} border border-gray-200 m-0 p-0`}
       onMouseDown={(event) => onMouseDown(event, row, col)}
       onMouseEnter={(event) => onMouseEnter(event, row, col)}
-      onMouseUp={() => onMouseUp()}
+      onMouseUp={() => onMouseUp(row, col)}
     />
   );
 };
