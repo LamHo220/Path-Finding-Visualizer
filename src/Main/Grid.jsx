@@ -2,7 +2,17 @@ import React, { useState, useEffect } from "react";
 import Node from "./Node";
 import aStar from "./Algorithms/AStar";
 import dijkstra from "./Algorithms/Dijkstra";
-import changeClassName from "./Helper";
+import {
+  changeClassName,
+  buildBoundaries,
+  refresh,
+  reverseGrid,
+} from "./misc/misc";
+import NoWalls from "./Algorithms/NoWalls";
+import SimpleRandomWalls from "./Algorithms/SimpleRandomWalls";
+import RecursiveDivision from "./Algorithms/RecursiveDivision";
+import RandomWalls from "./Algorithms/RandomWalls";
+import Prim from "./Algorithms/Prim";
 
 const Grid = (props) => {
   const style = getComputedStyle(document.body);
@@ -72,16 +82,16 @@ const Grid = (props) => {
       event = event || window.event;
       event.preventDefault();
       setPrev(!initNode.isWall);
-      const isWall = grid[row][col].isWall
+      const isWall = grid[row][col].isWall;
       grid[row][col].isWall = !isWall;
       setGrid(grid);
-      const row = initNode.row;
-      const col = initNode.col;
+      const initRow = initNode.row;
+      const initCol = initNode.col;
       if (initNode.isWall) {
-        document.getElementById(`${row}-${col}`).className =
+        document.getElementById(`${initRow}-${initCol}`).className =
           "node bg-gray-400 border border-grey-200 m-0 p-0";
       } else {
-        document.getElementById(`${row}-${col}`).className =
+        document.getElementById(`${initRow}-${initCol}`).className =
           "node border border-gray-200 m-0 p-0";
       }
     } else {
@@ -96,43 +106,42 @@ const Grid = (props) => {
     if (!(node.isStart || node.isEnd) && !node.isWall === prev) {
       event = event || window.event;
       event.preventDefault();
-      node.isWall = prev;
-      const row = node.row;
-      const col = node.col;
+      grid[row][col].isWall = prev;
+      const nrow = node.row;
+      const ncol = node.col;
       if (node.isWall) {
-        document.getElementById(`${row}-${col}`).className =
+        document.getElementById(`${nrow}-${ncol}`).className =
           "node bg-gray-400 border border-grey-200 m-0 p-0";
       } else {
-        document.getElementById(`${row}-${col}`).className =
+        document.getElementById(`${nrow}-${ncol}`).className =
           "node border border-gray-200 m-0 p-0";
       }
-      setGrid(grid);
+      // setGrid(updateHeuristic(grid.slice()));
     } else if (node.isWall === prev) {
       // pass
     } else if (node.isStart || node.isEnd) {
       // pass
     } else if (prev !== null && !node.isWall) {
       // swap two node
-      node.isStart = prev.isStart;
-      node.isEnd = prev.isEnd;
+      grid[row][col].isStart = prev.isStart;
+      grid[row][col].isEnd = prev.isEnd;
       prev.isStart = false;
       prev.isEnd = false;
-
       setPrev(node);
-      setGrid(updateHeuristic(grid));
+      // setGrid(updateHeuristic(grid.slice()));
     }
   };
 
   const handleMouseUp = (row, col) => {
-    const node = grid[row][col];
-    if (node.isStart) {
+    if (grid[row][col].isStart) {
       setStartCol(col);
       setStartRow(row);
-    } else if (node.isEnd) {
+    }
+    if (grid[row][col].isEnd) {
       setEndCol(col);
       setEndRow(row);
     }
-    setGrid(setNeightbours(grid));
+    setGrid(updateHeuristic(grid.slice()));
     setPrev(null);
   };
 
@@ -244,6 +253,8 @@ const Grid = (props) => {
           }
         }
       };
+      setPathLength(0);
+      setSteps(0);
       clearPath()
         .then(() => {
           if (algorithm === "A*") {
@@ -257,18 +268,17 @@ const Grid = (props) => {
           return new Promise((resolve) => {
             const n = visitedNodes.length;
             for (let i = 0; i < n; ++i) {
+              const node = visitedNodes[i];
               setTimeout(() => {
-                const node = visitedNodes[i];
                 if (!(node.isStart || node.isEnd)) {
                   changeClassName(node, "bg-cyan-300");
                 }
                 setSteps(i);
-              }, duration * i);
+              }, 0 * i);
             }
-            setTimeout(
-              () => resolve(shortestPath),
-              duration * visitedNodes.length
-            );
+            setTimeout(() => {
+              resolve(shortestPath);
+            }, 0 * n);
           });
         })
         .then((shortestPath) => {
@@ -282,63 +292,103 @@ const Grid = (props) => {
                   changeClassName(node, "bg-yellow-300");
                 }
                 setPathLength(i);
-              }, duration * i);
+              }, 0 * i);
             }
-            setTimeout(resolve, duration * shortestPath.length);
-            setStart();
-            setVisualized(!visualized);
+            setTimeout(() => {
+              resolve(n);
+            }, 0 * n);
           });
+        })
+        .then((n) => {
+          setVisualized(!visualized);
+          setTimeout(() => {
+            setStart();
+          }, n * 0);
         });
     }
   }, [props.start]);
 
-  useEffect(()=>{
-    console.log(grid);
-    if (visualized){
-      const clearPath = async () => {
-        // clear path
-        for (let row of grid) {
-          for (let node of row) {
-            document.getElementById(
-              `${node.row}-${node.col}`
-            ).className = `node ${
-              node.isStart
-                ? "bg-emerald-400"
-                : node.isEnd
-                ? "bg-pink-400"
-                : node.isWall
-                ? "bg-gray-400"
-                : ""
-            } border border-gray-200 m-0 p-0`;
-          }
+  useEffect(() => {
+    if (visualized) {
+      for (let row of grid) {
+        for (let node of row) {
+          document.getElementById(
+            `${node.row}-${node.col}`
+          ).className = `node ${
+            node.isStart
+              ? "bg-emerald-400"
+              : node.isEnd
+              ? "bg-pink-400"
+              : node.isWall
+              ? "bg-gray-400"
+              : ""
+          } border border-gray-200 m-0 p-0`;
         }
-      };
-      clearPath().then(()=>{
-        if (algorithm === "A*") {
-          return aStar(grid[startRow][startCol]);
-        } else if (algorithm === "Dijkstra") {
-          return dijkstra(grid[startRow][startCol]);
-        }
-      }).then(({ visitedNodes, shortestPath })=>{
-        const n = visitedNodes.length;
-        for (let i = 0; i < n; ++i) {
-          const node = visitedNodes[i];
-          if (!(node.isStart || node.isEnd)) {
-            changeClassName(node, "bg-cyan-300");
-          }
-          setSteps(i);
-        }
-        const m = shortestPath.length;
-        for (let i = 0; i < m; ++i) {
-          const node = shortestPath[i];
-          if (!(node.isStart || node.isEnd)) {
-            changeClassName(node, "bg-yellow-300");
-          }
-          setPathLength(i);
-        }
-      })
+      }
+      if (algorithm === "A*") {
+        let { visitedNodes, shortestPath } = aStar(grid[startRow][startCol]);
+        refresh(visitedNodes, shortestPath);
+        setPathLength(shortestPath.length);
+        setSteps(visitedNodes.length);
+      } else if (algorithm === "Dijkstra") {
+        let { visitedNodes, shortestPath } = dijkstra(grid[startRow][startCol]);
+        refresh(visitedNodes, shortestPath);
+        setPathLength(shortestPath.length);
+        setSteps(visitedNodes.length);
+      }
     }
   }, [grid]);
+
+  useEffect(() => {
+    switch (props.pattern) {
+      case "Simple Random Walls":
+        NoWalls(grid).then(() => {
+          SimpleRandomWalls(grid, 0.3);
+        });
+        break;
+      case "Recursive Division":
+        NoWalls(grid)
+          .then(() => {
+            return new Promise((resolve, reject) => {
+              buildBoundaries(grid);
+              setTimeout(() => {
+                resolve();
+              }, 0);
+            });
+          })
+          .then(() => {
+            return new Promise((resolve, reject) => {
+              RecursiveDivision(grid, maxRow, maxCol);
+              resolve();
+            });
+          });
+        break;
+      case "Random Walls":
+        NoWalls(grid).then(() => {
+          return new Promise((resolve, reject) => {
+            RandomWalls(grid, maxRow, maxCol);
+          });
+        });
+        break;
+      case "Prim's Algorithm":
+        NoWalls(grid)
+          .then(() => {
+            return new Promise((resolve, reject) => {
+              resolve(reverseGrid(grid, maxRow, maxCol));
+            });
+          })
+          .then((n) => {
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                Prim(grid, maxRow, maxCol);
+              }, (30 * n) / 12);
+            });
+          });
+        break;
+      default:
+        break;
+    }
+  }, [props.pattern]);
 
   return (
     <div className="px-5 relative sgrid">
