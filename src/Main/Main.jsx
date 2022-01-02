@@ -25,19 +25,20 @@ const Main = (props) => {
   const [allowDiagonal, setAllowDiagonal] = useState(false);
   const [heuristic, setHeuristic] = useState("Euclidean");
   const [algorithm, setAlgorithm] = useState("A*");
-  const [pattern, setPattern] = useState("No Walls");
+  const [pattern, setPattern] = useState("");
   const [start, setStart] = useState(false);
+  const [duration, setDuration] = useState(200);
 
   useEffect(() => {
     setHeuristic("Euclidean");
   }, [allowDiagonal]);
 
-  useState(() => {
-    console.log(123, start);
-  }, [start]);
+  useEffect(()=>{
+    setPattern("");
+  }, [pattern]);
 
   return (
-    <div>
+    <div className={start?"pointer-events-none":""}>
       <Head
         heuristics={heuristics}
         allowDiagonal={allowDiagonal}
@@ -65,7 +66,7 @@ const Main = (props) => {
         algorithm={algorithm}
         heuristic={heuristic}
         heuristics={heuristics}
-        duration={100}
+        duration={duration}
         setStart={()=>setStart(!start)}
       />
     </div>
