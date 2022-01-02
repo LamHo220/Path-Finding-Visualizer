@@ -1,4 +1,4 @@
-import { SelectionButton, StartButton, TrueFalseButton } from "./Button";
+import { SelectionButton, StartButton, TrueFalseButton } from "./Buttons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 const Head = (props) => {
