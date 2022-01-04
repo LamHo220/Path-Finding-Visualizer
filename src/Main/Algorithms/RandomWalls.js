@@ -1,7 +1,4 @@
-import { changeClassName, rand, reverseGrid } from "../misc/misc";
-
-const rowDir = { N: -1, S: 1, E: 0, W: 0 };
-const colDir = { N: 0, S: 0, E: 1, W: -1 };
+import { changeClassName, rand, rowDir, colDir } from "../misc/misc";
 
 const getWallDir = (grid, node, maxRow, maxCol) => {
   let result = [];
