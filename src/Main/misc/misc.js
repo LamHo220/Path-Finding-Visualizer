@@ -1,3 +1,6 @@
+const rowDir = { N: -1, S: 1, E: 0, W: 0 };
+const colDir = { N: 0, S: 0, E: 1, W: -1 };
+
 const changeClassName = async (node, name) => {
   const element = document.getElementById(`${node.row}-${node.col}`);
   element.className = `node ${
@@ -80,4 +83,11 @@ const reverseGrid = (grid,maxRow,maxCol) => {
   return (maxRow-1)*(maxCol-1);
 }
 
-export { changeClassName, buildBoundaries, refresh, rand, reverseGrid };
+const isHorizontalCut = (width, height) => {
+  if (width < height) return true;
+  else if (width > height) return false;
+  return Math.floor(Math.random() * 2) === 1;
+};
+
+
+export { changeClassName, buildBoundaries, refresh, rand, reverseGrid, rowDir, colDir,isHorizontalCut };
