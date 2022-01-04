@@ -1,7 +1,9 @@
-import { rand, changeClassName } from "../misc/misc";
+import { rand, changeClassName, isHorizontalCut } from "../misc/misc";
+
+var s = 0;
 
 const RecursiveDivision = async (grid, maxRow, maxCol) => {
-  await doRecuresiveDivision(
+  doRecuresiveDivision(
     grid,
     1,
     1,
@@ -18,7 +20,6 @@ const doRecuresiveDivision = async (
   toCol,
   isHorizontal
 ) => {
-  console.log(grid);
   if (isHorizontal) {
     if (toCol - fromCol < 2) {
       return new Promise((resolve, reject) => {
@@ -103,12 +104,6 @@ const doRecuresiveDivision = async (
   }
 };
 
-const isHorizontalCut = (width, height) => {
-  if (width < height) return true;
-  else if (width > height) return false;
-  return Math.floor(Math.random() * 2) === 1;
-};
-
 const horizontalCut = async (grid, fromCol, toCol, wallRow) => {
   return new Promise((resolve, reject) => {
     let passCol = Math.floor(rand(fromCol, toCol) / 2) * 2 + 1;
@@ -126,7 +121,7 @@ const horizontalCut = async (grid, fromCol, toCol, wallRow) => {
     }
     setTimeout(() => {
       resolve(grid);
-    }, 50 * (toCol - fromCol + 2));
+    }, 50 * (toCol - fromCol + 2)+10*s++);
   });
 };
 
@@ -147,7 +142,7 @@ const verticalCut = async (grid, fromRow, toRow, wallCol) => {
     }
     setTimeout(() => {
       resolve(grid);
-    }, 50 * (toRow - fromRow + 2));
+    }, 50 * (toRow - fromRow + 2)+10*s++);
   });
 };
 
