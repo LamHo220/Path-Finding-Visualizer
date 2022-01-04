@@ -13,6 +13,8 @@ import SimpleRandomWalls from "./Algorithms/SimpleRandomWalls";
 import RecursiveDivision from "./Algorithms/RecursiveDivision";
 import RandomWalls from "./Algorithms/RandomWalls";
 import Prim from "./Algorithms/Prim";
+import Kruskal from "./Algorithms/Kruskal";
+import RecursiveBacktracker from "./Algorithms/RecursiveBacktracking.js";
 
 const Grid = (props) => {
   const style = getComputedStyle(document.body);
@@ -201,15 +203,6 @@ const Grid = (props) => {
     if (nodes === undefined) {
       return [];
     }
-    let endNode;
-    for (let row of nodes) {
-      for (let node of row) {
-        if (node.isEnd) {
-          endNode = node;
-          break;
-        }
-      }
-    }
     for (let row of nodes) {
       for (let node of row) {
         node.g = Infinity;
@@ -217,8 +210,8 @@ const Grid = (props) => {
         node.h = heuristicFunction(
           node.row,
           node.col,
-          endNode.row,
-          endNode.col,
+          endRow,
+          endCol,
           heuristic
         );
         node.previous = null;
@@ -312,17 +305,7 @@ const Grid = (props) => {
     if (visualized) {
       for (let row of grid) {
         for (let node of row) {
-          document.getElementById(
-            `${node.row}-${node.col}`
-          ).className = `node ${
-            node.isStart
-              ? "bg-emerald-400"
-              : node.isEnd
-              ? "bg-pink-400"
-              : node.isWall
-              ? "bg-gray-400"
-              : ""
-          } border border-gray-200 m-0 p-0`;
+          changeClassName(node, "");
         }
       }
       if (algorithm === "A*") {
@@ -340,6 +323,7 @@ const Grid = (props) => {
   }, [grid]);
 
   useEffect(() => {
+    setVisualized(false);
     switch (props.pattern) {
       case "Simple Random Walls":
         NoWalls(grid).then(() => {
@@ -381,6 +365,42 @@ const Grid = (props) => {
             return new Promise((resolve, reject) => {
               setTimeout(() => {
                 Prim(grid, maxRow, maxCol);
+              }, (30 * n) / 12);
+            });
+          });
+        break;
+      case "Kruskal's Algorithm":
+        // NoWalls(grid)
+        //   .then(() => {
+        //     return new Promise((resolve, reject) => {
+        //       resolve(reverseGrid(grid, maxRow, maxCol));
+        //     });
+        //   })
+        //   .then((n) => {
+        //     return new Promise((resolve, reject) => {
+        //       setTimeout(() => {
+        //         Kruskal(grid, maxRow, maxCol);
+        //       }, (30 * n) / 12);
+        //     });
+        //   });
+        break;
+      case "Recursive Backtracking":
+        NoWalls(grid)
+          .then(() => {
+            return new Promise((resolve, reject) => {
+              resolve(reverseGrid(grid, maxRow, maxCol));
+            });
+          })
+          .then((n) => {
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                resolve(RecursiveBacktracker(
+                  grid,
+                  maxRow,
+                  maxCol,
+                  grid[startRow][startCol],
+                  grid[endRow][endCol]
+                ));
               }, (30 * n) / 12);
             });
           });
