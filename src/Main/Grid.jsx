@@ -4,17 +4,9 @@ import aStar from "./Algorithms/AStar";
 import dijkstra from "./Algorithms/Dijkstra";
 import {
   changeClassName,
-  buildBoundaries,
   refresh,
-  reverseGrid,
 } from "./misc/misc";
-import NoWalls from "./Algorithms/NoWalls";
-import SimpleRandomWalls from "./Algorithms/SimpleRandomWalls";
-import RecursiveDivision from "./Algorithms/RecursiveDivision";
-import RandomWalls from "./Algorithms/RandomWalls";
-import Prim from "./Algorithms/Prim";
-import Kruskal from "./Algorithms/Kruskal";
-import RecursiveBacktracker from "./Algorithms/RecursiveBacktracking.js";
+import patternVisualize from "./Algorithms/patterns";
 
 const Grid = (props) => {
   const style = getComputedStyle(document.body);
@@ -118,7 +110,6 @@ const Grid = (props) => {
         document.getElementById(`${nrow}-${ncol}`).className =
           "node border border-gray-200 m-0 p-0";
       }
-      // setGrid(updateHeuristic(grid.slice()));
     } else if (node.isWall === prev) {
       // pass
     } else if (node.isStart || node.isEnd) {
@@ -130,7 +121,6 @@ const Grid = (props) => {
       prev.isStart = false;
       prev.isEnd = false;
       setPrev(node);
-      // setGrid(updateHeuristic(grid.slice()));
     }
   };
 
@@ -324,90 +314,12 @@ const Grid = (props) => {
 
   useEffect(() => {
     setVisualized(false);
-    switch (props.pattern) {
-      case "Simple Random Walls":
-        NoWalls(grid).then(() => {
-          SimpleRandomWalls(grid, 0.3);
-        });
-        break;
-      case "Recursive Division":
-        NoWalls(grid)
-          .then(() => {
-            return new Promise((resolve, reject) => {
-              buildBoundaries(grid);
-              setTimeout(() => {
-                resolve();
-              }, 0);
-            });
-          })
-          .then(() => {
-            return new Promise((resolve, reject) => {
-              RecursiveDivision(grid, maxRow, maxCol);
-              resolve();
-            });
-          });
-        break;
-      case "Random Walls":
-        NoWalls(grid).then(() => {
-          return new Promise((resolve, reject) => {
-            RandomWalls(grid, maxRow, maxCol);
-          });
-        });
-        break;
-      case "Prim's Algorithm":
-        NoWalls(grid)
-          .then(() => {
-            return new Promise((resolve, reject) => {
-              resolve(reverseGrid(grid, maxRow, maxCol));
-            });
-          })
-          .then((n) => {
-            return new Promise((resolve, reject) => {
-              setTimeout(() => {
-                Prim(grid, maxRow, maxCol);
-              }, (30 * n) / 12);
-            });
-          });
-        break;
-      case "Kruskal's Algorithm":
-        // NoWalls(grid)
-        //   .then(() => {
-        //     return new Promise((resolve, reject) => {
-        //       resolve(reverseGrid(grid, maxRow, maxCol));
-        //     });
-        //   })
-        //   .then((n) => {
-        //     return new Promise((resolve, reject) => {
-        //       setTimeout(() => {
-        //         Kruskal(grid, maxRow, maxCol);
-        //       }, (30 * n) / 12);
-        //     });
-        //   });
-        break;
-      case "Recursive Backtracking":
-        NoWalls(grid)
-          .then(() => {
-            return new Promise((resolve, reject) => {
-              resolve(reverseGrid(grid, maxRow, maxCol));
-            });
-          })
-          .then((n) => {
-            return new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve(RecursiveBacktracker(
-                  grid,
-                  maxRow,
-                  maxCol,
-                  grid[startRow][startCol],
-                  grid[endRow][endCol]
-                ));
-              }, (30 * n) / 12);
-            });
-          });
-        break;
-      default:
-        break;
+    if (grid.length!==0){
+      const start = grid[startRow][startCol];
+      const end = grid[endRow][endCol];
+      patternVisualize(grid,props.pattern, maxRow, maxCol, start, end);
     }
+      
   }, [props.pattern]);
 
   return (
