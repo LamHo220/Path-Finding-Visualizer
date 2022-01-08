@@ -1,6 +1,6 @@
-import { rand, changeClassName, isHorizontalCut } from "../misc/misc";
+import { rand, changeClassName, isHorizontalCut, delay } from "../misc/misc";
 
-var s = 0;
+const deltaTime = 60;
 
 const RecursiveDivision = async (grid, maxRow, maxCol) => {
   doRecuresiveDivision(
@@ -22,128 +22,80 @@ const doRecuresiveDivision = async (
 ) => {
   if (isHorizontal) {
     if (toCol - fromCol < 2) {
-      return new Promise((resolve, reject) => {
-        resolve(grid);
-      });
+      return;
     }
     let wallRow = Math.floor(rand(fromRow + 1, toRow - 1) / 2) * 2;
-    return new Promise((resolve, reject) => {
-      resolve(
-        horizontalCut(grid, fromCol, toCol, wallRow)
-          .then((grid) => {
-            return new Promise((resolve, reject) => {
-              resolve(
-                doRecuresiveDivision(
-                  grid,
-                  fromRow,
-                  fromCol,
-                  wallRow - 1,
-                  toCol,
-                  isHorizontalCut(toCol - fromCol, wallRow - 1 - fromRow)
-                )
-              );
-            });
-          })
-          .then((grid) => {
-            return new Promise((resolve, reject) => {
-              resolve(
-                doRecuresiveDivision(
-                  grid,
-                  wallRow + 1,
-                  fromCol,
-                  toRow,
-                  toCol,
-                  isHorizontalCut(toCol - fromCol, toRow - wallRow - 1)
-                )
-              );
-            });
-          })
-      );
-    });
+    await horizontalCut(grid, fromCol, toCol, wallRow);
+    await doRecuresiveDivision(
+      grid,
+      fromRow,
+      fromCol,
+      wallRow - 1,
+      toCol,
+      isHorizontalCut(toCol - fromCol, wallRow - 1 - fromRow)
+    );
+    await doRecuresiveDivision(
+      grid,
+      wallRow + 1,
+      fromCol,
+      toRow,
+      toCol,
+      isHorizontalCut(toCol - fromCol, toRow - wallRow - 1)
+    );
   } else {
     if (toRow - fromRow < 2) {
-      return new Promise((resolve, reject) => {
-        resolve(grid);
-      });
+      return;
     }
 
     let wallCol = Math.floor(rand(fromCol + 1, toCol - 1) / 2) * 2;
-    return new Promise((resolve, reject) => {
-      resolve(
-        verticalCut(grid, fromRow, toRow, wallCol)
-          .then((grid) => {
-            return new Promise((resolve, reject) => {
-              resolve(
-                doRecuresiveDivision(
-                  grid,
-                  fromRow,
-                  fromCol,
-                  toRow,
-                  wallCol - 1,
-                  isHorizontalCut(wallCol - 1 - fromCol, toRow - fromRow)
-                )
-              );
-            });
-          })
-          .then((grid) => {
-            return new Promise((resolve, reject) => {
-              resolve(
-                doRecuresiveDivision(
-                  grid,
-                  fromRow,
-                  wallCol + 1,
-                  toRow,
-                  toCol,
-                  isHorizontalCut(toCol - wallCol - 1, toRow - fromRow)
-                )
-              );
-            });
-          })
-      );
-    });
+    await verticalCut(grid, fromRow, toRow, wallCol);
+    await doRecuresiveDivision(
+      grid,
+      fromRow,
+      fromCol,
+      toRow,
+      wallCol - 1,
+      isHorizontalCut(wallCol - 1 - fromCol, toRow - fromRow)
+    );
+    await doRecuresiveDivision(
+      grid,
+      fromRow,
+      wallCol + 1,
+      toRow,
+      toCol,
+      isHorizontalCut(toCol - wallCol - 1, toRow - fromRow)
+    );
   }
 };
 
 const horizontalCut = async (grid, fromCol, toCol, wallRow) => {
-  return new Promise((resolve, reject) => {
-    let passCol = Math.floor(rand(fromCol, toCol) / 2) * 2 + 1;
+  let passCol = Math.floor(rand(fromCol, toCol) / 2) * 2 + 1;
 
-    for (let i = fromCol; i <= toCol; ++i) {
-      setTimeout(() => {
-        if (i !== passCol) {
-          let node = grid[wallRow][i];
-          if (!(node.isStart || node.isEnd)) {
-            changeClassName(node, "bg-gray-400");
-            grid[wallRow][i].isWall = true;
-          }
-        }
-      }, 50 * i);
+  for (let i = fromCol; i <= toCol; ++i) {
+    if (i !== passCol) {
+      let node = grid[wallRow][i];
+      if (!(node.isStart || node.isEnd)) {
+        grid[wallRow][i].isWall = true;
+        changeClassName(node);
+      }
     }
-    setTimeout(() => {
-      resolve(grid);
-    }, 50 * (toCol - fromCol + 2)+10*s++);
-  });
+    await delay(deltaTime);
+  }
 };
 
 const verticalCut = async (grid, fromRow, toRow, wallCol) => {
-  return new Promise((resolve, reject) => {
-    let passRow = Math.floor(rand(fromRow, toRow) / 2) * 2 + 1;
+  let passRow = Math.floor(rand(fromRow, toRow) / 2) * 2 + 1;
 
-    for (let i = fromRow; i <= toRow; ++i) {
-      setTimeout(() => {
-        if (i !== passRow) {
-          let node = grid[i][wallCol];
-          if (!(node.isStart || node.isEnd)) {
-            changeClassName(node, "bg-gray-400");
-            grid[i][wallCol].isWall = true;
-          }
-        }
-      }, 50 * i);
+  for (let i = fromRow; i <= toRow; ++i) {
+    if (i !== passRow) {
+      let node = grid[i][wallCol];
+      if (!(node.isStart || node.isEnd)) {
+        grid[i][wallCol].isWall = true;
+        changeClassName(node);
+      }
     }
-    setTimeout(() => {
-      resolve(grid);
-    }, 50 * (toRow - fromRow + 2)+10*s++);
-  });
+    await delay(deltaTime);
+  }
 };
 
 export default RecursiveDivision;
