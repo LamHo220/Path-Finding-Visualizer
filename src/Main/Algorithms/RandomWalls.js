@@ -1,4 +1,6 @@
-import { changeClassName, rand, rowDir, colDir } from "../misc/misc";
+import { changeClassName, rand, rowDir, colDir, delay } from "../misc/misc";
+
+const deltaTime = 60;
 
 const getWallDir = (grid, node, maxRow, maxCol) => {
   let result = [];
@@ -48,17 +50,14 @@ const getWallDir = (grid, node, maxRow, maxCol) => {
 
 const RandomWalls = async (grid, maxRow, maxCol) => {
   let unvisitedNode = [];
-  let count = 0;
   for (let i = 1; i < maxRow - 1; i += 2) {
     for (let j = 1; j < maxCol - 1; j += 2) {
-      ++count;
       if (grid[i][j].isStart || grid[i][j].isEnd) {
         continue;
       }
-      setTimeout(() => {
         grid[i][j].isWall = true;
-        changeClassName(grid[i][j], "bg-gray-400");
-      }, 50 * (i + j));
+        changeClassName(grid[i][j]);
+        await delay(deltaTime);
       unvisitedNode.push(grid[i][j]);
     }
   }
@@ -74,11 +73,9 @@ const RandomWalls = async (grid, maxRow, maxCol) => {
       if (grid[nextRow][nextCol].isStart || grid[nextRow][nextCol].isEnd) {
         continue;
       }
-      setTimeout(() => {
         grid[nextRow][nextCol].isWall = true;
-        changeClassName(grid[nextRow][nextCol], "bg-gray-400");
-      }, (50 * count) / 4 + 100 * i);
-      ++i;
+        changeClassName(grid[nextRow][nextCol]);
+        await delay(deltaTime);
     }
   }
 };
