@@ -6,17 +6,16 @@ import Result from "./Result";
 
 const Main = (props) => {
   const heuristics = {
-    false: ["Euclidean", "Manhattan"],
-    true: ["Euclidean"],
+    false: ["Euclidean", "Manhattan", "Octile", "Chebyshev"],
+    true: ["Euclidean", "Octile", "Chebyshev"],
   };
   const algorithms = ["A*", "Dijkstra"];
   const patterns = [
     "No Walls",
     "Simple Random Walls",
-    "Random Walls",
     "Recursive Division",
     "Prim's Algorithm",
-    "Kruskal's Algorithm",
+    // "Kruskal's Algorithm",
     "Recursive Backtracking",
   ];
 
@@ -27,29 +26,42 @@ const Main = (props) => {
   const [algorithm, setAlgorithm] = useState("A*");
   const [pattern, setPattern] = useState("");
   const [start, setStart] = useState(false);
-  const [duration, setDuration] = useState(200);
+  const [timeRatio, setTimeRatio] = useState(200);
+  const [darkMode, setDarkMode] = useState(false);
+  const [disable, setDisable] = useState(false);
 
   useEffect(() => {
     setHeuristic("Euclidean");
   }, [allowDiagonal]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setPattern("");
   }, [pattern]);
 
+  useEffect(() => {
+    document.getElementsByTagName("html")[0].className = darkMode ? "dark" : "";
+  }, [darkMode]);
+
   return (
-    <div className={start?"pointer-events-none":""}>
+    <div
+      className={(disable ? "pointer-events-none " : " ") + "dark:bg-gray-900"}
+    >
       <Head
         heuristics={heuristics}
         allowDiagonal={allowDiagonal}
         algorithms={algorithms}
         patterns={patterns}
         start={start}
-        setStart={() => setStart(!start)}
+        darkMode={darkMode}
+        setStart={() => {
+          setStart(!start);
+          setDisable(!disable);
+        }}
         setHeuristic={setHeuristic}
         setAllowDiagonal={() => setAllowDiagonal(!allowDiagonal)}
         setAlgorithm={setAlgorithm}
         setPattern={setPattern}
+        setDarkMode={() => setDarkMode(!darkMode)}
       />
       <Result
         algorithm={algorithm}
@@ -66,8 +78,12 @@ const Main = (props) => {
         algorithm={algorithm}
         heuristic={heuristic}
         heuristics={heuristics}
-        duration={duration}
-        setStart={()=>setStart(!start)}
+        timeRatio={timeRatio}
+        setStart={() => {
+          setStart(!start);
+          setDisable(!disable);
+        }}
+        setDisable={() => setDisable(!disable)}
       />
     </div>
   );
