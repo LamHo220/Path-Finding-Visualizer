@@ -1,0 +1,15 @@
+export default {
+  Manhattan: (dx, dy) => {
+    return dx + dy;
+  },
+  Euclidean: (dx, dy) => {
+    return Math.sqrt(dx * dx + dy * dy);
+  },
+  Octile: (dx, dy) => {
+    const F = Math.SQRT2 - 1;
+    return (dx + dy) + F * Math.min(dx,dy);
+  },
+  Chebyshev: (dx, dy) => {
+    return Math.Max(dx, dy);
+  },
+};
