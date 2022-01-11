@@ -193,7 +193,7 @@ const Grid = (props) => {
       await clearPath(grid);
       const startNode = grid[startRow][startCol];
       const endNode = grid[endRow][endCol];
-      let res = utilities.getAlgorithmResult(algorithm, startNode, endNode);
+      let res = utilities.getAlgoResult(algorithm, startNode, endNode);
       // visualize visited nodes
       const n = res.visitedNodes.length;
       for (let i = 0; i < n; ++i) {
@@ -226,7 +226,7 @@ const Grid = (props) => {
       clearPath(grid);
       const startNode = grid[startRow][startCol];
       const endNode = grid[endRow][endCol];
-      let res = utilities.getAlgorithmResult(algorithm, startNode, endNode);
+      let res = utilities.getAlgoResult(algorithm, startNode, endNode);
       refresh(res.visitedNodes, res.shortestPath);
       setPathLength(res.shortestPath.length);
       setSteps(res.visitedNodes.length);
