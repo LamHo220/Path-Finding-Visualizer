@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --max-col: 64;
+  --max-col: 65;
   --max-row: 29;
   --node-size: 3vh;
   --node-start-row: 15;
@@ -12,7 +12,7 @@
   --node-end-col: 50;
 }
 
-.sgrid{
+.sgrid {
   display: grid;
   grid-template-columns: repeat(var(--max-col), var(--node-size));
   grid-template-rows: repeat(var(--max-row), var(--node-size));
@@ -21,4 +21,31 @@
 .node {
   height: var(--node-size);
   width: var(--node-size);
+}
+
+.visit {
+  animation: pop1;
+  animation-duration: 0.2s;
+  animation-fill-mode: forwards;
+}
+.path {
+  animation: pop2;
+  animation-duration: 0.2s;
+  animation-fill-mode: forwards;
+}
+@keyframes pop1 {
+  0% {
+    background-color: rgb(249 250 251);
+  }
+  100% {
+    background-color: rgb(103 232 249);
+  }
+}
+@keyframes pop2 {
+  0% {
+    background-color: rgb(103 232 249);
+  }
+  100% {
+    background-color: rgb(253 224 71);
+  }
 }
