@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMoon } from "@fortawesome/free-solid-svg-icons";
 
 const StartButton = (props) => {
   const { buttonName, setStart } = props;
@@ -7,9 +8,11 @@ const StartButton = (props) => {
     <div className="relative">
       <button
         type="button"
-        className="bg-sky-200 text-gray-700 transition ease-in-out delay-150 hover:scale-105 duration-200 px-5 py-1 group bg-white rounded-md inline-flex items-center text-base font-medium"
+        className="dark:bg-sky-800 dark:text-white bg-sky-200 text-gray-700 transition ease-in-out delay-150 hover:scale-105 duration-200 px-5 py-1 group bg-white rounded-md inline-flex items-center text-base font-medium"
         aria-expanded="false"
-        onClick={() => setStart()}
+        onClick={() => {
+          setStart();
+        }}
       >
         <span>{buttonName}</span>
       </button>
@@ -24,8 +27,10 @@ const TrueFalseButton = (props) => {
       <button
         type="button"
         className={`${
-          flag ? "bg-green-300" : "bg-rose-300"
-        } text-gray-700 transition ease-in-out delay-150 hover:scale-105 duration-300 px-5 py-1 group bg-white rounded-md inline-flex items-center text-base font-medium`}
+          flag
+            ? "bg-green-300 dark:bg-green-700"
+            : "bg-rose-300 dark:bg-rose-900"
+        } dark:text-white text-gray-700 transition ease-in-out delay-150 hover:scale-105 duration-300 px-5 py-1 group bg-white rounded-md inline-flex items-center text-base font-medium`}
         aria-expanded="false"
         onClick={() => {
           setFlag();
@@ -60,7 +65,7 @@ const SelectionButton = (props) => {
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className="text-gray-400 px-5 py-1 group bg-white rounded-md inline-flex items-center text-base font-medium"
+        className="dark:bg-gray-900 text-gray-400 dark:text-white px-5 py-1 transition ease-in-out delay-150 hover:scale-105 duration-300 hover:text-gray-600 group bg-white rounded-md inline-flex items-center text-base font-medium"
         aria-expanded="false"
         onClick={() => {
           setOpen(!open);
@@ -74,4 +79,12 @@ const SelectionButton = (props) => {
   );
 };
 
-export { SelectionButton, StartButton, TrueFalseButton };
+const DarkMode = (props) => {
+  return (
+    <a href="#" onClick={() => props.f()} className="px-5">
+      <FontAwesomeIcon icon={faMoon} />
+    </a>
+  );
+};
+
+export { SelectionButton, StartButton, TrueFalseButton, DarkMode };
