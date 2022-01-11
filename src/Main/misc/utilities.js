@@ -4,7 +4,7 @@ import Heuristic from "../Heuristic/Heuristic";
 import Mazes from "../Maze/Mazes";
 
 export default {
-  getAlgorithm: (algorithm, start, end) => {
+  getAlgoResult: (algorithm, start, end) => {
     switch (algorithm) {
       case "A*":
         return aStar(start, end);
