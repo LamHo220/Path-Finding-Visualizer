@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Node from "./Node";
-import aStar from "./Algorithms/AStar";
-import dijkstra from "./Algorithms/Dijkstra";
-import {
-  changeClassName,
-  refresh,
-} from "./misc/misc";
-import patternVisualize from "./Algorithms/patterns";
+import { changeClassName, refresh, delay, clearPath } from "./misc/misc";
+import utilities from "./misc/utilities";
 
 const Grid = (props) => {
   const style = getComputedStyle(document.body);
@@ -38,22 +33,9 @@ const Grid = (props) => {
     algorithm,
     setSteps,
     setPathLength,
-    duration,
+    timeRatio,
     setStart,
   } = props;
-
-  const heuristicFunction = (row1, col1, row2, col2, h) => {
-    const dx = Math.abs(col1 - col2);
-    const dy = Math.abs(row1 - row2);
-    //The Manhattan Distance Heuristic
-    if (h === "Manhattan") return dx + dy;
-    // let D = 1;
-    // let D2 = Math.SQRT2;
-    // return D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy);
-
-    // The Euclidean Distance Heuristic is slower but more accurate as it cover more area
-    if (h === "Euclidean") return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-  };
 
   const createNode = (row, col) => {
     return {
@@ -64,9 +46,10 @@ const Grid = (props) => {
       isWall: false,
       previous: null,
       g: Infinity,
-      h: heuristicFunction(row, col, endRow, endCol, heuristic),
+      h: utilities.getHeuristic(heuristic, Math.abs(row - endRow), Math.abs(col - endCol)),
       f: Infinity,
       neighbors: [],
+      weight: 1,
     };
   };
 
@@ -75,19 +58,10 @@ const Grid = (props) => {
     if (!(initNode.isStart || initNode.isEnd)) {
       event = event || window.event;
       event.preventDefault();
-      setPrev(!initNode.isWall);
-      const isWall = grid[row][col].isWall;
-      grid[row][col].isWall = !isWall;
-      setGrid(grid);
-      const initRow = initNode.row;
-      const initCol = initNode.col;
-      if (initNode.isWall) {
-        document.getElementById(`${initRow}-${initCol}`).className =
-          "node bg-gray-400 border border-grey-200 m-0 p-0";
-      } else {
-        document.getElementById(`${initRow}-${initCol}`).className =
-          "node border border-gray-200 m-0 p-0";
-      }
+      const isWall = initNode.isWall;
+      setPrev(!isWall);
+      initNode.isWall = !isWall;
+      changeClassName(initNode);
     } else {
       setPrev(initNode);
     }
@@ -100,26 +74,26 @@ const Grid = (props) => {
     if (!(node.isStart || node.isEnd) && !node.isWall === prev) {
       event = event || window.event;
       event.preventDefault();
-      grid[row][col].isWall = prev;
-      const nrow = node.row;
-      const ncol = node.col;
-      if (node.isWall) {
-        document.getElementById(`${nrow}-${ncol}`).className =
-          "node bg-gray-400 border border-grey-200 m-0 p-0";
-      } else {
-        document.getElementById(`${nrow}-${ncol}`).className =
-          "node border border-gray-200 m-0 p-0";
-      }
+      node.isWall = prev;
+      changeClassName(node);
     } else if (node.isWall === prev) {
       // pass
     } else if (node.isStart || node.isEnd) {
       // pass
     } else if (prev !== null && !node.isWall) {
       // swap two node
-      grid[row][col].isStart = prev.isStart;
-      grid[row][col].isEnd = prev.isEnd;
+      node.isStart = prev.isStart;
+      node.isEnd = prev.isEnd;
       prev.isStart = false;
       prev.isEnd = false;
+      if (node.isStart) {
+        setStartRow(row);
+        setStartCol(col);
+      }
+      if (node.isEnd) {
+        setEndRow(row);
+        setEndCol(col);
+      }
       setPrev(node);
     }
   };
@@ -133,7 +107,7 @@ const Grid = (props) => {
       setEndCol(col);
       setEndRow(row);
     }
-    setGrid(updateHeuristic(grid.slice()));
+    setGrid(grid.slice());
     setPrev(null);
   };
 
@@ -197,17 +171,13 @@ const Grid = (props) => {
       for (let node of row) {
         node.g = Infinity;
         node.f = Infinity;
-        node.h = heuristicFunction(
-          node.row,
-          node.col,
-          endRow,
-          endCol,
-          heuristic
-        );
+        const dx = Math.abs(node.col - endCol);
+        const dy = Math.abs(node.row - endRow);
+        node.h = utilities.getHeuristic(heuristic, dx, dy);
         node.previous = null;
       }
     }
-    return setNeightbours(nodes);
+    return nodes;
   };
 
   useEffect(() => {
@@ -216,114 +186,73 @@ const Grid = (props) => {
     }
   }, [props.heuristic]);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (props.start) {
-      const clearPath = async () => {
-        // clear path
-        for (let row of grid) {
-          for (let node of row) {
-            document.getElementById(
-              `${node.row}-${node.col}`
-            ).className = `node ${
-              node.isStart
-                ? "bg-emerald-400"
-                : node.isEnd
-                ? "bg-pink-400"
-                : node.isWall
-                ? "bg-gray-400"
-                : ""
-            } border border-gray-200 m-0 p-0`;
-          }
-        }
-      };
       setPathLength(0);
       setSteps(0);
-      clearPath()
-        .then(() => {
-          if (algorithm === "A*") {
-            return aStar(grid[startRow][startCol]);
-          } else if (algorithm === "Dijkstra") {
-            return dijkstra(grid[startRow][startCol]);
-          }
-        })
-        .then(({ visitedNodes, shortestPath }) => {
-          // visualize visited nodes
-          return new Promise((resolve) => {
-            const n = visitedNodes.length;
-            for (let i = 0; i < n; ++i) {
-              const node = visitedNodes[i];
-              setTimeout(() => {
-                if (!(node.isStart || node.isEnd)) {
-                  changeClassName(node, "bg-cyan-300");
-                }
-                setSteps(i);
-              }, 0 * i);
-            }
-            setTimeout(() => {
-              resolve(shortestPath);
-            }, 0 * n);
-          });
-        })
-        .then((shortestPath) => {
-          // visualize shortest path
-          return new Promise((resolve) => {
-            const n = shortestPath.length;
-            for (let i = 0; i < n; ++i) {
-              setTimeout(() => {
-                const node = shortestPath[i];
-                if (!(node.isStart || node.isEnd)) {
-                  changeClassName(node, "bg-yellow-300");
-                }
-                setPathLength(i);
-              }, 0 * i);
-            }
-            setTimeout(() => {
-              resolve(n);
-            }, 0 * n);
-          });
-        })
-        .then((n) => {
-          setVisualized(!visualized);
-          setTimeout(() => {
-            setStart();
-          }, n * 0);
-        });
+      await clearPath(grid);
+      const startNode = grid[startRow][startCol];
+      const endNode = grid[endRow][endCol];
+      let res = utilities.getAlgorithmResult(algorithm, startNode, endNode);
+      // visualize visited nodes
+      const n = res.visitedNodes.length;
+      for (let i = 0; i < n; ++i) {
+        const node = res.visitedNodes[i];
+        if (!(node.isStart || node.isEnd)) {
+          changeClassName(node, "visit");
+        }
+        setSteps(i);
+        await delay(0);
+      }
+      // visualize shortest path
+      const m = res.shortestPath.length;
+      for (let i = 0; i < m; ++i) {
+        const node = res.shortestPath[i];
+        if (!(node.isStart || node.isEnd)) {
+          changeClassName(node, "path");
+        }
+        setPathLength(i);
+        await delay(0);
+      }
+      await delay(20);
+      setVisualized(true);
+      setStart();
     }
   }, [props.start]);
 
   useEffect(() => {
+    updateHeuristic(grid);
     if (visualized) {
-      for (let row of grid) {
-        for (let node of row) {
-          changeClassName(node, "");
-        }
-      }
-      if (algorithm === "A*") {
-        let { visitedNodes, shortestPath } = aStar(grid[startRow][startCol]);
-        refresh(visitedNodes, shortestPath);
-        setPathLength(shortestPath.length);
-        setSteps(visitedNodes.length);
-      } else if (algorithm === "Dijkstra") {
-        let { visitedNodes, shortestPath } = dijkstra(grid[startRow][startCol]);
-        refresh(visitedNodes, shortestPath);
-        setPathLength(shortestPath.length);
-        setSteps(visitedNodes.length);
-      }
+      clearPath(grid);
+      const startNode = grid[startRow][startCol];
+      const endNode = grid[endRow][endCol];
+      let res = utilities.getAlgorithmResult(algorithm, startNode, endNode);
+      refresh(res.visitedNodes, res.shortestPath);
+      setPathLength(res.shortestPath.length);
+      setSteps(res.visitedNodes.length);
     }
   }, [grid]);
 
   useEffect(() => {
     setVisualized(false);
-    if (grid.length!==0){
+    if (grid.length !== 0) {
       const start = grid[startRow][startCol];
       const end = grid[endRow][endCol];
-      patternVisualize(grid,props.pattern, maxRow, maxCol, start, end);
+      utilities.generatePattern(
+        props.pattern,
+        grid,
+        maxRow,
+        maxCol,
+        start,
+        end,
+        50,
+        0.3
+      );
     }
-      
   }, [props.pattern]);
 
   return (
-    <div className="px-5 relative sgrid">
+    <div className="place-content-center relative sgrid">
       {grid.map((row, y) => {
         return row.map((node, x) => {
           const { isStart, isEnd, isWall } = node;
