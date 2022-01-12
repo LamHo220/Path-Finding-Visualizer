@@ -25,7 +25,7 @@ const doRecuresiveDivision = async (
     if (toCol - fromCol < 2) {
       return;
     }
-    let wallRow = Math.floor(rand(fromRow + 1, toRow - 1) / 2) * 2;
+    const wallRow = Math.floor(rand(fromRow + 1, toRow - 1) / 2) * 2;
     await horizontalCut(grid, fromCol, toCol, wallRow);
     await doRecuresiveDivision(
       grid,
@@ -48,7 +48,7 @@ const doRecuresiveDivision = async (
       return;
     }
 
-    let wallCol = Math.floor(rand(fromCol + 1, toCol - 1) / 2) * 2;
+    const wallCol = Math.floor(rand(fromCol + 1, toCol - 1) / 2) * 2;
     await verticalCut(grid, fromRow, toRow, wallCol);
     await doRecuresiveDivision(
       grid,
@@ -70,7 +70,7 @@ const doRecuresiveDivision = async (
 };
 
 const horizontalCut = async (grid, fromCol, toCol, wallRow) => {
-  let passCol = Math.floor(rand(fromCol, toCol) / 2) * 2 + 1;
+  const passCol = Math.floor(rand(fromCol, toCol) / 2) * 2 + 1;
 
   for (let i = fromCol; i <= toCol; ++i) {
     if (i !== passCol) {
@@ -85,7 +85,7 @@ const horizontalCut = async (grid, fromCol, toCol, wallRow) => {
 };
 
 const verticalCut = async (grid, fromRow, toRow, wallCol) => {
-  let passRow = Math.floor(rand(fromRow, toRow) / 2) * 2 + 1;
+  const passRow = Math.floor(rand(fromRow, toRow) / 2) * 2 + 1;
 
   for (let i = fromRow; i <= toRow; ++i) {
     if (i !== passRow) {
