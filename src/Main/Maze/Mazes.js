@@ -4,6 +4,7 @@ import RecursiveDivisionMaze from "./RecursiveDivision";
 import SimpleRandomWalls from "./SimpleRandomWalls";
 import PrimMaze from "./Prim";
 import { delay, changeClassName } from "../misc/misc";
+import Kruskal from "./Kruskal";
 
 const Reverse = async (grid, maxRow, maxCol) => {
   for (let row = 0; row < maxRow; ++row) {
@@ -59,7 +60,7 @@ export default {
   },
   RecursiveDivisionMaze: async (...args) => {
     await NoWalls(...args);
-    Boundary(...args);
+    await Boundary(...args);
     RecursiveDivisionMaze(...args);
   },
   PrimMaze: async (...args) => {
@@ -70,6 +71,11 @@ export default {
   SimpleRandomWalls: async (...args) => {
     await NoWalls(...args);
     SimpleRandomWalls(...args);
+  },
+  Kruskal: async (...args) => {
+    await NoWalls(...args);
+    await Boundary(...args);
+    Kruskal(...args);
   },
   NoWalls: NoWalls,
 };
