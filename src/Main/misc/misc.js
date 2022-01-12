@@ -1,6 +1,3 @@
-import aStar from "../Algorithms/PathFinding/AStar";
-import dijkstra from "../Algorithms/PathFinding/Dijkstra";
-
 const rowDir = { N: -1, S: 1, E: 0, W: 0 };
 const colDir = { N: 0, S: 0, E: 1, W: -1 };
 
@@ -14,9 +11,9 @@ const changeClassName = async (node, name="", fakeIsWall=false) => {
       : fakeIsWall
       ? name
       : node.isWall
-      ? "bg-gray-400 dark:bg-gray-700"
+      ? "bg-gray-400 dark:bg-gray-700 fade-in"
       : name
-  } border border-gray-200 m-0 p-0 dark:border-gray-700 hover:bg-orange-300`;
+  } border border-gray-200 m-0 p-0 dark:border-gray-700 hover:bg-orange-300 `;
 };
 
 const clearPath = async (grid) => {
@@ -60,15 +57,19 @@ const delay = (t)=>{
   });
 }
 
+const print = (...args) => {
+  console.log(...args);
+}
+
 
 export {
   changeClassName,
   refresh,
   rand,
-  //reverse,
   isHorizontalCut,
   delay,
   clearPath,
   rowDir,
-  colDir
+  colDir,
+  print
 };
