@@ -12,8 +12,8 @@ const RecursiveBacktrackingMaze = async (
   startNode.isWall = true;
   endNode.isWall = true;
 
-  let randCol = Math.floor(rand(0, maxCol - 1) / 2) * 2 + 1;
-  let randRow = Math.floor(rand(0, maxRow - 1) / 2) * 2 + 1;
+  const randCol = Math.floor(rand(0, maxCol - 1) / 2) * 2 + 1;
+  const randRow = Math.floor(rand(0, maxRow - 1) / 2) * 2 + 1;
   let node = grid[randRow][randCol];
   node.isWall=false;
   changeClassName(node);
@@ -40,21 +40,21 @@ const getDirection = (grid, row, col) => {
 };
 
 const doRecursiveBacktracker = async (grid, node, maxRow, maxCol) => {
-  let row = node.row;
-  let col = node.col;
+  const row = node.row;
+  const col = node.col;
 
   let dir = getDirection(grid, row, col);
   while (!!dir.length) {
-    let dirId = rand(0, dir.length - 1);
+    const dirId = rand(0, dir.length - 1);
     let direction = dir[dirId];
     dir = dir.filter((e) => e !== direction);
-    let nextRow = row + rowDir[direction];
-    let nextCol = col + colDir[direction];
+    const nextRow = row + rowDir[direction];
+    const nextCol = col + colDir[direction];
 
     let nextNode = grid[nextRow][nextCol];
 
-    let pretendRow = nextRow + rowDir[direction];
-    let pretendCol = nextCol + colDir[direction];
+    const pretendRow = nextRow + rowDir[direction];
+    const pretendCol = nextCol + colDir[direction];
     if (
       pretendRow < 0 ||
       pretendRow >= maxRow ||
