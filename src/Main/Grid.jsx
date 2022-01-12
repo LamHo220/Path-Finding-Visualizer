@@ -50,6 +50,7 @@ const Grid = (props) => {
       f: Infinity,
       neighbors: [],
       weight: 1,
+      idx: -1,
     };
   };
 
@@ -199,20 +200,20 @@ const Grid = (props) => {
       for (let i = 0; i < n; ++i) {
         const node = res.visitedNodes[i];
         if (!(node.isStart || node.isEnd)) {
-          changeClassName(node, "visit");
+          changeClassName(node, "bg-green-300 dark:bg-green-700 fade-in");
         }
         setSteps(i);
-        await delay(0);
+        await delay(10);
       }
       // visualize shortest path
       const m = res.shortestPath.length;
       for (let i = 0; i < m; ++i) {
         const node = res.shortestPath[i];
         if (!(node.isStart || node.isEnd)) {
-          changeClassName(node, "path");
+          changeClassName(node, "bg-yellow-300 dark:bg-yellow-600 fade-in");
         }
         setPathLength(i);
-        await delay(0);
+        await delay(10);
       }
       await delay(20);
       setVisualized(true);
@@ -245,7 +246,7 @@ const Grid = (props) => {
         maxCol,
         start,
         end,
-        50,
+        10,
         0.3
       );
     }
