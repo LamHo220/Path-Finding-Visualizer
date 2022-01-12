@@ -44,6 +44,9 @@ export default {
       case "Prim's Algorithm":
         Mazes.PrimMaze(grid, maxRow, maxCol, duration);
         break;
+      case "Kruskal's Algorithm":
+        Mazes.Kruskal(grid, maxRow, maxCol, duration);
+        break;
       default:
         Mazes.NoWalls(grid);
         break;
