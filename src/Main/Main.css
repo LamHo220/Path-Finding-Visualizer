@@ -23,29 +23,16 @@
   width: var(--node-size);
 }
 
-.visit {
-  animation: pop1;
+.fade-in {
+  animation: in;
   animation-duration: 0.2s;
   animation-fill-mode: forwards;
 }
-.path {
-  animation: pop2;
-  animation-duration: 0.2s;
-  animation-fill-mode: forwards;
-}
-@keyframes pop1 {
+@keyframes in {
   0% {
-    background-color: rgb(249 250 251);
+    opacity: 0;
   }
   100% {
-    background-color: rgb(103 232 249);
-  }
-}
-@keyframes pop2 {
-  0% {
-    background-color: rgb(103 232 249);
-  }
-  100% {
-    background-color: rgb(253 224 71);
+    opacity: 1;
   }
 }
