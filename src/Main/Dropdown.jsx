@@ -5,7 +5,10 @@ const Dropdown = (props) => {
   const { name } = props;
 
   return (
-    <SelectionButton buttonName={name} icon={name===""?faCog:faChevronDown}>
+    <SelectionButton
+      buttonName={name}
+      icon={name === "" ? faCog : faChevronDown}
+    >
       <div className="absolute">
         <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden ">
           {props.children}
@@ -17,12 +20,23 @@ const Dropdown = (props) => {
 
 const DropdownItem = (props) => {
   const { f } = props;
+
+  if (f === undefined) {
+    return (
+      <div className="dark:bg-gray-800 relative grid gap-2 bg-white px-3 py-2">
+        <div className="text-gray-400 dark:text-white text-sm whitespace-nowrap p-1 flex items-start rounded-lg">
+          {props.children}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="dark:bg-gray-800 relative grid gap-2 bg-white px-3 py-2">
       <a
-        onClick={() => f()}
+        onClick={f === undefined ? () => {} : () => f()}
         href="#"
-        className="transition ease-in-out delay-150 hover:scale-105 duration-100 hover:text-gray-900 text-gray-400 dark:text-white text-sm whitespace-nowrap p-1 flex items-start rounded-lg "
+        className="transition ease-in-out delay-150 hover:scale-105 duration-100 hover:text-gray-900 text-gray-400 dark:text-white text-sm whitespace-nowrap p-1 flex items-start rounded-lg"
       >
         {props.children}
       </a>
