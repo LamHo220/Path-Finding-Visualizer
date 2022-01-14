@@ -1,6 +1,6 @@
 import { rand, changeClassName, delay, isHorizontalCut } from "../misc/misc";
 
-const Kruskal = async (grid, maxRow, maxCol) => {
+const Kruskal = async (grid, maxRow, maxCol, duration) => {
   let closed = [];
   let groups = new Map();
   let idx = 0;
@@ -52,34 +52,34 @@ const Kruskal = async (grid, maxRow, maxCol) => {
       }
     }
   }
-  
+
   let open = grid.flat().filter((e) => !closed.includes(e));
-  while (!!open) {
+  while (open.length!==0) {
     const isHorizontal = isHorizontalCut(0, 0);
     const node = open[rand(0, open.length - 1)];
-    open = open.filter((e) => e != node);
+    open = open.filter((e) => e !== node);
     if (isHorizontal) {
       const nodeA = grid[node.row][node.col - 1];
       const nodeB = grid[node.row][node.col + 1];
-      if (!(await combineGroup(node, nodeA, nodeB, groups))) {
+      if (!(await combineGroup(node, nodeA, nodeB, groups, duration))) {
         const nodeA = grid[node.row - 1][node.col];
         const nodeB = grid[node.row + 1][node.col];
-        await combineGroup(node, nodeA, nodeB, groups);
+        await combineGroup(node, nodeA, nodeB, groups, duration);
       }
     } else {
       const nodeA = grid[node.row - 1][node.col];
       const nodeB = grid[node.row + 1][node.col];
-      if (!(await combineGroup(node, nodeA, nodeB, groups))) {
+      if (!(await combineGroup(node, nodeA, nodeB, groups, duration))) {
         const nodeA = grid[node.row][node.col - 1];
         const nodeB = grid[node.row][node.col + 1];
-        await combineGroup(node, nodeA, nodeB, groups);
+        await combineGroup(node, nodeA, nodeB, groups, duration);
       }
     }
   }
 };
 
-const combineGroup = async (node, nodeA, nodeB, groups) => {
-  if (nodeA.idx == nodeB.idx) {
+const combineGroup = async (node, nodeA, nodeB, groups, duration) => {
+  if (nodeA.idx === nodeB.idx) {
     return false;
   }
   let set1 = groups.get(nodeA.idx);
@@ -102,7 +102,7 @@ const combineGroup = async (node, nodeA, nodeB, groups) => {
   changeClassName(node);
   changeClassName(nodeB);
   changeClassName(nodeA);
-  await delay(50);
+  await delay(5 * duration);
   return true;
 };
 
