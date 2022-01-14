@@ -6,7 +6,7 @@ import PrimMaze from "./Prim";
 import { delay, changeClassName } from "../misc/misc";
 import Kruskal from "./Kruskal";
 
-const Reverse = async (grid, maxRow, maxCol) => {
+const Reverse = async (grid, maxRow, maxCol, duration) => {
   for (let row = 0; row < maxRow; ++row) {
     for (let col = 0; col < maxCol; ++col) {
       setTimeout(() => {
@@ -15,10 +15,10 @@ const Reverse = async (grid, maxRow, maxCol) => {
           node.isWall = !node.isWall;
           changeClassName(node);
         }
-      }, 30 * (row + col));
+      }, Math.max(duration, 30) * (row + col));
     }
   }
-  await delay(30 * (maxRow + maxCol));
+  await delay(Math.max(duration, 30) * (maxRow + maxCol));
 };
 
 const Boundary = async (grid, maxRow, maxCol, duration) => {
@@ -56,17 +56,17 @@ const Boundary = async (grid, maxRow, maxCol, duration) => {
 export default {
   RecursiveBacktrackingMaze: async (...args) => {
     await Reverse(...args);
-    RecursiveBacktrackingMaze(...args);
+    await RecursiveBacktrackingMaze(...args);
   },
   RecursiveDivisionMaze: async (...args) => {
     await NoWalls(...args);
     await Boundary(...args);
-    RecursiveDivisionMaze(...args);
+    await RecursiveDivisionMaze(...args);
   },
   PrimMaze: async (...args) => {
     await NoWalls(...args);
     await Reverse(...args);
-    PrimMaze(...args);
+    await PrimMaze(...args);
   },
   SimpleRandomWalls: async (...args) => {
     await NoWalls(...args);
@@ -75,7 +75,7 @@ export default {
   Kruskal: async (...args) => {
     await NoWalls(...args);
     await Boundary(...args);
-    Kruskal(...args);
+    await Kruskal(...args);
   },
   NoWalls: NoWalls,
 };
