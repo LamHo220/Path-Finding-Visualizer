@@ -14,7 +14,7 @@ export default {
         break;
     }
   },
-  generatePattern: (
+  generatePattern: async (
     pattern,
     grid,
     maxRow,
@@ -26,13 +26,13 @@ export default {
   ) => {
     switch (pattern) {
       case "Simple Random Walls":
-        Mazes.SimpleRandomWalls(grid, density);
+        await Mazes.SimpleRandomWalls(grid, density);
         break;
       case "Recursive Division":
-        Mazes.RecursiveDivisionMaze(grid, maxRow, maxCol, duration);
+        await Mazes.RecursiveDivisionMaze(grid, maxRow, maxCol, duration);
         break;
       case "Recursive Backtracking":
-        Mazes.RecursiveBacktrackingMaze(
+        await Mazes.RecursiveBacktrackingMaze(
           grid,
           maxRow,
           maxCol,
@@ -42,13 +42,13 @@ export default {
         );
         break;
       case "Prim's Algorithm":
-        Mazes.PrimMaze(grid, maxRow, maxCol, duration);
+        await Mazes.PrimMaze(grid, maxRow, maxCol, duration);
         break;
       case "Kruskal's Algorithm":
-        Mazes.Kruskal(grid, maxRow, maxCol, duration);
+        await Mazes.Kruskal(grid, maxRow, maxCol, duration);
         break;
       default:
-        Mazes.NoWalls(grid);
+        await Mazes.NoWalls(grid);
         break;
     }
   },
