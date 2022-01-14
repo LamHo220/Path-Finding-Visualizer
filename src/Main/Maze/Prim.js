@@ -1,8 +1,6 @@
 import { rand, changeClassName, rowDir, colDir, delay } from "../misc/misc";
 
-const deltaTime = 60;
-
-const PrimMaze = async (grid, maxRow, maxCol) => {
+const PrimMaze = async (grid, maxRow, maxCol, duration) => {
   let isStarted = false;
   let row = Math.floor(rand(maxRow / 3, maxRow - 2) / 2) * 2 + 1;
   let col = Math.floor(rand(maxCol / 2, maxCol - 2) / 2) * 2 + 1;
@@ -10,7 +8,7 @@ const PrimMaze = async (grid, maxRow, maxCol) => {
   while (!!pretendNodes.length) {
     let current = pretendNodes[rand(0, pretendNodes.length - 1)];
     if (isStarted) {
-      await connectTwoNode(grid, current, maxRow, maxCol);
+      await connectTwoNode(grid, current, maxRow, maxCol, duration);
     }
     pretendNodes = pretendNodes.filter((e) => e !== current);
     let crow = current.row;
@@ -20,8 +18,8 @@ const PrimMaze = async (grid, maxRow, maxCol) => {
         current.isWall = false;
       }
       changeClassName(grid[crow][ccol]);
-      await delay(deltaTime);
-      let dir = await getPrimDir(grid, current, maxRow, maxCol);
+      await delay(duration);
+      let dir = await getPrimDir(grid, current, maxRow, maxCol, duration);
       if (dir.length !== 0) {
         for (let direction of dir) {
           let col = ccol + colDir[direction] * 2;
@@ -34,7 +32,7 @@ const PrimMaze = async (grid, maxRow, maxCol) => {
   }
 };
 
-const connectTwoNode = async (grid, toNode, maxRow, maxCol) => {
+const connectTwoNode = async (grid, toNode, maxRow, maxCol, duration) => {
   let toRow = toNode.row;
   let toCol = toNode.col;
   let fromNode;
@@ -82,16 +80,16 @@ const connectTwoNode = async (grid, toNode, maxRow, maxCol) => {
       next.isWall = false;
       changeClassName(next);
     }
-    await delay(deltaTime);
+    await delay(duration);
     if (!(toNode.isStart || toNode.isEnd)) {
       toNode.isWall = false;
       changeClassName(toNode);
     }
-    await delay(deltaTime);
+    await delay(duration);
   }
 };
 
-const getPrimDir = async (grid, node, maxRow, maxCol) => {
+const getPrimDir = async (grid, node, maxRow, maxCol, duration) => {
   let row = node.row;
   let col = node.col;
   let result = [];
@@ -101,7 +99,7 @@ const getPrimDir = async (grid, node, maxRow, maxCol) => {
     if (next.isWall && !next.isStart && !next.isEnd) {
       result.push("N");
       changeClassName(grid[row - 2][col], "bg-cyan-500", true);
-      await delay(deltaTime);
+      await delay(duration);
     }
   }
   if (row + 2 < maxRow) {
@@ -109,7 +107,7 @@ const getPrimDir = async (grid, node, maxRow, maxCol) => {
     if (next.isWall && !next.isStart && !next.isEnd) {
       result.push("S");
       changeClassName(grid[row + 2][col], "bg-cyan-500", true);
-      await delay(deltaTime);
+      await delay(duration);
     }
   }
   if (col + 2 < maxCol) {
@@ -117,7 +115,7 @@ const getPrimDir = async (grid, node, maxRow, maxCol) => {
     if (next.isWall && !next.isStart && !next.isEnd) {
       result.push("E");
       changeClassName(grid[row][col + 2], "bg-cyan-500", true);
-      await delay(deltaTime);
+      await delay(duration);
     }
   }
   if (col - 2 >= 0) {
@@ -125,7 +123,7 @@ const getPrimDir = async (grid, node, maxRow, maxCol) => {
     if (next.isWall && !next.isStart && !next.isEnd) {
       result.push("W");
       changeClassName(grid[row][col - 2], "bg-cyan-500", true);
-      await delay(deltaTime);
+      await delay(duration);
     }
   }
   return result;
