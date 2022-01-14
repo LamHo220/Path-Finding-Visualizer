@@ -18,13 +18,13 @@ const Node = (props) => {
     : isEnd
     ? "bg-pink-400 dark:bg-pink-700"
     : isWall
-    ? "bg-gray-400 dark:bg-gray-700"
+    ? "bg-gray-400 dark:bg-gray-600 fade-in"
     : "hover:bg-orange-300";
 
   return (
     <div
       id={id}
-      className={`node ${name} border border-gray-200 m-0 p-0 dark:border-gray-700`}
+      className={`node ${name} border border-gray-200 m-0 p-0 dark:border-gray-700 hover:bg-orange-300 `}
       onMouseDown={(event) => onMouseDown(event, row, col)}
       onMouseEnter={(event) => onMouseEnter(event, row, col)}
       onMouseUp={() => onMouseUp(row, col)}
