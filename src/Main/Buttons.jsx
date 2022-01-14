@@ -8,7 +8,7 @@ const StartButton = (props) => {
     <div className="relative">
       <button
         type="button"
-        className="dark:bg-sky-800 dark:text-white bg-sky-200 text-gray-700 transition ease-in-out delay-150 hover:scale-105 duration-200 px-5 py-1 group bg-white rounded-md inline-flex items-center text-base font-medium"
+        className="bg-sky-200 dark:bg-sky-800 dark:text-white text-gray-700 transition ease-in-out delay-150 hover:scale-105 duration-200 px-5 py-1 group bg-white rounded-md inline-flex items-center text-base font-medium"
         aria-expanded="false"
         onClick={() => {
           setStart();
@@ -81,10 +81,35 @@ const SelectionButton = (props) => {
 
 const DarkMode = (props) => {
   return (
-    <a href="#" onClick={() => props.f()} className="px-5">
+    <a href="#" onClick={() => props.f()} className="">
       <FontAwesomeIcon icon={faMoon} />
     </a>
   );
 };
 
-export { SelectionButton, StartButton, TrueFalseButton, DarkMode };
+const SliceBar = (props) => {
+  return (
+    <div className="dark:bg-gray-800 text-gray-400 dark:text-white py-1 group bg-white rounded-md inline-flex items-center text-base font-medium">
+      <span className="pr-2">{props.name}</span>
+      <input
+        type="range"
+        min="0.1"
+        max="9.1"
+        value={props.timeRatio}
+        className="slider"
+        list="tickmarks"
+        id="range"
+        onChange={(event) => props.onSlice(event)}
+        step="3"
+      />
+      <datalist id="tickmarks">
+        <option value="0.1"></option>
+        <option value="3.1"></option>
+        <option value="6.1"></option>
+        <option value="9.1"></option>
+      </datalist>
+    </div>
+  );
+};
+
+export { SliceBar, SelectionButton, StartButton, TrueFalseButton, DarkMode };
