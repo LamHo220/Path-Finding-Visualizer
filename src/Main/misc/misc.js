@@ -11,8 +11,8 @@ const changeClassName = async (node, name="", fakeIsWall=false) => {
       : fakeIsWall
       ? name
       : node.isWall
-      ? "bg-gray-400 dark:bg-gray-700 fade-in"
-      : name
+      ? "bg-gray-400 dark:bg-gray-600 fade-in"
+      : name + " hover:bg-orange-300"
   } border border-gray-200 m-0 p-0 dark:border-gray-700 hover:bg-orange-300 `;
 };
 
