@@ -35,6 +35,7 @@ const Grid = (props) => {
     setPathLength,
     timeRatio,
     setStart,
+    setPattern,
   } = props;
 
   const createNode = (row, col) => {
@@ -46,7 +47,11 @@ const Grid = (props) => {
       isWall: false,
       previous: null,
       g: Infinity,
-      h: utilities.getHeuristic(heuristic, Math.abs(row - endRow), Math.abs(col - endCol)),
+      h: utilities.getHeuristic(
+        heuristic,
+        Math.abs(row - endRow),
+        Math.abs(col - endCol)
+      ),
       f: Infinity,
       neighbors: [],
       weight: 1,
@@ -203,7 +208,7 @@ const Grid = (props) => {
           changeClassName(node, "bg-green-300 dark:bg-green-700 fade-in");
         }
         setSteps(i);
-        await delay(10);
+        await delay(10 * timeRatio);
       }
       // visualize shortest path
       const m = res.shortestPath.length;
@@ -213,9 +218,9 @@ const Grid = (props) => {
           changeClassName(node, "bg-yellow-300 dark:bg-yellow-600 fade-in");
         }
         setPathLength(i);
-        await delay(10);
+        await delay(10 * timeRatio);
       }
-      await delay(20);
+      await delay(20 * timeRatio);
       setVisualized(true);
       setStart();
     }
@@ -234,21 +239,22 @@ const Grid = (props) => {
     }
   }, [grid]);
 
-  useEffect(() => {
+  useEffect(async () => {
     setVisualized(false);
-    if (grid.length !== 0) {
+    if (grid.length !== 0 && props.pattern !== "") {
       const start = grid[startRow][startCol];
       const end = grid[endRow][endCol];
-      utilities.generatePattern(
+      await utilities.generatePattern(
         props.pattern,
         grid,
         maxRow,
         maxCol,
         start,
         end,
-        10,
+        10 * timeRatio,
         0.3
       );
+      setPattern("");
     }
   }, [props.pattern]);
 
