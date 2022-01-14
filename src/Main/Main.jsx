@@ -15,7 +15,7 @@ const Main = (props) => {
     "Simple Random Walls",
     "Recursive Division",
     "Prim's Algorithm",
-    // "Kruskal's Algorithm",
+    "Kruskal's Algorithm",
     "Recursive Backtracking",
   ];
 
@@ -26,7 +26,7 @@ const Main = (props) => {
   const [algorithm, setAlgorithm] = useState("A*");
   const [pattern, setPattern] = useState("");
   const [start, setStart] = useState(false);
-  const [timeRatio, setTimeRatio] = useState(200);
+  const [timeRatio, setTimeRatio] = useState(3.1);
   const [darkMode, setDarkMode] = useState(false);
   const [disable, setDisable] = useState(false);
 
@@ -35,12 +35,18 @@ const Main = (props) => {
   }, [allowDiagonal]);
 
   useEffect(() => {
-    setPattern("");
-  }, [pattern]);
+    document.getElementsByTagName("html")[0].className =
+      (darkMode ? "dark" : "") + " dark:bg-gray-900";
+  }, [darkMode]);
 
   useEffect(() => {
-    document.getElementsByTagName("html")[0].className = darkMode ? "dark" : "";
-  }, [darkMode]);
+    console.log(123);
+  }, [disable]);
+
+  const handleSlice = (event) => {
+    let value = event.target.value;
+    setTimeRatio(value);
+  };
 
   return (
     <div
@@ -60,8 +66,12 @@ const Main = (props) => {
         setHeuristic={setHeuristic}
         setAllowDiagonal={() => setAllowDiagonal(!allowDiagonal)}
         setAlgorithm={setAlgorithm}
-        setPattern={setPattern}
+        setPattern={(pattern) => {
+          setPattern(pattern);
+          setDisable(!disable);
+        }}
         setDarkMode={() => setDarkMode(!darkMode)}
+        onSlice={handleSlice}
       />
       <Result
         algorithm={algorithm}
@@ -79,6 +89,10 @@ const Main = (props) => {
         heuristic={heuristic}
         heuristics={heuristics}
         timeRatio={timeRatio}
+        setPattern={(pattern) => {
+          setPattern(pattern);
+          setDisable(!disable);
+        }}
         setStart={() => {
           setStart(!start);
           setDisable(!disable);
