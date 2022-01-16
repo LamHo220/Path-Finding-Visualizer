@@ -1,19 +1,32 @@
+import {Card, Grid } from "@mui/material";
+
 const Result = (props) => {
   return (
-    <div className="flex md:justify-around items-center dark:bg-gray-900">
-      <div className="font-medium text-gray-700 dark:text-gray-400">
-        Algorithm: {props.algorithm}
-      </div>
-      <div className="font-medium text-gray-700 dark:text-gray-400">
-        Heuristic: {props.heuristic}
-      </div>
-      <div className="font-noraml text-gray-700 dark:text-gray-400">
-        Number of Steps: {props.steps}
-      </div>
-      <div className="font-noraml text-gray-700 dark:text-gray-400">
-        Length of Path: {props.pathLength}
-      </div>
-    </div>
+    <Card>
+      <Grid
+        container
+        direction="row"
+        justifyContent="space-around"
+        alignItems="center"
+      >
+        <Grid item xs={1}>
+          <b>Algorithm:</b> <br />
+          {props.algorithm}
+        </Grid>
+        <Grid item xs={1}>
+          <b>Heuristic:</b> <br />
+          {props.heuristic}
+        </Grid>
+        <Grid item xs={1}>
+          <b>Number of Steps:</b> <br />
+          {props.steps}
+        </Grid>
+        <Grid item xs={1}>
+          <b>Length of Path:</b> <br />
+          {props.pathLength}
+        </Grid>
+      </Grid>
+    </Card>
   );
 };
 

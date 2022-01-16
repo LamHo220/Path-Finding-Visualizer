@@ -1,5 +1,5 @@
 import {changeClassName} from "../misc/misc";
-const SimpleRandomWalls = (grid, density) => {
+const SimpleRandomWalls = (dark, grid, density) => {
   for (let row of grid) {
     for (let node of row) {
       if (node.isStart || node.isEnd) {
@@ -7,7 +7,7 @@ const SimpleRandomWalls = (grid, density) => {
       }
       if (Math.random() < density) {
         node.isWall = true;
-        changeClassName(node, "bg-gray-400");
+        changeClassName(dark, node);
       }
     }
   }

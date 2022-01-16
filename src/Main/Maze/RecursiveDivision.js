@@ -2,9 +2,10 @@ import { rand, changeClassName, isHorizontalCut, delay } from "../misc/misc";
 
 var deltaTime = 60;
 
-const RecursiveDivisionMaze = async (grid, maxRow, maxCol, duration) => {
+const RecursiveDivisionMaze = async (dark, grid, maxRow, maxCol, duration) => {
   deltaTime = duration;
-  doRecuresiveDivision(
+  await doRecuresiveDivision(
+    dark,
     grid,
     1,
     1,
@@ -14,6 +15,7 @@ const RecursiveDivisionMaze = async (grid, maxRow, maxCol, duration) => {
   );
 };
 const doRecuresiveDivision = async (
+  dark,
   grid,
   fromRow,
   fromCol,
@@ -26,8 +28,9 @@ const doRecuresiveDivision = async (
       return;
     }
     const wallRow = Math.floor(rand(fromRow + 1, toRow - 1) / 2) * 2;
-    await horizontalCut(grid, fromCol, toCol, wallRow);
+    await horizontalCut(dark, grid, fromCol, toCol, wallRow);
     await doRecuresiveDivision(
+      dark,
       grid,
       fromRow,
       fromCol,
@@ -36,6 +39,7 @@ const doRecuresiveDivision = async (
       isHorizontalCut(toCol - fromCol, wallRow - 1 - fromRow)
     );
     await doRecuresiveDivision(
+      dark,
       grid,
       wallRow + 1,
       fromCol,
@@ -49,8 +53,9 @@ const doRecuresiveDivision = async (
     }
 
     const wallCol = Math.floor(rand(fromCol + 1, toCol - 1) / 2) * 2;
-    await verticalCut(grid, fromRow, toRow, wallCol);
+    await verticalCut(dark, grid, fromRow, toRow, wallCol);
     await doRecuresiveDivision(
+      dark,
       grid,
       fromRow,
       fromCol,
@@ -59,6 +64,7 @@ const doRecuresiveDivision = async (
       isHorizontalCut(wallCol - 1 - fromCol, toRow - fromRow)
     );
     await doRecuresiveDivision(
+      dark,
       grid,
       fromRow,
       wallCol + 1,
@@ -69,7 +75,7 @@ const doRecuresiveDivision = async (
   }
 };
 
-const horizontalCut = async (grid, fromCol, toCol, wallRow) => {
+const horizontalCut = async (dark, grid, fromCol, toCol, wallRow) => {
   const passCol = Math.floor(rand(fromCol, toCol) / 2) * 2 + 1;
 
   for (let i = fromCol; i <= toCol; ++i) {
@@ -77,14 +83,14 @@ const horizontalCut = async (grid, fromCol, toCol, wallRow) => {
       let node = grid[wallRow][i];
       if (!(node.isStart || node.isEnd)) {
         grid[wallRow][i].isWall = true;
-        changeClassName(node);
+        changeClassName(dark, node);
       }
     }
     await delay(deltaTime);
   }
 };
 
-const verticalCut = async (grid, fromRow, toRow, wallCol) => {
+const verticalCut = async (dark, grid, fromRow, toRow, wallCol) => {
   const passRow = Math.floor(rand(fromRow, toRow) / 2) * 2 + 1;
 
   for (let i = fromRow; i <= toRow; ++i) {
@@ -92,7 +98,7 @@ const verticalCut = async (grid, fromRow, toRow, wallCol) => {
       let node = grid[i][wallCol];
       if (!(node.isStart || node.isEnd)) {
         grid[i][wallCol].isWall = true;
-        changeClassName(node);
+        changeClassName(dark, node);
       }
     }
     await delay(deltaTime);

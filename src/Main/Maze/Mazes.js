@@ -6,14 +6,14 @@ import PrimMaze from "./Prim";
 import { delay, changeClassName } from "../misc/misc";
 import Kruskal from "./Kruskal";
 
-const Reverse = async (grid, maxRow, maxCol, duration) => {
+const Reverse = async (dark, grid, maxRow, maxCol, duration) => {
   for (let row = 0; row < maxRow; ++row) {
     for (let col = 0; col < maxCol; ++col) {
       setTimeout(() => {
         let node = grid[row][col];
         if (!(node.isStart || node.isEnd)) {
           node.isWall = !node.isWall;
-          changeClassName(node);
+          changeClassName(dark, node);
         }
       }, Math.max(duration, 30) * (row + col));
     }
@@ -21,18 +21,18 @@ const Reverse = async (grid, maxRow, maxCol, duration) => {
   await delay(Math.max(duration, 30) * (maxRow + maxCol));
 };
 
-const Boundary = async (grid, maxRow, maxCol, duration) => {
+const Boundary = async (dark, grid, maxRow, maxCol, duration) => {
   for (let i = 0; i < maxRow; ++i) {
     setTimeout(() => {
       let node = grid[i][0];
       if (!(node.isStart || node.isEnd)) {
         node.isWall = true;
-        changeClassName(node);
+        changeClassName(dark, node);
       }
       node = grid[i][maxCol - 1];
       if (!(node.isStart || node.isEnd)) {
         node.isWall = true;
-        changeClassName(node);
+        changeClassName(dark, node);
       }
     }, duration * i);
   }
@@ -41,12 +41,12 @@ const Boundary = async (grid, maxRow, maxCol, duration) => {
       let node = grid[0][j];
       if (!(node.isStart || node.isEnd)) {
         node.isWall = true;
-        changeClassName(node);
+        changeClassName(dark, node);
       }
       node = grid[maxRow - 1][j];
       if (!(node.isStart || node.isEnd)) {
         node.isWall = true;
-        changeClassName(node);
+        changeClassName(dark, node);
       }
     }, duration * j);
   }
@@ -55,6 +55,7 @@ const Boundary = async (grid, maxRow, maxCol, duration) => {
 
 export default {
   RecursiveBacktrackingMaze: async (...args) => {
+    await NoWalls(...args);
     await Reverse(...args);
     await RecursiveBacktrackingMaze(...args);
   },

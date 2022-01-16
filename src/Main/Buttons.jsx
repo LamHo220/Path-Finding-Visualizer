@@ -1,115 +1,31 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMoon } from "@fortawesome/free-solid-svg-icons";
+import { Box, FormControl, InputLabel, NativeSelect } from "@mui/material";
+import React from "react";
 
-const StartButton = (props) => {
-  const { buttonName, setStart } = props;
+const SelectMenu = (props) => {
+
+  const {labelName, list, setItem} = props;
+
   return (
-    <div className="relative">
-      <button
-        type="button"
-        className="bg-sky-200 dark:bg-sky-800 dark:text-white text-gray-700 transition ease-in-out delay-150 hover:scale-105 duration-200 px-5 py-1 group bg-white rounded-md inline-flex items-center text-base font-medium"
-        aria-expanded="false"
-        onClick={() => {
-          setStart();
-        }}
-      >
-        <span>{buttonName}</span>
-      </button>
-    </div>
+    <Box component="span" sx={{ p: '1em' }}>
+      <FormControl >
+        <InputLabel variant="standard" htmlFor="uncontrolled-native">
+          {labelName}
+        </InputLabel>
+        <NativeSelect
+          defaultValue=""
+          inputProps={{
+            name: {labelName},
+            id: "uncontrolled-native",
+          }}
+          onChange={(event)=>setItem(event.target.value)}
+        >
+          {list.map(e=>{
+            return <option value={e}>{e}</option>
+          })}
+        </NativeSelect>
+      </FormControl>
+    </Box>
   );
 };
 
-const TrueFalseButton = (props) => {
-  const { buttonName, flag, setFlag } = props;
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        className={`${
-          flag
-            ? "bg-green-300 dark:bg-green-700"
-            : "bg-rose-300 dark:bg-rose-900"
-        } dark:text-white text-gray-700 transition ease-in-out delay-150 hover:scale-105 duration-300 px-5 py-1 group bg-white rounded-md inline-flex items-center text-base font-medium`}
-        aria-expanded="false"
-        onClick={() => {
-          setFlag();
-        }}
-      >
-        <span>{buttonName}</span>
-      </button>
-    </div>
-  );
-};
-
-const SelectionButton = (props) => {
-  const { buttonName, icon } = props;
-  const [open, setOpen] = useState(false);
-  const ref = useRef();
-
-  useEffect(() => {
-    const checkIfClickedOutside = (e) => {
-      // If the menu is open and the clicked target is not within the menu,
-      // then close the menu
-      if (open && ref.current && !ref.current.contains(e.target)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", checkIfClickedOutside);
-    return () => {
-      // Cleanup the event listener
-      document.removeEventListener("mousedown", checkIfClickedOutside);
-    };
-  }, [open]);
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        type="button"
-        className="dark:bg-gray-900 text-gray-400 dark:text-white px-5 py-1 transition ease-in-out delay-150 hover:scale-105 duration-300 hover:text-gray-600 group bg-white rounded-md inline-flex items-center text-base font-medium"
-        aria-expanded="false"
-        onClick={() => {
-          setOpen(!open);
-        }}
-      >
-        <span>{buttonName}</span>
-        {icon && <FontAwesomeIcon icon={icon} />}
-      </button>
-      {open && props.children}
-    </div>
-  );
-};
-
-const DarkMode = (props) => {
-  return (
-    <a href="#" onClick={() => props.f()} className="">
-      <FontAwesomeIcon icon={faMoon} />
-    </a>
-  );
-};
-
-const SliceBar = (props) => {
-  return (
-    <div className="dark:bg-gray-800 text-gray-400 dark:text-white py-1 group bg-white rounded-md inline-flex items-center text-base font-medium">
-      <span className="pr-2">{props.name}</span>
-      <input
-        type="range"
-        min="0.1"
-        max="9.1"
-        value={props.timeRatio}
-        className="slider"
-        list="tickmarks"
-        id="range"
-        onChange={(event) => props.onSlice(event)}
-        step="3"
-      />
-      <datalist id="tickmarks">
-        <option value="0.1"></option>
-        <option value="3.1"></option>
-        <option value="6.1"></option>
-        <option value="9.1"></option>
-      </datalist>
-    </div>
-  );
-};
-
-export { SliceBar, SelectionButton, StartButton, TrueFalseButton, DarkMode };
+export {SelectMenu};

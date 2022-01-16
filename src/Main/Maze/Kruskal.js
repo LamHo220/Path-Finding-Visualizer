@@ -1,6 +1,6 @@
 import { rand, changeClassName, delay, isHorizontalCut } from "../misc/misc";
 
-const Kruskal = async (grid, maxRow, maxCol, duration) => {
+const Kruskal = async (dark, grid, maxRow, maxCol, duration) => {
   let closed = [];
   let groups = new Map();
   let idx = 0;
@@ -61,24 +61,24 @@ const Kruskal = async (grid, maxRow, maxCol, duration) => {
     if (isHorizontal) {
       const nodeA = grid[node.row][node.col - 1];
       const nodeB = grid[node.row][node.col + 1];
-      if (!(await combineGroup(node, nodeA, nodeB, groups, duration))) {
+      if (!(await combineGroup(dark, node, nodeA, nodeB, groups, duration))) {
         const nodeA = grid[node.row - 1][node.col];
         const nodeB = grid[node.row + 1][node.col];
-        await combineGroup(node, nodeA, nodeB, groups, duration);
+        await combineGroup(dark, node, nodeA, nodeB, groups, duration);
       }
     } else {
       const nodeA = grid[node.row - 1][node.col];
       const nodeB = grid[node.row + 1][node.col];
-      if (!(await combineGroup(node, nodeA, nodeB, groups, duration))) {
+      if (!(await combineGroup(dark, node, nodeA, nodeB, groups, duration))) {
         const nodeA = grid[node.row][node.col - 1];
         const nodeB = grid[node.row][node.col + 1];
-        await combineGroup(node, nodeA, nodeB, groups, duration);
+        await combineGroup(dark, node, nodeA, nodeB, groups, duration);
       }
     }
   }
 };
 
-const combineGroup = async (node, nodeA, nodeB, groups, duration) => {
+const combineGroup = async (dark, node, nodeA, nodeB, groups, duration) => {
   if (nodeA.idx === nodeB.idx) {
     return false;
   }
@@ -99,9 +99,9 @@ const combineGroup = async (node, nodeA, nodeB, groups, duration) => {
   if (!(nodeB.isStart || nodeB.isEnd)) {
     nodeB.isWall = true;
   }
-  changeClassName(node);
-  changeClassName(nodeB);
-  changeClassName(nodeA);
+  changeClassName(dark,node);
+  changeClassName(dark,nodeB);
+  changeClassName(dark,nodeA);
   await delay(5 * duration);
   return true;
 };

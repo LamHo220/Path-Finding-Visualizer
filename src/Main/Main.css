@@ -12,12 +12,6 @@
   --node-end-col: 50;
 }
 
-.sgrid {
-  display: grid;
-  grid-template-columns: repeat(var(--max-col), var(--node-size));
-  grid-template-rows: repeat(var(--max-row), var(--node-size));
-}
-
 .node {
   height: var(--node-size);
   width: var(--node-size);

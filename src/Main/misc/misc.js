@@ -1,42 +1,42 @@
 const rowDir = { N: -1, S: 1, E: 0, W: 0 };
 const colDir = { N: 0, S: 0, E: 1, W: -1 };
 
-const changeClassName = async (node, name="", fakeIsWall=false) => {
+const changeClassName = async (dark, node, name="", fakeIsWall=false) => {
   const element = document.getElementById(`${node.row}-${node.col}`);
   element.className = `node ${
     node.isStart
-      ? "bg-blue-400 dark:bg-blue-700"
+      ? (!dark?"bg-blue-400":"bg-blue-700")
       : node.isEnd
-      ? "bg-pink-400  dark:bg-pink-700"
+      ? (!dark?"bg-pink-400":"bg-pink-700")
       : fakeIsWall
       ? name
       : node.isWall
-      ? "bg-gray-400 dark:bg-gray-600 fade-in"
+      ? (!dark?"bg-gray-400":"bg-gray-600")+ " fade-in"
       : name + " hover:bg-orange-300"
-  } border border-gray-200 m-0 p-0 dark:border-gray-700 hover:bg-orange-300 `;
+  } border ${!dark?"border-gray-200":"border-gray-700"} m-0 p-0  hover:bg-orange-300`;
 };
 
-const clearPath = async (grid) => {
+const clearPath = async (dark, grid) => {
   for (let row of grid) {
     for (let node of row) {
-      changeClassName(node);
+      changeClassName(dark, node);
     }
   }
 }
 
-const refresh = async (visitedNodes, shortestPath) => {
+const refresh = async (dark, visitedNodes, shortestPath) => {
   const n = visitedNodes.length;
   for (let i = 0; i < n; ++i) {
     const node = visitedNodes[i];
     if (!(node.isStart || node.isEnd)) {
-      changeClassName(node, "bg-cyan-300 dark:bg-cyan-700");
+      changeClassName(dark, node, !dark?"bg-cyan-300":"bg-cyan-700");
     }
   }
   const m = shortestPath.length;
   for (let i = 0; i < m; ++i) {
     const node = shortestPath[i];
     if (!(node.isStart || node.isEnd)) {
-      changeClassName(node, "bg-yellow-300 dark:bg-yellow-700");
+      changeClassName(dark, node, !dark?"bg-yellow-300":"bg-yellow-700");
     }
   }
 };

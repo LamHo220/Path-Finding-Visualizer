@@ -1,6 +1,18 @@
-import { DarkMode, StartButton, TrueFalseButton, SliceBar } from "./Buttons";
-import { Dropdown, DropdownItem } from "./Dropdown";
-
+import { Dropdown } from "./Dropdown";
+import {
+  AppBar,
+  FormControlLabel,
+  FormGroup,
+  Slider,
+  Switch,
+  Toolbar,
+  Typography,
+  Button,
+  ButtonGroup,
+  Grid,
+} from "@mui/material";
+import { Box } from "@mui/system";
+import { SelectMenu } from "./Buttons";
 const Head = (props) => {
   const {
     timeRatio,
@@ -15,68 +27,91 @@ const Head = (props) => {
     setStart,
     setDarkMode,
     onSlice,
+    setStartMaze,
   } = props;
-  return (
-    <div className="relative bg-white z-10 dark:bg-gray-900 dark:text-white">
-      <div className="justify-items-center sm:flex-col md:flex-row flex flex-wrap md:justify-between items-center border-b-2 border-gray-100 dark:border-gray-700 py-2 sm:justify-start md:space-x-10">
-        <div className="justify-start px-5">
-          <a
-            href="#"
-            className="italic dark:text-white text-gray-700 inline-flex items-center text-base font-black"
-          >
-            Path Finding Visualizer
-          </a>
-        </div>
-        <Dropdown name="Algorithm">
-          {algorithms.map((algorithm) => {
-            return (
-              <DropdownItem f={() => setAlgorithm(algorithm)}>
-                {algorithm}
-              </DropdownItem>
-            );
-          })}
-        </Dropdown>
-        <Dropdown name="Heuristic">
-          {heuristics[allowDiagonal].map((heuristic) => {
-            return (
-              <DropdownItem f={() => setHeuristic(heuristic)}>
-                {heuristic}
-              </DropdownItem>
-            );
-          })}
-        </Dropdown>
-        <StartButton buttonName="Start" setStart={setStart} />
-        <Dropdown name="Pattern">
-          {patterns.map((pattern) => {
-            return (
-              <DropdownItem f={() => setPattern(pattern)}>
-                {pattern}
-              </DropdownItem>
-            );
-          })}
-        </Dropdown>
 
-        <Dropdown name="Parameters">
-          <DropdownItem>
-            <TrueFalseButton
-              buttonName="Diagonal is allowed"
-              flag={allowDiagonal}
-              setFlag={setAllowDiagonal}
-            />
-          </DropdownItem>
-          <DropdownItem>
-            <SliceBar
-              name="Animation Speed: "
-              timeRatio={timeRatio}
-              onSlice={onSlice}
-            />
-          </DropdownItem>
-        </Dropdown>
-        <div className="pl-52 pr-5">
-          <DarkMode f={() => setDarkMode()} />
-        </div>
-      </div>
-    </div>
+  return (
+    <AppBar position="static" color="default">
+      <Toolbar>
+        <Typography variant="h6" component="div">
+          Path Finding Visualizer
+        </Typography>
+        <Grid
+          container
+          direction="row"
+          justifyContent="space-around"
+          alignItems="center"
+        >
+          <Grid item>
+            <Dropdown
+              list={algorithms}
+              func={setStart}
+              setItem={setAlgorithm}
+            ></Dropdown>
+          </Grid>
+          <Grid item>
+            <Dropdown
+              list={patterns}
+              func={setStartMaze}
+              setItem={setPattern}
+            ></Dropdown>
+          </Grid>
+          <Grid item>
+            <SelectMenu
+              setItem={setHeuristic}
+              labelName="Heuristic"
+              list={heuristics[allowDiagonal]}
+            ></SelectMenu>
+          </Grid>
+          <Grid item>
+            <Box sx={{ width: "auto" }}>
+              <Typography id="input-slider" gutterBottom>
+                Animation Speed
+              </Typography>
+              <Slider
+                aria-label="Time Ratio"
+                defaultValue={5}
+                getAriaValueText={timeRatio}
+                valueLabelDisplay="auto"
+                onChange={onSlice}
+                step={1}
+                marks
+                min={1}
+                max={10}
+              />
+            </Box>
+          </Grid>
+          <Grid item>
+            <Box component="span" >
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={allowDiagonal}
+                      onChange={setAllowDiagonal}
+                      defaultChecked
+                    />
+                  }
+                  label="Allow Diagonal"
+                />
+              </FormGroup>
+            </Box>
+          </Grid>
+          <Grid item>
+            <Box component="span">
+              <ButtonGroup
+                variant="text"
+                variant="outlined"
+                aria-label="text button group"
+              >
+                <Button onClick={() => {}}>Clear Wall</Button>
+                <Button onClick={() => {}}>Clear Path</Button>
+              </ButtonGroup>
+            </Box>
+          </Grid>
+        </Grid>
+      </Toolbar>
+    </AppBar>
   );
 };
 

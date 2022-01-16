@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Node from "./Node";
-import { changeClassName, refresh, delay, clearPath } from "./misc/misc";
+import { changeClassName,  refresh, delay, clearPath } from "./misc/misc";
+import { Box } from "@mui/system";
 import utilities from "./misc/utilities";
 
 const Grid = (props) => {
@@ -34,8 +35,12 @@ const Grid = (props) => {
     setSteps,
     setPathLength,
     timeRatio,
+    start,
+    startMaze,
     setStart,
-    setPattern,
+    setStartMaze,
+    pattern,
+    darkMode
   } = props;
 
   const createNode = (row, col) => {
@@ -64,10 +69,17 @@ const Grid = (props) => {
     if (!(initNode.isStart || initNode.isEnd)) {
       event = event || window.event;
       event.preventDefault();
-      const isWall = initNode.isWall;
-      setPrev(!isWall);
-      initNode.isWall = !isWall;
-      changeClassName(initNode);
+      switch (event.buttons ) {
+        case 1:
+          const isWall = initNode.isWall;
+          setPrev(!isWall);
+          initNode.isWall = !isWall;
+          changeClassName(darkMode, initNode);
+          break;
+        default:
+          break;
+      }
+      
     } else {
       setPrev(initNode);
     }
@@ -80,27 +92,43 @@ const Grid = (props) => {
     if (!(node.isStart || node.isEnd) && !node.isWall === prev) {
       event = event || window.event;
       event.preventDefault();
-      node.isWall = prev;
-      changeClassName(node);
+      switch (event.buttons ) {
+        case 1:
+          node.isWall = prev;
+          changeClassName(darkMode, node);
+          break;
+        case 2:
+
+          break;
+        default:
+          break;
+      }
     } else if (node.isWall === prev) {
       // pass
     } else if (node.isStart || node.isEnd) {
       // pass
     } else if (prev !== null && !node.isWall) {
       // swap two node
-      node.isStart = prev.isStart;
-      node.isEnd = prev.isEnd;
-      prev.isStart = false;
-      prev.isEnd = false;
-      if (node.isStart) {
-        setStartRow(row);
-        setStartCol(col);
+      switch (event.buttons ) {
+        case 1:
+          node.isStart = prev.isStart;
+          node.isEnd = prev.isEnd;
+          prev.isStart = false;
+          prev.isEnd = false;
+          if (node.isStart) {
+            setStartRow(row);
+            setStartCol(col);
+          }
+          if (node.isEnd) {
+            setEndRow(row);
+            setEndCol(col);
+          }
+          setPrev(node);
+          break;
+        
+        default:
+          break;
       }
-      if (node.isEnd) {
-        setEndRow(row);
-        setEndCol(col);
-      }
-      setPrev(node);
     }
   };
 
@@ -190,13 +218,13 @@ const Grid = (props) => {
     if (grid.length !== 0) {
       setGrid(updateHeuristic(grid));
     }
-  }, [props.heuristic]);
+  }, [heuristic]);
 
   useEffect(async () => {
-    if (props.start) {
+    if (start) {
       setPathLength(0);
       setSteps(0);
-      await clearPath(grid);
+      await clearPath(darkMode,grid);
       const startNode = grid[startRow][startCol];
       const endNode = grid[endRow][endCol];
       let res = utilities.getAlgoResult(algorithm, startNode, endNode);
@@ -205,35 +233,35 @@ const Grid = (props) => {
       for (let i = 0; i < n; ++i) {
         const node = res.visitedNodes[i];
         if (!(node.isStart || node.isEnd)) {
-          changeClassName(node, "bg-green-300 dark:bg-green-700 fade-in");
+          changeClassName(darkMode, node, (!darkMode?"bg-cyan-300":"bg-cyan-700")+" fade-in");
         }
         setSteps(i);
-        await delay(10 * timeRatio);
+        await delay(20 * timeRatio);
       }
       // visualize shortest path
       const m = res.shortestPath.length;
       for (let i = 0; i < m; ++i) {
         const node = res.shortestPath[i];
         if (!(node.isStart || node.isEnd)) {
-          changeClassName(node, "bg-yellow-300 dark:bg-yellow-600 fade-in");
+          changeClassName(darkMode, node, (!darkMode?"bg-yellow-300":"bg-yellow-600")+" fade-in");
         }
         setPathLength(i);
-        await delay(10 * timeRatio);
+        await delay(20 * timeRatio);
       }
       await delay(20 * timeRatio);
       setVisualized(true);
       setStart();
     }
-  }, [props.start]);
+  }, [start]);
 
   useEffect(() => {
     updateHeuristic(grid);
     if (visualized) {
-      clearPath(grid);
+      clearPath(darkMode,grid);
       const startNode = grid[startRow][startCol];
       const endNode = grid[endRow][endCol];
       let res = utilities.getAlgoResult(algorithm, startNode, endNode);
-      refresh(res.visitedNodes, res.shortestPath);
+      refresh(darkMode, res.visitedNodes, res.shortestPath);
       setPathLength(res.shortestPath.length);
       setSteps(res.visitedNodes.length);
     }
@@ -241,11 +269,12 @@ const Grid = (props) => {
 
   useEffect(async () => {
     setVisualized(false);
-    if (grid.length !== 0 && props.pattern !== "") {
+    if (grid.length !== 0 && startMaze) {
       const start = grid[startRow][startCol];
       const end = grid[endRow][endCol];
       await utilities.generatePattern(
-        props.pattern,
+        darkMode,
+        pattern,
         grid,
         maxRow,
         maxCol,
@@ -254,30 +283,42 @@ const Grid = (props) => {
         10 * timeRatio,
         0.3
       );
-      setPattern("");
+      setStartMaze();
     }
-  }, [props.pattern]);
+  }, [startMaze]);
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+  };
+
 
   return (
-    <div className="place-content-center relative sgrid">
-      {grid.map((row, y) => {
-        return row.map((node, x) => {
-          const { isStart, isEnd, isWall } = node;
-          return (
-            <Node
-              row={y}
-              col={x}
-              isWall={isWall}
-              isStart={isStart}
-              isEnd={isEnd}
-              id={y + "-" + x}
-              onMouseDown={handleMouseDown}
-              onMouseEnter={handleMouseEnter}
-              onMouseUp={handleMouseUp}
-            />
-          );
-        });
-      })}
+    <div onContextMenu={handleContextMenu} style={{ cursor: 'context-menu' }}>
+      <Box 
+        display="grid"
+        gridTemplateColumns={`repeat(${maxCol}, 3vh)`}
+        gridTemplateRows={`repeat(${maxRow}, 3vh)`}
+      >
+        {grid.map((row, y) => {
+          return row.map((node, x) => {
+            const { isStart, isEnd, isWall } = node;
+            return (
+              <Node
+                dark={darkMode}
+                row={y}
+                col={x}
+                isWall={isWall}
+                isStart={isStart}
+                isEnd={isEnd}
+                id={y + "-" + x}
+                onMouseDown={handleMouseDown}
+                onMouseEnter={handleMouseEnter}
+                onMouseUp={handleMouseUp}
+              />
+            );
+          });
+        })}
+      </Box>
     </div>
   );
 };

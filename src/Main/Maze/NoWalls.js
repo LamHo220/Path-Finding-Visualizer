@@ -1,13 +1,13 @@
 import { changeClassName, delay } from "../misc/misc";
 
-const NoWalls = async (grid) => {
+const NoWalls = async (darkMode, grid) => {
   for (let row of grid) {
     for (let node of row) {
       if (node.isStart || node.isEnd) {
         continue;
       }
       node.isWall = false;
-      changeClassName(node);
+      changeClassName(darkMode, node);
     }
   }
   await delay(10);

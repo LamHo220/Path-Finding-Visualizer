@@ -1,23 +1,25 @@
 import { rand, changeClassName, rowDir, colDir, delay } from "../misc/misc";
 
-const deltaTime = 60;
+var deltaTime = 60;
 
 const RecursiveBacktrackingMaze = async (
+  dark,
   grid,
   maxRow,
   maxCol,
+  duration,
   startNode,
   endNode
 ) => {
   startNode.isWall = true;
   endNode.isWall = true;
-
+  deltaTime=duration;
   const randCol = Math.floor(rand(0, maxCol - 1) / 2) * 2 + 1;
   const randRow = Math.floor(rand(0, maxRow - 1) / 2) * 2 + 1;
   let node = grid[randRow][randCol];
   node.isWall=false;
-  changeClassName(node);
-  doRecursiveBacktracker(grid, node, maxRow, maxCol);
+  changeClassName(dark, node);
+  await doRecursiveBacktracker(dark, grid, node, maxRow, maxCol);
   startNode.isWall = false;
   endNode.isWall = false;
 };
@@ -39,7 +41,7 @@ const getDirection = (grid, row, col) => {
   return res;
 };
 
-const doRecursiveBacktracker = async (grid, node, maxRow, maxCol) => {
+const doRecursiveBacktracker = async (dark, grid, node, maxRow, maxCol) => {
   const row = node.row;
   const col = node.col;
 
@@ -68,16 +70,16 @@ const doRecursiveBacktracker = async (grid, node, maxRow, maxCol) => {
     }
     if (!(nextNode.isStart || nextNode.isEnd)) {
       nextNode.isWall = false;
-      changeClassName(nextNode, "");
+      changeClassName(dark, nextNode);
       await delay(deltaTime);
     }
     nextNode = grid[pretendRow][pretendCol];
     if (!(nextNode.isStart || nextNode.isEnd)) {
       nextNode.isWall = false;
-      changeClassName(nextNode, "");
+      changeClassName(dark, nextNode);
       await delay(deltaTime);
     }
-    await doRecursiveBacktracker(grid, nextNode, maxRow, maxCol);
+    await doRecursiveBacktracker(dark, grid, nextNode, maxRow, maxCol);
   }
 };
 

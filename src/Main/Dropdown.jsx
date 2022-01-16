@@ -1,47 +1,98 @@
-import { faChevronDown, faCog } from "@fortawesome/free-solid-svg-icons";
-import { SelectionButton } from "./Buttons";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  ClickAwayListener,
+  Grow,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
+} from "@mui/material";
+import React, { useRef, useState, useEffect } from "react";
 
 const Dropdown = (props) => {
-  const { name } = props;
+  const { list, func, setItem } = props;
+
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    setOpen(false);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    setItem(list[selectedIndex]);
+  }, [selectedIndex]);
 
   return (
-    <SelectionButton
-      buttonName={name}
-      icon={name === "" ? faCog : faChevronDown}
-    >
-      <div className="absolute">
-        <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden ">
-          {props.children}
-        </div>
-      </div>
-    </SelectionButton>
-  );
-};
-
-const DropdownItem = (props) => {
-  const { f } = props;
-
-  if (f === undefined) {
-    return (
-      <div className="dark:bg-gray-800 relative grid gap-2 bg-white px-3 py-2">
-        <div className="text-gray-400 dark:text-white text-sm whitespace-nowrap p-1 flex items-start rounded-lg">
-          {props.children}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="dark:bg-gray-800 relative grid gap-2 bg-white px-3 py-2">
-      <a
-        onClick={f === undefined ? () => {} : () => f()}
-        href="#"
-        className="transition ease-in-out delay-150 hover:scale-105 duration-100 hover:text-gray-900 text-gray-400 dark:text-white text-sm whitespace-nowrap p-1 flex items-start rounded-lg"
+    <Box component="span" sx={{ zIndex: 'tooltip' }}>
+      <ButtonGroup
+        variant="outlined"
+        ref={anchorRef}
+        aria-label="split button"
       >
-        {props.children}
-      </a>
-    </div>
+        <Button onClick={func}>{list[selectedIndex]}</Button>
+        <Button
+          size="small"
+          aria-controls={open ? "split-button-menu" : undefined}
+          aria-expanded={open ? "true" : undefined}
+          aria-label="select merge strategy"
+          aria-haspopup="menu"
+          onClick={handleToggle}
+        >
+          <ArrowDropDownIcon />
+        </Button>
+      </ButtonGroup>
+      <Popper
+        open={open}
+        anchorEl={anchorRef.current}
+        role={undefined}
+        transition
+        disablePortal
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placement === "bottom" ? "center top" : "center bottom",
+            }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={handleClose}> 
+                <MenuList id="split-button-menu">
+                  {list.map((e, id) => (
+                    <MenuItem
+                      key={e}
+                      selected={true}
+                      onClick={(event) => handleMenuItemClick(event, id)}
+                    >
+                      {e}
+                    </MenuItem>
+                  ))}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </Box>
   );
 };
 
-export { Dropdown, DropdownItem };
+export { Dropdown };

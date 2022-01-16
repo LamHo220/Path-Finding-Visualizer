@@ -3,6 +3,7 @@ import "./Main.css";
 import Grid from "./Grid";
 import Head from "./Head";
 import Result from "./Result";
+import { Paper, createTheme, ThemeProvider } from "@mui/material";
 
 const Main = (props) => {
   const heuristics = {
@@ -26,80 +27,86 @@ const Main = (props) => {
   const [algorithm, setAlgorithm] = useState("A*");
   const [pattern, setPattern] = useState("");
   const [start, setStart] = useState(false);
+  const [startMaze, setStartMaze] = useState(false);
   const [timeRatio, setTimeRatio] = useState(3.1);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [disable, setDisable] = useState(false);
 
   useEffect(() => {
     setHeuristic("Euclidean");
   }, [allowDiagonal]);
 
-  useEffect(() => {
-    document.getElementsByTagName("html")[0].className =
-      (darkMode ? "dark" : "") + " dark:bg-gray-900";
-  }, [darkMode]);
-
-  useEffect(() => {
-    console.log(123);
-  }, [disable]);
-
   const handleSlice = (event) => {
     let value = event.target.value;
     setTimeRatio(value);
   };
 
+  const theme = createTheme({
+    palette: {
+      mode: darkMode ? "dark" : "light",
+    },
+  });
+
   return (
-    <div
-      className={(disable ? "pointer-events-none " : " ") + "dark:bg-gray-900"}
-    >
-      <Head
-        heuristics={heuristics}
-        allowDiagonal={allowDiagonal}
-        algorithms={algorithms}
-        patterns={patterns}
-        start={start}
-        darkMode={darkMode}
-        setStart={() => {
-          setStart(!start);
-          setDisable(!disable);
-        }}
-        setHeuristic={setHeuristic}
-        setAllowDiagonal={() => setAllowDiagonal(!allowDiagonal)}
-        setAlgorithm={setAlgorithm}
-        setPattern={(pattern) => {
-          setPattern(pattern);
-          setDisable(!disable);
-        }}
-        setDarkMode={() => setDarkMode(!darkMode)}
-        onSlice={handleSlice}
-      />
-      <Result
-        algorithm={algorithm}
-        heuristic={heuristic}
-        steps={steps}
-        pathLength={pathLength}
-      />
-      <Grid
-        start={start}
-        setSteps={setSteps}
-        setPathLength={setPathLength}
-        allowDiagonal={allowDiagonal}
-        pattern={pattern}
-        algorithm={algorithm}
-        heuristic={heuristic}
-        heuristics={heuristics}
-        timeRatio={timeRatio}
-        setPattern={(pattern) => {
-          setPattern(pattern);
-          setDisable(!disable);
-        }}
-        setStart={() => {
-          setStart(!start);
-          setDisable(!disable);
-        }}
-        setDisable={() => setDisable(!disable)}
-      />
-    </div>
+    <ThemeProvider theme={theme}>
+      <Paper>
+        <div className={disable?"pointer-events-none":""}>
+          <Head
+            heuristics={heuristics}
+            allowDiagonal={allowDiagonal}
+            algorithms={algorithms}
+            patterns={patterns}
+            start={start}
+            darkMode={darkMode}
+            setStart={() => {
+              setStart(!start);
+              setDisable(!disable);
+            }}
+            setStartMaze={() => {
+              setStartMaze(!start);
+              setDisable(!disable);
+            }}
+            setHeuristic={setHeuristic}
+            setAllowDiagonal={() => setAllowDiagonal(!allowDiagonal)}
+            setAlgorithm={setAlgorithm}
+            setPattern={(pattern) => {
+              setPattern(pattern);
+            }}
+            setDarkMode={() => setDarkMode(!darkMode)}
+            onSlice={handleSlice}
+          />
+          <Result
+            algorithm={algorithm}
+            heuristic={heuristic}
+            steps={steps}
+            pathLength={pathLength}
+          />
+          <Grid
+            darkMode={darkMode}
+            start={start}
+            setSteps={setSteps}
+            setPathLength={setPathLength}
+            allowDiagonal={allowDiagonal}
+            pattern={pattern}
+            algorithm={algorithm}
+            heuristic={heuristic}
+            heuristics={heuristics}
+            timeRatio={timeRatio}
+            setStart={() => {
+              setStart(!start);
+              setDisable(!disable);
+            }}
+            startMaze={startMaze}
+            setStartMaze={() => {
+              setStartMaze(false);
+              setDisable(!disable);
+            }}
+            setDisable={() => setDisable(!disable)}
+          />
+        </div>
+
+      </Paper>
+    </ThemeProvider>
   );
 };
 
