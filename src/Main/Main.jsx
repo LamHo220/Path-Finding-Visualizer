@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./Main.css";
 import Grid from "./Grid";
 import Head from "./Head";
 import Result from "./Result";
@@ -31,6 +30,8 @@ const Main = (props) => {
   const [timeRatio, setTimeRatio] = useState(3.1);
   const [darkMode, setDarkMode] = useState(true);
   const [disable, setDisable] = useState(false);
+  const [clearPath, setClearPath] = useState(false);
+  const [isWeighted, setIsWeighted] = useState(false);
 
   useEffect(() => {
     setHeuristic("Euclidean");
@@ -52,6 +53,7 @@ const Main = (props) => {
       <Paper>
         <div className={disable?"pointer-events-none":""}>
           <Head
+            theme={theme}
             heuristics={heuristics}
             allowDiagonal={allowDiagonal}
             algorithms={algorithms}
@@ -72,8 +74,11 @@ const Main = (props) => {
             setPattern={(pattern) => {
               setPattern(pattern);
             }}
-            setDarkMode={() => setDarkMode(!darkMode)}
+            setDarkMode={(flag) => setDarkMode(flag)}
             onSlice={handleSlice}
+            setClearPath={setClearPath}
+            isWeighted={isWeighted}
+            setIsWeighted={setIsWeighted}
           />
           <Result
             algorithm={algorithm}
@@ -82,6 +87,8 @@ const Main = (props) => {
             pathLength={pathLength}
           />
           <Grid
+            clear={clearPath}
+            setClearPath={setClearPath}
             darkMode={darkMode}
             start={start}
             setSteps={setSteps}
@@ -102,6 +109,7 @@ const Main = (props) => {
               setDisable(!disable);
             }}
             setDisable={() => setDisable(!disable)}
+            isWeighted={isWeighted}
           />
         </div>
 

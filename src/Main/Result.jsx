@@ -8,6 +8,7 @@ const Result = (props) => {
         direction="row"
         justifyContent="space-around"
         alignItems="center"
+        sx={{py:1}}
       >
         <Grid item xs={1}>
           <b>Algorithm:</b> <br />
