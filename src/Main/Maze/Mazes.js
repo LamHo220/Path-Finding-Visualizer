@@ -1,10 +1,10 @@
-import RecursiveBacktrackingMaze from "./RecursiveBacktracking";
+import { delay, changeClassName } from "../utilities/utilities";
 import NoWalls from "./NoWalls";
-import RecursiveDivisionMaze from "./RecursiveDivision";
 import SimpleRandomWalls from "./SimpleRandomWalls";
 import PrimMaze from "./Prim";
-import { delay, changeClassName } from "../misc/misc";
 import Kruskal from "./Kruskal";
+import RecursiveDivisionMaze from "./RecursiveDivision";
+import RecursiveBacktrackingMaze from "./RecursiveBacktracking";
 
 const Reverse = async (dark, grid, maxRow, maxCol, duration) => {
   for (let row = 0; row < maxRow; ++row) {

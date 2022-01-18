@@ -1,6 +1,14 @@
-import { rand, changeClassName, delay, isHorizontalCut } from "../misc/misc";
+import {
+  rand,
+  changeClassName,
+  delay,
+  isHorizontalCut,
+} from "../utilities/utilities";
+
+var deltaTime;
 
 const Kruskal = async (dark, grid, maxRow, maxCol, duration) => {
+  deltaTime = duration
   let closed = [];
   let groups = new Map();
   let idx = 0;
@@ -54,31 +62,31 @@ const Kruskal = async (dark, grid, maxRow, maxCol, duration) => {
   }
 
   let open = grid.flat().filter((e) => !closed.includes(e));
-  while (open.length!==0) {
+  while (open.length !== 0) {
     const isHorizontal = isHorizontalCut(0, 0);
     const node = open[rand(0, open.length - 1)];
     open = open.filter((e) => e !== node);
     if (isHorizontal) {
       const nodeA = grid[node.row][node.col - 1];
       const nodeB = grid[node.row][node.col + 1];
-      if (!(await combineGroup(dark, node, nodeA, nodeB, groups, duration))) {
+      if (!(await combineGroup(dark, node, nodeA, nodeB, groups))) {
         const nodeA = grid[node.row - 1][node.col];
         const nodeB = grid[node.row + 1][node.col];
-        await combineGroup(dark, node, nodeA, nodeB, groups, duration);
+        await combineGroup(dark, node, nodeA, nodeB, groups);
       }
     } else {
       const nodeA = grid[node.row - 1][node.col];
       const nodeB = grid[node.row + 1][node.col];
-      if (!(await combineGroup(dark, node, nodeA, nodeB, groups, duration))) {
+      if (!(await combineGroup(dark, node, nodeA, nodeB, groups))) {
         const nodeA = grid[node.row][node.col - 1];
         const nodeB = grid[node.row][node.col + 1];
-        await combineGroup(dark, node, nodeA, nodeB, groups, duration);
+        await combineGroup(dark, node, nodeA, nodeB, groups);
       }
     }
   }
 };
 
-const combineGroup = async (dark, node, nodeA, nodeB, groups, duration) => {
+const combineGroup = async (dark, node, nodeA, nodeB, groups) => {
   if (nodeA.idx === nodeB.idx) {
     return false;
   }
@@ -99,10 +107,10 @@ const combineGroup = async (dark, node, nodeA, nodeB, groups, duration) => {
   if (!(nodeB.isStart || nodeB.isEnd)) {
     nodeB.isWall = true;
   }
-  changeClassName(dark,node);
-  changeClassName(dark,nodeB);
-  changeClassName(dark,nodeA);
-  await delay(5 * duration);
+  changeClassName(dark, node);
+  changeClassName(dark, nodeB);
+  changeClassName(dark, nodeA);
+  await delay(5 * deltaTime);
   return true;
 };
 

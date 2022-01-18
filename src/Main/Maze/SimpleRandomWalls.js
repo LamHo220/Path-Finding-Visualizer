@@ -1,4 +1,4 @@
-import {changeClassName} from "../misc/misc";
+import { changeClassName } from "../utilities/utilities";
 const SimpleRandomWalls = (dark, grid, density) => {
   for (let row of grid) {
     for (let node of row) {
@@ -11,5 +11,5 @@ const SimpleRandomWalls = (dark, grid, density) => {
       }
     }
   }
-}
+};
 export default SimpleRandomWalls;

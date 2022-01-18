@@ -1,6 +1,11 @@
-import { rand, changeClassName, isHorizontalCut, delay } from "../misc/misc";
+import {
+  rand,
+  changeClassName,
+  isHorizontalCut,
+  delay,
+} from "../utilities/utilities";
 
-var deltaTime = 60;
+var deltaTime;
 
 const RecursiveDivisionMaze = async (dark, grid, maxRow, maxCol, duration) => {
   deltaTime = duration;

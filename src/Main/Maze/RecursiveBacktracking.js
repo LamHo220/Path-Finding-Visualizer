@@ -1,6 +1,12 @@
-import { rand, changeClassName, rowDir, colDir, delay } from "../misc/misc";
+import {
+  rand,
+  changeClassName,
+  rowDir,
+  colDir,
+  delay,
+} from "../utilities/utilities";
 
-var deltaTime = 60;
+var deltaTime;
 
 const RecursiveBacktrackingMaze = async (
   dark,
@@ -13,11 +19,11 @@ const RecursiveBacktrackingMaze = async (
 ) => {
   startNode.isWall = true;
   endNode.isWall = true;
-  deltaTime=duration;
+  deltaTime = duration;
   const randCol = Math.floor(rand(0, maxCol - 1) / 2) * 2 + 1;
   const randRow = Math.floor(rand(0, maxRow - 1) / 2) * 2 + 1;
   let node = grid[randRow][randCol];
-  node.isWall=false;
+  node.isWall = false;
   changeClassName(dark, node);
   await doRecursiveBacktracker(dark, grid, node, maxRow, maxCol);
   startNode.isWall = false;
@@ -65,7 +71,7 @@ const doRecursiveBacktracker = async (dark, grid, node, maxRow, maxCol) => {
     ) {
       continue;
     }
-    if (!grid[pretendRow][pretendCol].isWall ) {
+    if (!grid[pretendRow][pretendCol].isWall) {
       continue;
     }
     if (!(nextNode.isStart || nextNode.isEnd)) {
