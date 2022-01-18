@@ -40,7 +40,7 @@ export default function dijkstra(start) {
       }
       // if neighbor doesn't exist in the open set, add it and calcualate the f
       if (!openSet.includes(neighbor)) {
-        neighbor.f = current.f + h(current, neighbor);
+        neighbor.f = current.f + neighbor.weight + distance(current, neighbor);
         neighbor.previous = current;
         openSet.push(neighbor);
       }
@@ -57,14 +57,12 @@ export default function dijkstra(start) {
  * @param {Object} nodeB - the second node that will be calculated
  * @returns 
  */
-function h(nodeA, nodeB) {
+ function distance(nodeA, nodeB) {
   let Acol = nodeA.col;
   let Bcol = nodeB.col;
   let Arow = nodeA.row;
   let Brow = nodeB.row;
-  let col = Math.pow(Acol - Bcol, 2);
-  let row = Math.pow(Arow - Brow, 2);
-  return Math.sqrt(col + row);
+  return Math.sqrt(Math.pow(Acol - Bcol, 2) + Math.pow(Arow - Brow, 2));
 }
 
 /**

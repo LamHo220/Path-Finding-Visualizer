@@ -32,11 +32,11 @@ export default function aStar(start) {
       if (neighbor.isWall || visitedNodes.includes(neighbor)) {
         continue;
       }
-      let tempG = current.g + distance(current, neighbor);
+      let tempG = current.g + neighbor.weight + distance(current, neighbor);
 
       if (tempG < neighbor.g || !openSet.includes(neighbor)) {
         neighbor.g = tempG;
-        neighbor.f = neighbor.g + neighbor.h;
+        neighbor.f = neighbor.g + neighbor.weight + neighbor.h;
         neighbor.previous = current;
         if (!openSet.includes(neighbor)) {
           openSet.push(neighbor);
