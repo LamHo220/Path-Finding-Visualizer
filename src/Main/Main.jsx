@@ -75,18 +75,18 @@ const Main = (props) => {
             darkMode={darkMode}
             clear={clearPath}
             isWeighted={isWeighted}
-            setClearPath={setClearPath}
-            setSteps={setSteps}
-            setPathLength={setPathLength}
-            setStart={() => {
+            onClearPath={setClearPath}
+            onSteps={setSteps}
+            onPathLength={setPathLength}
+            onStart={() => {
               setStart(!start);
               setDisable(!disable);
             }}
-            setStartMaze={() => {
+            onStartMaze={() => {
               setStartMaze(false);
               setDisable(!disable);
             }}
-            setDisable={() => setDisable(!disable)}
+            onDisable={() => setDisable(!disable)}
           />
         </div>
       </Paper>
