@@ -1,35 +1,55 @@
 import {
   Box,
-  FormControl,
+  Button,
   FormControlLabel,
   FormGroup,
-  InputLabel,
-  NativeSelect,
+  Menu,
   Switch,
+  Typography,
+  MenuItem
 } from "@mui/material";
+import { useState } from "react";
 
 const SelectMenu = (props) => {
-  const { labelName, list, setItem } = props;
+  const { labelName, list, setItem, item } = props;
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
-    <Box component="span" sx={{ p: "1em" }}>
-      <FormControl>
-        <InputLabel variant="standard" htmlFor="uncontrolled-native">
-          {labelName}
-        </InputLabel>
-        <NativeSelect
-          defaultValue=""
-          inputProps={{
-            name: { labelName },
-            id: "uncontrolled-native",
-          }}
-          onChange={(event) => setItem(event.target.value)}
-        >
-          {list.map((e) => {
-            return <option value={e}>{e}</option>;
-          })}
-        </NativeSelect>
-      </FormControl>
+    <Box component="span" >
+      <Typography >
+      {labelName}
+      </Typography>
+      <Button
+        id="basic-button"
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+        variant="outlined"
+      >
+        {item}
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        {list.map((e)=>{
+          return <MenuItem onClick={()=>{handleClose();setItem(e)}}>{e}</MenuItem>
+        })}
+      </Menu>
     </Box>
   );
 };

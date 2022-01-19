@@ -1,141 +1,173 @@
-import { Dropdown } from "./Dropdown";
 import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
-  ButtonGroup,
-  Grid,
   IconButton,
-  ClickAwayListener,
+  Slider,
+  Box,
 } from "@mui/material";
-import { Box } from "@mui/system";
-import { SelectMenu, SwitchButton } from "./Buttons";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { useEffect, useState } from "react";
-import {
-  DrawerSlider,
-  DrawerTheme,
-  DrawerTwoWaysButton,
-  Setting,
-} from "../Setting";
+import { heuristics, algorithms, patterns } from "./Constants/Constants";
+import { useState } from "react";
+import { DrawerGroupButtons, DrawerTwoWaysButton, Setting } from "../Setting";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import MenuIcon from "@mui/icons-material/Menu";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 
 const Head = (props) => {
   const {
-    timeRatio,
-    algorithms,
-    heuristics,
+    disable,
+    algorithm,
     allowDiagonal,
-    patterns,
-    setHeuristic,
-    setAllowDiagonal,
-    setAlgorithm,
-    setPattern,
-    setStart,
-    setDarkMode,
-    onSlice,
-    setStartMaze,
-    theme,
-    setClearPath,
+    darkMode,
+    heuristic,
     isWeighted,
-    setIsWeighted,
+    pattern,
+    onStart,
+    onStartMaze,
+    onHeuristic,
+    onAllowDiagonal,
+    onAlgorithm,
+    onPattern,
+    onDarkMode,
+    onSlice,
+    onIsWeighted,
+    onClearPath
   } = props;
 
   const [open, setOpen] = useState(false);
 
-  const toggleDrawer = (open) => (event)=>{
+  const toggleDrawer = (open) => (event) => {
     if (
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
     ) {
       return;
     }
-
     setOpen(open);
   };
-
-  useEffect(()=>{
-    setOpen(false);
-  }, [props])
 
   return (
     <>
       <AppBar position="static" open={open} color="default">
         <Toolbar>
-          <Typography variant="h6" component="div">
+          <Typography noWrap sx={{ flexGrow: 1 }} variant="h6" component="div">
             Path Finding Visualizer
           </Typography>
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-around"
-            alignItems="center"
-          >
-            <Grid item>
-              <Dropdown
-                list={algorithms}
-                func={setStart}
-                setItem={setAlgorithm}
-              ></Dropdown>
-            </Grid>
-            <Grid item>
-              <Dropdown
-                list={patterns}
-                func={setStartMaze}
-                setItem={setPattern}
-              ></Dropdown>
-            </Grid>
-            <Grid item>
-              <SelectMenu
-                setItem={setHeuristic}
-                labelName="Heuristic"
-                list={heuristics[allowDiagonal]}
-              ></SelectMenu>
-            </Grid>
-            <Grid item>
-              <SwitchButton flag={allowDiagonal} setFlag={setAllowDiagonal} />
-            </Grid>
-            <Grid item>
-              <Box component="span">
-                <ButtonGroup
-                  variant="text"
-                  variant="outlined"
-                  aria-label="text button group"
-                >
-                  <Button onClick={() => setClearPath(true)}>Clear Path</Button>
-                </ButtonGroup>
-              </Box>
-            </Grid>
-          </Grid>
           <IconButton
+            disabled={disable}
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="start"
+            onClick={() => onStart()}
+          >
+            <PlayArrowIcon />
+          </IconButton>
+          <IconButton
+            disabled={!disable}
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="pause"
+            onClick={() => window.alert("pused")}
+          >
+            <PauseIcon />
+          </IconButton>
+          <IconButton
+            disabled={disable}
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="clearPath"
+            onClick={() => onClearPath(true)}
+          >
+            <CleaningServicesIcon />
+          </IconButton>
+          <Box sx={{ width: 200, px: 4 }}>
+            <Typography>Animation Speed</Typography>
+            <Slider
+              disabled={disable}
+              aria-label="Speed"
+              defaultValue={5}
+              valueLabelDisplay="off"
+              step={1}
+              min={1}
+              max={10}
+              onChange={onSlice}
+            />
+          </Box>
+          <IconButton
+            disabled={disable}
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="isDarkMode"
+            onClick={() => onDarkMode(!darkMode)}
+          >
+            <DarkModeOutlinedIcon />
+          </IconButton>
+          <IconButton
+            disabled={disable}
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="tutorial"
+            // onClick={() => tutorial()}
+          >
+            <QuestionMarkIcon />
+          </IconButton>
+          <IconButton
+            disabled={disable}
             size="large"
             edge="start"
             color="inherit"
             aria-label="setting"
             onClick={toggleDrawer(true)}
           >
-            <SettingsIcon />
+            <MenuIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
       <Setting open={open} toggleDrawer={toggleDrawer(false)}>
-        <DrawerTheme
-          toggleDrawer={toggleDrawer(false)}
-          theme={theme}
-          setDarkMode={setDarkMode}
-        />
-        <DrawerSlider
-          handleOnChange={onSlice}
-          name={"Animation Speed"}
-          text={timeRatio}
-        />
         <DrawerTwoWaysButton
           name="Weights"
           flag={isWeighted}
-          setFlag={setIsWeighted}
+          setFlag={onIsWeighted}
           toggleDrawer={toggleDrawer(false)}
           flagName1="Not Weighted"
           flagName2="Randomly Weighted"
+        />
+        <DrawerGroupButtons
+          name="Algorithm"
+          toggleDrawer={toggleDrawer(false)}
+          list={algorithms}
+          curr={algorithm}
+          setCurr={onAlgorithm}
+        />
+        <DrawerGroupButtons
+          name="Heuristic"
+          toggleDrawer={toggleDrawer(false)}
+          list={heuristics[allowDiagonal]}
+          curr={heuristic}
+          setCurr={onHeuristic}
+        />
+        <DrawerGroupButtons
+          name="Maze"
+          toggleDrawer={(event)=>{toggleDrawer(false)(event);onStartMaze()}}
+          list={patterns}
+          curr={pattern}
+          setCurr={onPattern}
+        />
+        <DrawerTwoWaysButton
+          name="Allow Diagonal"
+          flag={allowDiagonal}
+          setFlag={onAllowDiagonal}
+          toggleDrawer={toggleDrawer(false)}
+          flagName1="Not Allowed"
+          flagName2="Allowed"
         />
       </Setting>
     </>

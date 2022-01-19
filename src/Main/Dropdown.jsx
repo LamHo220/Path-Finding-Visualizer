@@ -9,11 +9,12 @@ import {
   MenuList,
   Paper,
   Popper,
+  Typography,
 } from "@mui/material";
 import React, { useRef, useState, useEffect } from "react";
 
 const Dropdown = (props) => {
-  const { list, func, setItem } = props;
+  const { list, func, setItem, name } = props;
 
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
@@ -40,7 +41,10 @@ const Dropdown = (props) => {
   }, [selectedIndex]);
 
   return (
-    <Box component="span" sx={{ zIndex: 'tooltip' }}>
+    <Box component="span">
+      <Typography>
+        {name}
+      </Typography>
       <ButtonGroup
         variant="outlined"
         ref={anchorRef}
@@ -64,6 +68,7 @@ const Dropdown = (props) => {
         role={undefined}
         transition
         disablePortal
+        sx={{zIndex:20}}
       >
         {({ TransitionProps, placement }) => (
           <Grow

@@ -34,7 +34,7 @@ const Node = (props) => {
       id={id}
       className={`node ${name} border ${
         !dark ? "border-gray-200" : "border-gray-700"
-      } m-0 p-0  hover:bg-orange-300`}
+      } m-0 p-0 hover:bg-orange-300`}
       onMouseDown={(event) => onMouseDown(event, row, col)}
       onMouseEnter={(event) => onMouseEnter(event, row, col)}
       onMouseUp={() => onMouseUp(row, col)}

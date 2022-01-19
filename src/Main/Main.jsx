@@ -5,20 +5,6 @@ import Result from "./Result";
 import { Paper, createTheme, ThemeProvider } from "@mui/material";
 
 const Main = (props) => {
-  const heuristics = {
-    false: ["Euclidean", "Manhattan", "Octile", "Chebyshev"],
-    true: ["Euclidean", "Octile", "Chebyshev"],
-  };
-  const algorithms = ["A*", "Dijkstra"];
-  const patterns = [
-    "No Walls",
-    "Simple Random Walls",
-    "Recursive Division",
-    "Prim's Algorithm",
-    "Kruskal's Algorithm",
-    "Recursive Backtracking",
-  ];
-
   const [steps, setSteps] = useState(0);
   const [pathLength, setPathLength] = useState(0);
   const [allowDiagonal, setAllowDiagonal] = useState(false);
@@ -27,7 +13,7 @@ const Main = (props) => {
   const [pattern, setPattern] = useState("");
   const [start, setStart] = useState(false);
   const [startMaze, setStartMaze] = useState(false);
-  const [timeRatio, setTimeRatio] = useState(3.1);
+  const [timeRatio, setTimeRatio] = useState(5);
   const [darkMode, setDarkMode] = useState(true);
   const [disable, setDisable] = useState(false);
   const [clearPath, setClearPath] = useState(false);
@@ -51,68 +37,58 @@ const Main = (props) => {
   return (
     <ThemeProvider theme={theme}>
       <Paper>
-        <div className={disable?"pointer-events-none":""}>
-          <Head
-            theme={theme}
-            heuristics={heuristics}
-            allowDiagonal={allowDiagonal}
-            algorithms={algorithms}
-            patterns={patterns}
-            start={start}
-            darkMode={darkMode}
-            setStart={() => {
-              setStart(!start);
-              setDisable(!disable);
-            }}
-            setStartMaze={() => {
-              setStartMaze(!start);
-              setDisable(!disable);
-            }}
-            setHeuristic={setHeuristic}
-            setAllowDiagonal={() => setAllowDiagonal(!allowDiagonal)}
-            setAlgorithm={setAlgorithm}
-            setPattern={(pattern) => {
-              setPattern(pattern);
-            }}
-            setDarkMode={(flag) => setDarkMode(flag)}
-            onSlice={handleSlice}
-            setClearPath={setClearPath}
-            isWeighted={isWeighted}
-            setIsWeighted={setIsWeighted}
-          />
-          <Result
-            algorithm={algorithm}
-            heuristic={heuristic}
-            steps={steps}
-            pathLength={pathLength}
-          />
+        <Head
+          disable={disable}
+          algorithm={algorithm}
+          allowDiagonal={allowDiagonal}
+          darkMode={darkMode}
+          heuristic={heuristic}
+          isWeighted={isWeighted}
+          pattern={pattern}
+          onStart={() => {
+            setStart(!start);
+            setDisable(!disable);
+          }}
+          onStartMaze={() => {
+            setStartMaze(!startMaze);
+            setDisable(!disable);
+          }}
+          onHeuristic={setHeuristic}
+          onAllowDiagonal={() => setAllowDiagonal(!allowDiagonal)}
+          onAlgorithm={setAlgorithm}
+          onPattern={setPattern}
+          onDarkMode={setDarkMode}
+          onSlice={handleSlice}
+          onIsWeighted={setIsWeighted}
+          onClearPath={setClearPath}
+        />
+        <Result steps={steps} pathLength={pathLength} />
+        <div className={disable ? "pointer-events-none" : ""}>
           <Grid
-            clear={clearPath}
-            setClearPath={setClearPath}
-            darkMode={darkMode}
+            allowDiagonal={allowDiagonal}
+            heuristic={heuristic}
+            algorithm={algorithm}
+            timeRatio={timeRatio}
             start={start}
+            startMaze={startMaze}
+            pattern={pattern}
+            darkMode={darkMode}
+            clear={clearPath}
+            isWeighted={isWeighted}
+            setClearPath={setClearPath}
             setSteps={setSteps}
             setPathLength={setPathLength}
-            allowDiagonal={allowDiagonal}
-            pattern={pattern}
-            algorithm={algorithm}
-            heuristic={heuristic}
-            heuristics={heuristics}
-            timeRatio={timeRatio}
             setStart={() => {
               setStart(!start);
               setDisable(!disable);
             }}
-            startMaze={startMaze}
             setStartMaze={() => {
               setStartMaze(false);
               setDisable(!disable);
             }}
             setDisable={() => setDisable(!disable)}
-            isWeighted={isWeighted}
           />
         </div>
-
       </Paper>
     </ThemeProvider>
   );
