@@ -3,7 +3,7 @@ import {
   changeClassName,
   delay,
   isHorizontalCut,
-} from "../utilities/utilities";
+} from "../../utilities/utilities";
 
 var deltaTime;
 

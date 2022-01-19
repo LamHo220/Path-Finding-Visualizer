@@ -6,13 +6,11 @@ import {
   generatePattern,
   changeClassName,
   refresh,
-  delay,
   clearPath,
   initGrid,
   updateHeuristic,
   setNeightbours,
   visualize,
-  rand,
   randomWeight,
   clearWeight,
 } from "./utilities/utilities";
@@ -44,18 +42,18 @@ const Grid = (props) => {
     allowDiagonal,
     heuristic,
     algorithm,
-    setSteps,
-    setPathLength,
     timeRatio,
     start,
     startMaze,
-    setStart,
-    setStartMaze,
     pattern,
     darkMode,
     clear,
-    setClearPath,
     isWeighted,
+    onStart,
+    onStartMaze,
+    onClearPath,
+    onSteps,
+    onPathLength,
   } = props;
 
   const [grid, setGrid] = useState(
@@ -71,9 +69,9 @@ const Grid = (props) => {
 
   const handleMouseDown = (event, row, col) => {
     let initNode = grid[row][col];
+    event = event || window.event;
+    event.preventDefault();
     if (!(initNode.isStart || initNode.isEnd)) {
-      event = event || window.event;
-      event.preventDefault();
       switch (event.buttons) {
         case 1:
           const isWall = initNode.isWall;
@@ -96,9 +94,9 @@ const Grid = (props) => {
 
   const handleMouseEnter = (event, row, col) => {
     const node = grid[row][col];
+    event = event || window.event;
+    event.preventDefault();
     if (!(node.isStart || node.isEnd) && !node.isWall === prev) {
-      event = event || window.event;
-      event.preventDefault();
       switch (event.buttons ) {
         case 1:
           node.isWall = prev;
@@ -159,22 +157,24 @@ const Grid = (props) => {
 
   useEffect(async () => {
     if (start) {
-      setPathLength(0);
-      setSteps(0);
+      onPathLength(0);
+      onSteps(0);
       await clearPath(darkMode, grid);
       const startNode = grid[startRow][startCol];
       const endNode = grid[endRow][endCol];
-      await visualize(
+      const {visited, path} = await visualize(
         algorithm,
         startNode,
         endNode,
         darkMode,
         10 * timeRatio,
-        setSteps,
-        setPathLength
+        onSteps,
+        onPathLength
       );
+      onPathLength(visited);
+      onSteps(path);
       setVisualized(true);
-      setStart();
+      onStart();
     }
   }, [start]);
 
@@ -186,10 +186,10 @@ const Grid = (props) => {
       const endNode = grid[endRow][endCol];
       let res = getAlgoResult(algorithm)(startNode, endNode);
       refresh(darkMode, res.visitedNodes, res.shortestPath);
-      setPathLength(res.shortestPath.length - 1);
-      setSteps(res.visitedNodes.length - 1);
+      onPathLength(res.shortestPath.length - 1);
+      onSteps(res.visitedNodes.length - 1);
     }
-  }, [grid]);
+  }, [grid, algorithm]);
 
   useEffect(async () => {
     setVisualized(false);
@@ -207,7 +207,7 @@ const Grid = (props) => {
         10 * timeRatio,
         0.3
       );
-      setStartMaze();
+      onStartMaze();
     }
   }, [startMaze]);
 
@@ -215,7 +215,7 @@ const Grid = (props) => {
     if (clear) {
       clearPath(darkMode, grid);
       setVisualized(false);
-      setClearPath(false);
+      onClearPath(false);
     }
   }, [clear]);
 

@@ -1,4 +1,4 @@
-import { delay, changeClassName } from "../utilities/utilities";
+import { delay, changeClassName } from "../../utilities/utilities";
 import NoWalls from "./NoWalls";
 import SimpleRandomWalls from "./SimpleRandomWalls";
 import PrimMaze from "./Prim";

@@ -1,4 +1,4 @@
-import { changeClassName, delay } from "../utilities/utilities";
+import { changeClassName, delay } from "../../utilities/utilities";;
 
 const NoWalls = async (darkMode, grid) => {
   for (let row of grid) {

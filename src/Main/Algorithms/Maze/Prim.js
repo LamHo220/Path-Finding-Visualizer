@@ -1,10 +1,9 @@
 import {
   rand,
   changeClassName,
-  rowDir,
-  colDir,
   delay,
-} from "../utilities/utilities";
+} from "../../utilities/utilities";
+import { rowDir, colDir } from "../../Constants/Constants";
 
 var deltaTime;
 

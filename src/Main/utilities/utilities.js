@@ -1,7 +1,7 @@
 import aStar from "../Algorithms/PathFinding/AStar";
 import dijkstra from "../Algorithms/PathFinding/Dijkstra";
 import Heuristic from "../Heuristic/Heuristic";
-import Mazes from "../Maze/Mazes";
+import Mazes from "../Algorithms/Maze/Mazes";
 
 export const getAlgoResult = (algorithm) => {
   switch (algorithm) {
@@ -78,15 +78,7 @@ export const delay = (t) => {
   });
 };
 
-export const rowDir = { N: -1, S: 1, E: 0, W: 0 };
-export const colDir = { N: 0, S: 0, E: 1, W: -1 };
-
-export const changeClassName = (
-  dark,
-  node,
-  name = "",
-  fakeIsWall = false
-) => {
+export const changeClassName = (dark, node, name = "", fakeIsWall = false) => {
   const element = document.getElementById(`${node.row}-${node.col}`);
   element.className = `node ${
     node.isStart
@@ -106,7 +98,7 @@ export const changeClassName = (
       : name + " hover:bg-orange-300"
   } border ${
     !dark ? "border-gray-200" : "border-gray-700"
-  } m-0 p-0  hover:bg-orange-300`;
+  } m-0 p-0 hover:bg-orange-300`;
 };
 
 export const clearPath = async (dark, grid) => {
@@ -129,7 +121,7 @@ export const refresh = async (dark, visitedNodes, shortestPath) => {
   for (let i = 0; i < m; ++i) {
     const node = shortestPath[i];
     if (!(node.isStart || node.isEnd)) {
-      changeClassName(dark, node, !dark ? "bg-yellow-300" : "bg-yellow-700");
+      changeClassName(dark, node, !dark ? "bg-yellow-300" : "bg-yellow-600");
     }
   }
 };
@@ -233,16 +225,7 @@ export const updateHeuristic = (nodes, heuristic, endRow, endCol) => {
   return nodes;
 };
 
-export const visualize = async (
-  algorithm,
-  start,
-  end,
-  dark,
-  duration,
-  setSteps,
-  setPathLength
-) => {
-  // deltaTime = duration;
+export const visualize = async (algorithm, start, end, dark, duration) => {
   const res = getAlgoResult(algorithm)(start, end);
   const n = res.visitedNodes.length;
   const m = res.shortestPath.length;
@@ -255,8 +238,8 @@ export const visualize = async (
         (!dark ? "bg-cyan-300" : "bg-cyan-700") + " fade-in"
       );
     }
-    setSteps(i);
-    await delay(duration);
+    document.getElementById("no-of-steps").textContent = i;
+    await delay(2 * duration);
   }
   for (let i = 0; i < m; ++i) {
     const node = res.shortestPath[i];
@@ -267,29 +250,33 @@ export const visualize = async (
         (!dark ? "bg-yellow-300" : "bg-yellow-600") + " fade-in"
       );
     }
-    setPathLength(i);
-    await delay(duration);
+    document.getElementById("path-length").textContent = i;
+    await delay(2 * duration);
   }
+  return {
+    visited: res.shortestPath.length - 1,
+    path: res.visitedNodes.length - 1,
+  };
 };
 
 export const randomWeight = (grid) => {
-  for (let row of grid){
-    for (let node of row){
-      node.weight = rand(0,20);
+  for (let row of grid) {
+    for (let node of row) {
+      node.weight = rand(1, 20);
       const element = document.getElementById(`${node.row}-${node.col}`);
       element.textContent = node.weight;
     }
   }
   return grid;
-}
+};
 
 export const clearWeight = (grid) => {
-  for (let row of grid){
-    for (let node of row){
+  for (let row of grid) {
+    for (let node of row) {
       node.weight = 0;
       const element = document.getElementById(`${node.row}-${node.col}`);
       element.textContent = "";
     }
   }
   return grid;
-}
+};
