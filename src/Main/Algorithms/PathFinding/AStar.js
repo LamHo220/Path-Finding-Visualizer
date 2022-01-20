@@ -4,7 +4,7 @@
  * @returns { visitedNodes, shortestPath } - an object that contains two array: visited nodes and shortest path
  */
 
-export default function aStar(start) {
+export default function aStar(start, end, grid) {
   // initialize an open list and push the start node to the open list.
   let openSet = [start];
 
@@ -27,16 +27,16 @@ export default function aStar(start) {
     }
     // current is visited
     visitedNodes.push(current);
-    let neighbors = current.neighbors;
+    let neighbors = current.neighbors.filter((e) => !visitedNodes.includes(e));
     for (let neighbor of neighbors) {
-      if (neighbor.isWall || visitedNodes.includes(neighbor)) {
+      if (neighbor.isWall) {
         continue;
       }
       let tempG = current.g + neighbor.weight + distance(current, neighbor);
 
       if (tempG < neighbor.g || !openSet.includes(neighbor)) {
         neighbor.g = tempG;
-        neighbor.f = neighbor.g + neighbor.weight + neighbor.h;
+        neighbor.f = tempG + neighbor.h;
         neighbor.previous = current;
         if (!openSet.includes(neighbor)) {
           openSet.push(neighbor);

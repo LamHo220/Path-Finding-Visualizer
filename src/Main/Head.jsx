@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { heuristics, algorithms, patterns } from "./Constants/Constants";
 import { useState } from "react";
-import { DrawerGroupButtons, DrawerTwoWaysButton, Setting } from "../Setting";
+import { DrawerGroupButtons, DrawerTwoWaysButton, Setting } from "./Setting";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -25,6 +25,7 @@ const Head = (props) => {
     heuristic,
     isWeighted,
     pattern,
+    isBidirection,
     onStart,
     onStartMaze,
     onHeuristic,
@@ -34,7 +35,8 @@ const Head = (props) => {
     onDarkMode,
     onSlice,
     onIsWeighted,
-    onClearPath
+    onClearPath,
+    onIsBidirection
   } = props;
 
   const [open, setOpen] = useState(false);
@@ -168,6 +170,14 @@ const Head = (props) => {
           toggleDrawer={toggleDrawer(false)}
           flagName1="Not Allowed"
           flagName2="Allowed"
+        />
+        <DrawerTwoWaysButton
+          name="Bidirection?"
+          flag={isBidirection}
+          setFlag={onIsBidirection}
+          toggleDrawer={toggleDrawer(false)}
+          flagName1="No"
+          flagName2="Yes"
         />
       </Setting>
     </>

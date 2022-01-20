@@ -18,6 +18,7 @@ const Main = (props) => {
   const [disable, setDisable] = useState(false);
   const [clearPath, setClearPath] = useState(false);
   const [isWeighted, setIsWeighted] = useState(false);
+  const [isBidirection, setIsBidirection] = useState(false);
 
   useEffect(() => {
     setHeuristic("Euclidean");
@@ -45,6 +46,7 @@ const Main = (props) => {
           heuristic={heuristic}
           isWeighted={isWeighted}
           pattern={pattern}
+          isBidirection={isBidirection}
           onStart={() => {
             setStart(!start);
             setDisable(!disable);
@@ -61,6 +63,7 @@ const Main = (props) => {
           onSlice={handleSlice}
           onIsWeighted={setIsWeighted}
           onClearPath={setClearPath}
+          onIsBidirection={setIsBidirection}
         />
         <Result steps={steps} pathLength={pathLength} />
         <div className={disable ? "pointer-events-none" : ""}>

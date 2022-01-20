@@ -7,8 +7,9 @@ import {
 
 var deltaTime;
 
-const RecursiveDivisionMaze = async (dark, grid, maxRow, maxCol, duration) => {
-  deltaTime = duration;
+const RecursiveDivisionMaze = async (input) => {
+  const { dark, grid, maxRow, maxCol, timeRatio } = input;
+  deltaTime = timeRatio;
   await doRecuresiveDivision(
     dark,
     grid,

@@ -3,56 +3,18 @@ import dijkstra from "../Algorithms/PathFinding/Dijkstra";
 import Heuristic from "../Heuristic/Heuristic";
 import Mazes from "../Algorithms/Maze/Mazes";
 
-export const getAlgoResult = (algorithm) => {
-  switch (algorithm) {
-    case "A*":
-      return aStar;
-    case "Dijkstra":
-      return dijkstra;
-    default:
-      break;
-  }
+export const getAlgoResult = {
+  "A*":aStar,
+  "Dijkstra":dijkstra,
 };
 
-export const generatePattern = async (
-  dark,
-  pattern,
-  grid,
-  maxRow,
-  maxCol,
-  start = null,
-  end = null,
-  duration = 50,
-  density = 0.3
-) => {
-  switch (pattern) {
-    case "Simple Random Walls":
-      await Mazes.SimpleRandomWalls(dark, grid, density);
-      break;
-    case "Recursive Division":
-      await Mazes.RecursiveDivisionMaze(dark, grid, maxRow, maxCol, duration);
-      break;
-    case "Recursive Backtracking":
-      await Mazes.RecursiveBacktrackingMaze(
-        dark,
-        grid,
-        maxRow,
-        maxCol,
-        duration,
-        start,
-        end
-      );
-      break;
-    case "Prim's Algorithm":
-      await Mazes.PrimMaze(dark, grid, maxRow, maxCol, duration);
-      break;
-    case "Kruskal's Algorithm":
-      await Mazes.Kruskal(dark, grid, maxRow, maxCol, duration);
-      break;
-    default:
-      await Mazes.NoWalls(dark, grid);
-      break;
-  }
+export const generatePattern = {
+  "Simple Random Walls":Mazes.SimpleRandomWalls,
+  "Recursive Division":Mazes.RecursiveDivisionMaze,
+  "Recursive Backtracking":Mazes.RecursiveBacktrackingMaze,
+  "Prim's Algorithm":Mazes.PrimMaze,
+  "Kruskal's Algorithm":Mazes.Kruskal,
+  "No Walls":Mazes.NoWalls,
 };
 
 export const getHeuristic = (heuristic) => {
@@ -93,8 +55,6 @@ export const changeClassName = (dark, node, name = "", fakeIsWall = false) => {
       ? name
       : node.isWall
       ? (!dark ? "bg-gray-400" : "bg-gray-600") + " fade-in"
-      : node.isWeight
-      ? (!dark ? "bg-orange-400" : "bg-orange-600") + " fade-in"
       : name + " hover:bg-orange-300"
   } border ${
     !dark ? "border-gray-200" : "border-gray-700"
@@ -225,8 +185,8 @@ export const updateHeuristic = (nodes, heuristic, endRow, endCol) => {
   return nodes;
 };
 
-export const visualize = async (algorithm, start, end, dark, duration) => {
-  const res = getAlgoResult(algorithm)(start, end);
+export const visualize = async (algorithm, grid, start, end, dark, duration) => {
+  const res = getAlgoResult[algorithm](start, end, grid);
   const n = res.visitedNodes.length;
   const m = res.shortestPath.length;
   for (let i = 0; i < n; ++i) {

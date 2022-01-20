@@ -97,7 +97,7 @@ const Grid = (props) => {
     event = event || window.event;
     event.preventDefault();
     if (!(node.isStart || node.isEnd) && !node.isWall === prev) {
-      switch (event.buttons ) {
+      switch (event.buttons) {
         case 1:
           node.isWall = prev;
           changeClassName(darkMode, node);
@@ -162,8 +162,9 @@ const Grid = (props) => {
       await clearPath(darkMode, grid);
       const startNode = grid[startRow][startCol];
       const endNode = grid[endRow][endCol];
-      const {visited, path} = await visualize(
+      const { visited, path } = await visualize(
         algorithm,
+        grid,
         startNode,
         endNode,
         darkMode,
@@ -184,7 +185,7 @@ const Grid = (props) => {
       clearPath(darkMode, grid);
       const startNode = grid[startRow][startCol];
       const endNode = grid[endRow][endCol];
-      let res = getAlgoResult(algorithm)(startNode, endNode);
+      let res = getAlgoResult[algorithm](startNode, endNode, grid);
       refresh(darkMode, res.visitedNodes, res.shortestPath);
       onPathLength(res.shortestPath.length - 1);
       onSteps(res.visitedNodes.length - 1);
@@ -196,17 +197,17 @@ const Grid = (props) => {
     if (grid.length !== 0 && startMaze) {
       const start = grid[startRow][startCol];
       const end = grid[endRow][endCol];
-      await generatePattern(
-        darkMode,
-        pattern,
+      const input = {
+        dark:darkMode,
         grid,
         maxRow,
         maxCol,
         start,
         end,
-        10 * timeRatio,
-        0.3
-      );
+        timeRatio: 10 * timeRatio,
+        density: 0.3,
+      };
+      await generatePattern[pattern](input);
       onStartMaze();
     }
   }, [startMaze]);
@@ -230,7 +231,11 @@ const Grid = (props) => {
   return (
     <div
       onContextMenu={handleContextMenu}
-      style={{ cursor: "context-menu", alignContent: "center", textAlign: "center" }}
+      style={{
+        cursor: "context-menu",
+        alignContent: "center",
+        textAlign: "center",
+      }}
     >
       <Box
         display="grid"
@@ -248,7 +253,6 @@ const Grid = (props) => {
                 isWall={isWall}
                 isStart={isStart}
                 isEnd={isEnd}
-                isWeight={isWeight}
                 id={y + "-" + x}
                 onMouseDown={handleMouseDown}
                 onMouseEnter={handleMouseEnter}

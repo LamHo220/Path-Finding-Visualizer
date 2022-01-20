@@ -3,17 +3,10 @@ import { rowDir, colDir } from "../../Constants/Constants";
 
 var deltaTime;
 
-const RecursiveBacktrackingMaze = async (
-  dark,
-  grid,
-  maxRow,
-  maxCol,
-  duration,
-  startNode,
-  endNode
-) => {
-  startNode.isWall = true;
-  endNode.isWall = true;
+const RecursiveBacktrackingMaze = async (input) => {
+  const { dark, grid, maxRow, maxCol, duration, start, end } = input;
+  start.isWall = true;
+  end.isWall = true;
   deltaTime = duration;
   const randCol = Math.floor(rand(0, maxCol - 1) / 2) * 2 + 1;
   const randRow = Math.floor(rand(0, maxRow - 1) / 2) * 2 + 1;
@@ -21,8 +14,8 @@ const RecursiveBacktrackingMaze = async (
   node.isWall = false;
   changeClassName(dark, node);
   await doRecursiveBacktracker(dark, grid, node, maxRow, maxCol);
-  startNode.isWall = false;
-  endNode.isWall = false;
+  start.isWall = false;
+  end.isWall = false;
 };
 
 const getDirection = (grid, row, col) => {

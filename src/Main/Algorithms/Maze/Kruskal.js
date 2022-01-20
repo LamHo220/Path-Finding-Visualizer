@@ -7,8 +7,9 @@ import {
 
 var deltaTime;
 
-const Kruskal = async (dark, grid, maxRow, maxCol, duration) => {
-  deltaTime = duration
+const Kruskal = async (input) => {
+  const { dark, grid, maxRow, maxCol, timeRatio } = input;
+  deltaTime = timeRatio;
   let closed = [];
   let groups = new Map();
   let idx = 0;

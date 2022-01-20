@@ -6,7 +6,8 @@ import Kruskal from "./Kruskal";
 import RecursiveDivisionMaze from "./RecursiveDivision";
 import RecursiveBacktrackingMaze from "./RecursiveBacktracking";
 
-const Reverse = async (dark, grid, maxRow, maxCol, duration) => {
+const Reverse = async (input) => {
+  const {dark, grid, maxRow, maxCol, timeRatio} = input
   for (let row = 0; row < maxRow; ++row) {
     for (let col = 0; col < maxCol; ++col) {
       setTimeout(() => {
@@ -15,13 +16,14 @@ const Reverse = async (dark, grid, maxRow, maxCol, duration) => {
           node.isWall = !node.isWall;
           changeClassName(dark, node);
         }
-      }, Math.max(duration, 30) * (row + col));
+      }, Math.max(timeRatio, 30) * (row + col));
     }
   }
-  await delay(Math.max(duration, 30) * (maxRow + maxCol));
+  await delay(Math.max(timeRatio, 30) * (maxRow + maxCol));
 };
 
-const Boundary = async (dark, grid, maxRow, maxCol, duration) => {
+const Boundary = async (input) => {
+  const {dark, grid, maxRow, maxCol, timeRatio} = input
   for (let i = 0; i < maxRow; ++i) {
     setTimeout(() => {
       let node = grid[i][0];
@@ -34,7 +36,7 @@ const Boundary = async (dark, grid, maxRow, maxCol, duration) => {
         node.isWall = true;
         changeClassName(dark, node);
       }
-    }, duration * i);
+    }, timeRatio * i);
   }
   for (let j = 0; j < maxCol; ++j) {
     setTimeout(() => {
@@ -48,35 +50,35 @@ const Boundary = async (dark, grid, maxRow, maxCol, duration) => {
         node.isWall = true;
         changeClassName(dark, node);
       }
-    }, duration * j);
+    }, timeRatio * j);
   }
-  await delay(duration * Math.max(maxRow, maxCol));
+  await delay(timeRatio * Math.max(maxRow, maxCol));
 };
 
 export default {
-  RecursiveBacktrackingMaze: async (...args) => {
-    await NoWalls(...args);
-    await Reverse(...args);
-    await RecursiveBacktrackingMaze(...args);
+  RecursiveBacktrackingMaze: async (input) => {
+    await NoWalls(input);
+    await Reverse(input);
+    await RecursiveBacktrackingMaze(input);
   },
-  RecursiveDivisionMaze: async (...args) => {
-    await NoWalls(...args);
-    await Boundary(...args);
-    await RecursiveDivisionMaze(...args);
+  RecursiveDivisionMaze: async (input) => {
+    await NoWalls(input);
+    await Boundary(input);
+    await RecursiveDivisionMaze(input);
   },
-  PrimMaze: async (...args) => {
-    await NoWalls(...args);
-    await Reverse(...args);
-    await PrimMaze(...args);
+  PrimMaze: async (input) => {
+    await NoWalls(input);
+    await Reverse(input);
+    await PrimMaze(input);
   },
-  SimpleRandomWalls: async (...args) => {
-    await NoWalls(...args);
-    SimpleRandomWalls(...args);
+  SimpleRandomWalls: async (input) => {
+    await NoWalls(input);
+    SimpleRandomWalls(input);
   },
-  Kruskal: async (...args) => {
-    await NoWalls(...args);
-    await Boundary(...args);
-    await Kruskal(...args);
+  Kruskal: async (input) => {
+    await NoWalls(input);
+    await Boundary(input);
+    await Kruskal(input);
   },
   NoWalls: NoWalls,
 };

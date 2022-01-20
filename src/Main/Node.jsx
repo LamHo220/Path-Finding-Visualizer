@@ -12,7 +12,6 @@ const Node = (props) => {
     onMouseEnter,
     onMouseUp,
     dark,
-    isWeight,
   } = props;
 
   const name = isStart
@@ -25,8 +24,6 @@ const Node = (props) => {
       : "bg-pink-700"
     : isWall
     ? (!dark ? "bg-gray-400" : "bg-gray-600") + " fade-in"
-    : isWeight
-    ? (!dark ? "bg-orange-400" : "bg-orange-600") + " fade-in"
     : "hover:bg-orange-300";
 
   return (

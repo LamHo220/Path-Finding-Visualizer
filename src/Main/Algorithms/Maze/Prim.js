@@ -1,13 +1,10 @@
-import {
-  rand,
-  changeClassName,
-  delay,
-} from "../../utilities/utilities";
+import { rand, changeClassName, delay } from "../../utilities/utilities";
 import { rowDir, colDir } from "../../Constants/Constants";
 
 var deltaTime;
 
-const PrimMaze = async (dark, grid, maxRow, maxCol, duration) => {
+const PrimMaze = async (input) => {
+  const { dark, grid, maxRow, maxCol, duration } = input;
   deltaTime = duration;
   let isStarted = false;
   let row = Math.floor(rand(maxRow / 3, maxRow - 2) / 2) * 2 + 1;

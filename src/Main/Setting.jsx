@@ -5,27 +5,18 @@ import {
   Drawer,
   Typography,
 } from "@mui/material";
-import { Box } from "@mui/system";
-
+import Box from '@mui/material/Box';
 
 export const DrawerTwoWaysButton = (props) => {
   const { name, flag, setFlag, toggleDrawer, flagName1, flagName2 } = props;
   return (
-    <>
+    <Box sx={{alignItem:"center",alignContent:"center"}}>
       <Typography sx={{ p: 1 }} variant="h6" component="div" textAlign="center">
         {name}
       </Typography>
-      <ButtonGroup sx={{ p: 1, width:240 }}>
+      <ButtonGroup alignItems="center" sx={{ p: 1, width:245 }}>
         <Button
-          disabled={!flag}
-          onClick={(event) => {
-            setFlag(!flag);
-            toggleDrawer(event);
-          }}
-        >
-          {flagName1}
-        </Button>
-        <Button
+          sx={{width:120}}
           disabled={flag}
           onClick={(event) => {
             setFlag(!flag);
@@ -34,9 +25,19 @@ export const DrawerTwoWaysButton = (props) => {
         >
           {flagName2}
         </Button>
+        <Button
+          sx={{width:120}}
+          disabled={!flag}
+          onClick={(event) => {
+            setFlag(!flag);
+            toggleDrawer(event);
+          }}
+        >
+          {flagName1}
+        </Button>
       </ButtonGroup>
       <Divider></Divider>
-    </>
+    </Box>
   );
 };
 
@@ -44,10 +45,10 @@ export const DrawerGroupButtons = (props) => {
   const { name, toggleDrawer, list, curr, setCurr } = props;
   return (
     <Box alignContent="center" textAlign="center" alignItems="center">
-      <Typography sx={{ p: 1 }}  variant="h6" component="div" textAlign="center">
+      <Typography sx={{ p: 1 }} variant="h6" component="div" textAlign="center">
         {name}
       </Typography>
-      <ButtonGroup sx={{ p: 1, width:240 }} orientation="vertical">
+      <ButtonGroup sx={{ p: 1, width: 250 }} orientation="vertical">
         {list.map((e) => {
           return (
             <Button
