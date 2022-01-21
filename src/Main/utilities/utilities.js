@@ -1,37 +1,19 @@
 import aStar from "../Algorithms/PathFinding/AStar";
 import dijkstra from "../Algorithms/PathFinding/Dijkstra";
-import Heuristic from "../Heuristic/Heuristic";
 import Mazes from "../Algorithms/Maze/Mazes";
 
 export const getAlgoResult = {
-  "A*":aStar,
-  "Dijkstra":dijkstra,
+  "A*": aStar,
+  Dijkstra: dijkstra,
 };
 
 export const generatePattern = {
-  "Simple Random Walls":Mazes.SimpleRandomWalls,
-  "Recursive Division":Mazes.RecursiveDivisionMaze,
-  "Recursive Backtracking":Mazes.RecursiveBacktrackingMaze,
-  "Prim's Algorithm":Mazes.PrimMaze,
-  "Kruskal's Algorithm":Mazes.Kruskal,
-  "No Walls":Mazes.NoWalls,
-};
-
-export const getHeuristic = (heuristic) => {
-  switch (heuristic) {
-    case "Manhattan":
-      return Heuristic.Manhattan;
-    case "Euclidean":
-      return Heuristic.Euclidean;
-    case "Octile":
-      return Heuristic.Octile;
-    case "Chebyshev":
-      return Heuristic.Octile;
-    default:
-      return (dx, dy) => {
-        return dx + dy;
-      };
-  }
+  "Simple Random Walls": Mazes.SimpleRandomWalls,
+  "Recursive Division": Mazes.RecursiveDivisionMaze,
+  "Recursive Backtracking": Mazes.RecursiveBacktrackingMaze,
+  "Prim's Algorithm": Mazes.PrimMaze,
+  "Kruskal's Algorithm": Mazes.Kruskal,
+  "No Walls": Mazes.NoWalls,
 };
 
 export const delay = (t) => {
@@ -109,84 +91,37 @@ export const createNode = (row, col, start, end, heuristic) => {
     isEnd: row === endRow && col === endCol,
     isWall: false,
     previous: null,
-    g: Infinity,
-    h: getHeuristic(heuristic)(Math.abs(row - endRow), Math.abs(col - endCol)),
-    f: Infinity,
-    neighbors: [],
     weight: 0,
-    isWeight: false,
     idx: -1,
   };
 };
 
-export const initGrid = (
-  maxRow,
-  maxCol,
-  start,
-  end,
-  heuristic,
-  allowDiagonal
-) => {
+export const initGrid = (maxRow, maxCol, start, end) => {
   let nodes = [];
   for (let row = 0; row < maxRow; ++row) {
     let cur = [];
     for (let col = 0; col < maxCol; ++col) {
-      cur.push(createNode(row, col, start, end, heuristic));
+      cur.push(createNode(row, col, start, end));
     }
     nodes.push(cur);
   }
-  return setNeightbours(nodes, maxRow, maxCol, allowDiagonal);
-};
-
-export const setNeightbours = (nodes, maxRow, maxCol, allowDiagonal) => {
-  for (let row = 0; row < maxRow; ++row) {
-    for (let col = 0; col < maxCol; ++col) {
-      nodes[row][col].neighbors = [];
-      let neighbors = nodes[row][col].neighbors;
-      // up
-      if (row - 1 >= 0) neighbors.push(nodes[row - 1][col]);
-      // down
-      if (row + 1 < maxRow) neighbors.push(nodes[row + 1][col]);
-      // left
-      if (col - 1 >= 0) neighbors.push(nodes[row][col - 1]);
-      // right
-      if (col + 1 < maxCol) neighbors.push(nodes[row][col + 1]);
-      // diagonal
-      if (allowDiagonal) {
-        // up left
-        if (row - 1 >= 0 && col - 1 >= 0)
-          neighbors.push(nodes[row - 1][col - 1]);
-        // down right
-        if (row + 1 < maxRow && col + 1 < maxCol)
-          neighbors.push(nodes[row + 1][col + 1]);
-        // down left
-        if (row + 1 < maxRow && col - 1 >= 0)
-          neighbors.push(nodes[row + 1][col - 1]);
-        // up right
-        if (row - 1 >= 0 && col + 1 < maxCol)
-          neighbors.push(nodes[row - 1][col + 1]);
-      }
-    }
-  }
   return nodes;
 };
 
-export const updateHeuristic = (nodes, heuristic, endRow, endCol) => {
-  for (let row of nodes) {
-    for (let node of row) {
-      node.g = Infinity;
-      node.f = Infinity;
-      const dx = Math.abs(node.col - endCol);
-      const dy = Math.abs(node.row - endRow);
-      node.h = getHeuristic(heuristic)(dx, dy);
-      node.previous = null;
-    }
-  }
-  return nodes;
-};
-
-export const visualize = async (algorithm, grid, start, end, dark, duration) => {
-  const res = getAlgoResult[algorithm](start, end, grid);
+export const visualize = async (
+  algorithm,
+  grid,
+  start,
+  end,
+  dark,
+  duration,
+  isBidirection,
+  allowDiagonal,
+  heuristic
+) => {
+  const input = { start, end, grid, isBidirection, allowDiagonal, heuristic };
+  const res = getAlgoResult[algorithm](input);
+  console.log(res);
   const n = res.visitedNodes.length;
   const m = res.shortestPath.length;
   for (let i = 0; i < n; ++i) {
@@ -240,3 +175,72 @@ export const clearWeight = (grid) => {
   }
   return grid;
 };
+
+export const getNeighbours = (grid, node, allowDiagonal) => {
+  const maxRow = grid.length;
+  const maxCol = grid[0].length;
+
+  let res = [];
+  let { row, col } = node;
+
+  if (row - 1 >= 0) res.push(grid[row - 1][col]);
+  // down
+  if (row + 1 < maxRow) res.push(grid[row + 1][col]);
+  // left
+  if (col - 1 >= 0) res.push(grid[row][col - 1]);
+  // right
+  if (col + 1 < maxCol) res.push(grid[row][col + 1]);
+  // diagonal
+  if (allowDiagonal) {
+    // up left
+    if (row - 1 >= 0 && col - 1 >= 0) res.push(grid[row - 1][col - 1]);
+    // down right
+    if (row + 1 < maxRow && col + 1 < maxCol) res.push(grid[row + 1][col + 1]);
+    // down left
+    if (row + 1 < maxRow && col - 1 >= 0) res.push(grid[row + 1][col - 1]);
+    // up right
+    if (row - 1 >= 0 && col + 1 < maxCol) res.push(grid[row - 1][col + 1]);
+  }
+
+  return res;
+};
+
+export const distance = (nodeA, nodeB) =>{
+  let Acol = nodeA.col;
+  let Bcol = nodeB.col;
+  let Arow = nodeA.row;
+  let Brow = nodeB.row;
+  return Math.sqrt(Math.pow(Acol - Bcol, 2) + Math.pow(Arow - Brow, 2));
+}
+
+export const getPath = (node) =>{
+  if (node===undefined){
+    return [];
+  }
+  let path = [];
+  let temp = node;
+  while (temp.previous !== null) {
+    path.unshift(temp);
+    temp = temp.previous;
+  }
+  return path;
+}
+
+export const toOrderedList = (l1, l2) => {
+  let res = []
+  while (l1.length!==0 && l2.length!==0){
+    const x = l1.shift();
+    const y = l2.shift();
+    res.push(x);
+    res.push(y);
+  }
+  while (l1.length!==0){
+    const x = l1.shift();
+    res.push(x);
+  }
+  while (l2.length!==0){
+    const y = l2.shift();
+    res.push(y);
+  }
+  return res;
+}

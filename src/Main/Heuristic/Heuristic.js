@@ -10,6 +10,6 @@ export default {
     return (dx + dy) + F * Math.min(dx,dy);
   },
   Chebyshev: (dx, dy) => {
-    return Math.Max(dx, dy);
+    return Math.max(dx, dy);
   },
 };

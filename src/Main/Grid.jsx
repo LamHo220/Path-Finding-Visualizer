@@ -8,8 +8,6 @@ import {
   refresh,
   clearPath,
   initGrid,
-  updateHeuristic,
-  setNeightbours,
   visualize,
   randomWeight,
   clearWeight,
@@ -49,6 +47,7 @@ const Grid = (props) => {
     darkMode,
     clear,
     isWeighted,
+    isBidirection,
     onStart,
     onStartMaze,
     onClearPath,
@@ -61,9 +60,7 @@ const Grid = (props) => {
       maxRow,
       maxCol,
       { row: startRow, col: startCol },
-      { row: endRow, col: endCol },
-      heuristic,
-      allowDiagonal
+      { row: endRow, col: endCol }
     )
   );
 
@@ -151,10 +148,6 @@ const Grid = (props) => {
     event.preventDefault();
   };
 
-  useEffect(() => {
-    setGrid(setNeightbours(grid.slice(), maxRow, maxCol, allowDiagonal));
-  }, [allowDiagonal, heuristic]);
-
   useEffect(async () => {
     if (start) {
       onPathLength(0);
@@ -169,8 +162,9 @@ const Grid = (props) => {
         endNode,
         darkMode,
         10 * timeRatio,
-        onSteps,
-        onPathLength
+        isBidirection,
+        allowDiagonal,
+        heuristic
       );
       onPathLength(visited);
       onSteps(path);
@@ -180,13 +174,21 @@ const Grid = (props) => {
   }, [start]);
 
   useEffect(() => {
-    updateHeuristic(grid.slice(), heuristic, endRow, endCol);
     if (visualized) {
       clearPath(darkMode, grid);
       const startNode = grid[startRow][startCol];
       const endNode = grid[endRow][endCol];
-      let res = getAlgoResult[algorithm](startNode, endNode, grid);
-      refresh(darkMode, res.visitedNodes, res.shortestPath);
+      const input = {
+        start: startNode,
+        end: endNode,
+        grid,
+        isBidirection,
+        allowDiagonal,
+        heuristic,
+      };
+      let res = getAlgoResult[algorithm](input);
+  console.log(res);
+  refresh(darkMode, res.visitedNodes, res.shortestPath);
       onPathLength(res.shortestPath.length - 1);
       onSteps(res.visitedNodes.length - 1);
     }
@@ -198,7 +200,7 @@ const Grid = (props) => {
       const start = grid[startRow][startCol];
       const end = grid[endRow][endCol];
       const input = {
-        dark:darkMode,
+        dark: darkMode,
         grid,
         maxRow,
         maxCol,

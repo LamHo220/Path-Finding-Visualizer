@@ -16,6 +16,7 @@ export const DrawerTwoWaysButton = (props) => {
       </Typography>
       <ButtonGroup alignItems="center" sx={{ p: 1, width:245 }}>
         <Button
+          color="success"
           sx={{width:120}}
           disabled={flag}
           onClick={(event) => {
@@ -26,6 +27,7 @@ export const DrawerTwoWaysButton = (props) => {
           {flagName2}
         </Button>
         <Button
+          color="error"
           sx={{width:120}}
           disabled={!flag}
           onClick={(event) => {

@@ -18,7 +18,7 @@ const Main = (props) => {
   const [disable, setDisable] = useState(false);
   const [clearPath, setClearPath] = useState(false);
   const [isWeighted, setIsWeighted] = useState(false);
-  const [isBidirection, setIsBidirection] = useState(false);
+  const [isBidirection, setIsBidirection] = useState(true);
 
   useEffect(() => {
     setHeuristic("Euclidean");
@@ -78,6 +78,7 @@ const Main = (props) => {
             darkMode={darkMode}
             clear={clearPath}
             isWeighted={isWeighted}
+            isBidirection={isBidirection}
             onClearPath={setClearPath}
             onSteps={setSteps}
             onPathLength={setPathLength}
