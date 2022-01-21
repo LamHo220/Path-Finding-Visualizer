@@ -11,6 +11,7 @@ import {
   visualize,
   randomWeight,
   clearWeight,
+  createNode,
 } from "./utilities/utilities";
 
 const Grid = (props) => {
@@ -187,12 +188,11 @@ const Grid = (props) => {
         heuristic,
       };
       let res = getAlgoResult[algorithm](input);
-  console.log(res);
-  refresh(darkMode, res.visitedNodes, res.shortestPath);
+      refresh(darkMode, res.visitedNodes, res.shortestPath);
       onPathLength(res.shortestPath.length - 1);
       onSteps(res.visitedNodes.length - 1);
     }
-  }, [grid, algorithm]);
+  }, [grid, algorithm, isBidirection, darkMode]);
 
   useEffect(async () => {
     setVisualized(false);
@@ -224,29 +224,24 @@ const Grid = (props) => {
 
   useEffect(() => {
     if (isWeighted) {
-      setGrid(randomWeight(grid.slice()));
+      setGrid((prevGrid)=>randomWeight(prevGrid));
     } else {
-      setGrid(clearWeight(grid.slice()));
+      setGrid((prevGrid)=>clearWeight(prevGrid));
     }
   }, [isWeighted]);
 
   return (
     <div
       onContextMenu={handleContextMenu}
-      style={{
-        cursor: "context-menu",
-        alignContent: "center",
-        textAlign: "center",
-      }}
     >
       <Box
         display="grid"
-        gridTemplateColumns={`repeat(${maxCol}, 3vh)`}
+        gridTemplateColumns={`repeat(${maxCol}, 1fr)`}
         gridTemplateRows={`repeat(${maxRow}, 3vh)`}
       >
         {grid.map((row, y) => {
           return row.map((node, x) => {
-            const { isStart, isEnd, isWall, isWeight } = node;
+            const { isStart, isEnd, isWall } = node;
             return (
               <Node
                 dark={darkMode}

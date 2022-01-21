@@ -3,16 +3,10 @@ import {
   getNeighbours,
   distance,
   getPath,
-  toOrderedList,
 } from "../../utilities/utilities";
 
-/**
- * An algorithm that find the shortest path
- * @param {Object} start - the start node
- * @returns { visitedNodes, shortestPath } - an object that contains two array: visited nodes and shortest path
- */
 export default function aStar(input) {
-  const { start, end, grid, isBidirection, allowDiagonal, heuristic, dark } =
+  const { start, end, grid, isBidirection, allowDiagonal, heuristic } =
     input;
 
   const startRow = start.row;
@@ -21,84 +15,88 @@ export default function aStar(input) {
   const endCol = end.col;
 
   if (isBidirection) {
-    // let visitedNodesA = [];
-    // let visitedNodesB = [];
-    // start.g = 0;
-    // end.g = 0;
-    // start.f = 0;
-    // end.f = 0;
-    // let openA = [start];
-    // let openB = [end];
-    // while (!!openA && !!openB) {
-    //   openA.sort((a, b) => a.f - b.f);
-    //   let node = openA.shift();
-    //   // changeClassName(dark, node, "bg-red-500");
-    //   visitedNodesA.push(node);
-    //   let neighbors = getNeighbours(grid, node, allowDiagonal).filter(
-    //     (e) => !e.isWall && !visitedNodesA.includes(e)
-    //   );
-    //   for (let neighbor of neighbors) {
-    //     if (visitedNodesB.includes(neighbor)) {
-    //       console.log("doneA");
-    //       return {
-    //         visitedNodes: toOrderedList(visitedNodesA, visitedNodesB),
-    //         shortestPath: getPath(node).concat(getPath(neighbor).reverse()),
-    //       };
-    //     }
-    //     let tempG = node.g + distance(node, neighbor) + neighbor.weight;
-    //     if (
-    //       tempG < neighbor.g ||
-    //       !openA.includes(neighbor) ||
-    //       !openB.includes(neighbor)
-    //     ) {
-    //       neighbor.g = tempG;
-    //       const dx = Math.abs(neighbor.col - endCol);
-    //       const dy = Math.abs(neighbor.row - endRow);
-    //       neighbor.f = tempG + Heuristic[heuristic](dx, dy);
-    //       if (!openA.includes(neighbor)) {
-    //         if (neighbor.previous === null) {
-    //           neighbor.previous = node;
-    //         }
-    //         openA.push(neighbor);
-    //       }
-    //     }
-    //   }
-    //   openB.sort((a, b) => a.f - b.f);
-    //   node = openB.shift();
-    //   // changeClassName(dark, node, "bg-green-500");
-    //   visitedNodesB.push(node);
-    //   neighbors = getNeighbours(grid, node, allowDiagonal).filter(
-    //     (e) => !e.isWall && !visitedNodesB.includes(e)
-    //   );
-    //   for (let neighbor of neighbors) {
-    //     if (visitedNodesA.includes(neighbor)) {
-    //       console.log("doneB");
-    //       return {
-    //         visitedNodes: toOrderedList(visitedNodesA, visitedNodesB),
-    //         shortestPath: getPath(neighbor).concat(getPath(node).reverse()),
-    //       };
-    //     }
-    //     let tempG = node.g + distance(node, neighbor) + neighbor.weight;
-    //     if (
-    //       tempG < neighbor.g ||
-    //       !openA.includes(neighbor) ||
-    //       !openB.includes(neighbor)
-    //     ) {
-    //       neighbor.g = tempG;
-    //       const dx = Math.abs(neighbor.col - startCol);
-    //       const dy = Math.abs(neighbor.row - startRow);
-    //       neighbor.f = tempG + Heuristic[heuristic](dx, dy);
-    //       if (!openB.includes(neighbor)) {
-    //         if (neighbor.previous === null) {
-    //           neighbor.previous = node;
-    //         }
-    //         openB.push(neighbor);
-    //       }
-    //     }
-    //   }
-    // }
-
-    return { shortestPath: [], visitedNodes: [] };
+    let visitedNodesA = [];
+    let visitedNodesB = [];
+    start.g = 0;
+    end.g = 0;
+    start.f = 0;
+    end.f = 0;
+    let openA = [start];
+    let openB = [end];
+    while (openA.length!==0 || openB.length!==0) {
+      let node, neighbors;
+      openA.sort((a, b) => a.f - b.f);
+      node = openA.shift();
+      if (node){
+        visitedNodesA.push(node);
+        let neighbors = getNeighbours(grid, node, allowDiagonal).filter(
+          (e) => !e.isWall && !visitedNodesA.includes(e) 
+        );
+        for (let neighbor of neighbors) {
+          if (visitedNodesB.includes(neighbor)) {
+            let visitedNodes = visitedNodesA.concat(visitedNodesB);
+            visitedNodes.sort((a,b)=>a.g-b.g);
+            return {
+              visitedNodes,
+              shortestPath: getPath(node).concat(getPath(neighbor).reverse()),
+            };
+          }
+          let tempG = node.g + distance(node, neighbor) + neighbor.weight;
+          if (
+            tempG < neighbor.g ||
+            !openA.includes(neighbor) ||
+            !openB.includes(neighbor)
+          ) {
+            neighbor.g = tempG;
+            const dx = Math.abs(neighbor.col - endCol);
+            const dy = Math.abs(neighbor.row - endRow);
+            neighbor.f = tempG + Heuristic[heuristic](dx, dy);
+            neighbor.previous = node;
+            if (!openA.includes(neighbor)) {
+              openA.push(neighbor);
+              visitedNodesA.push(neighbor);
+            }
+          }
+        }
+      }
+      openB.sort((a, b) => a.f - b.f);
+      node = openB.shift();
+      if (node){
+        visitedNodesB.push(node);
+        neighbors = getNeighbours(grid, node, allowDiagonal).filter(
+          (e) => !e.isWall && !visitedNodesB.includes(e)
+        );
+        for (let neighbor of neighbors) {
+          if (visitedNodesA.includes(neighbor)) {
+            let visitedNodes = visitedNodesA.concat(visitedNodesB);
+            visitedNodes.sort((a,b)=>a.g-b.g);
+            return {
+              visitedNodes,
+              shortestPath: getPath(neighbor).concat(getPath(node).reverse()),
+            };
+          }
+          let tempG = node.g + distance(node, neighbor) + neighbor.weight;
+          if (
+            tempG < neighbor.g ||
+            !openA.includes(neighbor) ||
+            !openB.includes(neighbor)
+          ) {
+            neighbor.g = tempG;
+            const dx = Math.abs(neighbor.col - startCol);
+            const dy = Math.abs(neighbor.row - startRow);
+            neighbor.f = tempG + Heuristic[heuristic](dx, dy);
+            neighbor.previous = node;
+            if (!openB.includes(neighbor)) {
+              openB.push(neighbor);
+              visitedNodesB.push(neighbor);
+            }
+          }
+        }
+      }
+    }
+    let visitedNodes = visitedNodesA.concat(visitedNodesB);
+    visitedNodes.sort((a,b)=>a.f-b.f);
+    return { shortestPath: [], visitedNodes };
   }
 
   let visitedNodes = [];
@@ -110,7 +108,7 @@ export default function aStar(input) {
     openSet.sort((a, b) => a.f - b.f);
     let current = openSet.shift();
     if (current.isEnd) {
-      return { visitedNodes, shortestPath: getPath(current) };
+      return { visitedNodes, shortestPath: getPath(current, false) };
     }
     visitedNodes.push(current);
     let neighbors = getNeighbours(grid, current, allowDiagonal).filter(
@@ -126,6 +124,7 @@ export default function aStar(input) {
         neighbor.previous = current;
         if (!openSet.includes(neighbor)) {
           openSet.push(neighbor);
+          visitedNodes.push(neighbor);
         }
       }
     }

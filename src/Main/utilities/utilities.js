@@ -121,7 +121,6 @@ export const visualize = async (
 ) => {
   const input = { start, end, grid, isBidirection, allowDiagonal, heuristic };
   const res = getAlgoResult[algorithm](input);
-  console.log(res);
   const n = res.visitedNodes.length;
   const m = res.shortestPath.length;
   for (let i = 0; i < n; ++i) {
@@ -213,34 +212,23 @@ export const distance = (nodeA, nodeB) =>{
   return Math.sqrt(Math.pow(Acol - Bcol, 2) + Math.pow(Arow - Brow, 2));
 }
 
-export const getPath = (node) =>{
-  if (node===undefined){
-    return [];
-  }
+export const getPath = (node, isBidirection=true) =>{
   let path = [];
   let temp = node;
+  if ((temp.isEnd || temp.isStart)&&(!isBidirection)){
+    temp = temp.previous;
+  }
   while (temp.previous !== null) {
+    if (isBidirection){
+      if (temp.isStart){
+        return path;
+      }
+      if (temp.isEnd){
+        return path;
+      }
+    }
     path.unshift(temp);
     temp = temp.previous;
   }
   return path;
-}
-
-export const toOrderedList = (l1, l2) => {
-  let res = []
-  while (l1.length!==0 && l2.length!==0){
-    const x = l1.shift();
-    const y = l2.shift();
-    res.push(x);
-    res.push(y);
-  }
-  while (l1.length!==0){
-    const x = l1.shift();
-    res.push(x);
-  }
-  while (l2.length!==0){
-    const y = l2.shift();
-    res.push(y);
-  }
-  return res;
 }

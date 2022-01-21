@@ -10,12 +10,12 @@ const Result = (props) => {
         alignItems="center"
         sx={{ py: 1 }}
       >
-        <Grid item xs={1}>
-          <b>Number of Steps:</b> <br />
+        <Grid item>
+          <b>Number of Steps:</b>
           <div id="no-of-steps">{props.steps}</div>
         </Grid>
-        <Grid item xs={1}>
-          <b>Length of Path:</b> <br />
+        <Grid item>
+          <b>Length of Path:</b>
           <div id="path-length">{props.pathLength}</div>
         </Grid>
       </Grid>

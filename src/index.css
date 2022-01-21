@@ -4,19 +4,12 @@
 
 :root {
   --max-col: 65;
-  --max-row: 29;
-  --node-size: 3vh;
+  --max-row: 27;
   --node-start-row: 15;
   --node-start-col: 14;
   --node-end-row: 15;
   --node-end-col: 50;
 }
-
-.node {
-  height: var(--node-size);
-  width: var(--node-size);
-}
-
 .fade-in {
   animation: in;
   animation-duration: 0.2s;
@@ -29,6 +22,13 @@
   100% {
     opacity: 1;
   }
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
 body {

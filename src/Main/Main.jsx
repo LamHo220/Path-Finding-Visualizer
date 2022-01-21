@@ -24,16 +24,20 @@ const Main = (props) => {
     setHeuristic("Euclidean");
   }, [allowDiagonal]);
 
+  
   const handleSlice = (event) => {
     let value = event.target.value;
     setTimeRatio(value);
   };
-
+  
   const theme = createTheme({
     palette: {
       mode: darkMode ? "dark" : "light",
     },
   });
+  useEffect(()=>{
+    document.body.style.backgroundColor = theme.palette.background.default
+  }, [darkMode])
 
   return (
     <ThemeProvider theme={theme}>
