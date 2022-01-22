@@ -1,21 +1,46 @@
 import { rand, changeClassName, delay } from "../../utilities/utilities";
 import { rowDir, colDir } from "../../Constants/Constants";
 
+/**
+ * The time to be waited.
+ */
 var deltaTime;
 
+/**
+ * A function to generate a maze by Randomized Prim's algorithm.
+ * @param {Object} input The input of the algorithm.
+ * @param {Array<Array<Object>>} input.grid The grid to be used.
+ * @param {Number} input.maxRow The maximum row of the grid.
+ * @param {Number} input.maxCol The maximum column of the grid.
+ * @param {Number} input.timeRatio The thime to be waited.
+ * @param {Boolean} input.dark Whether currently is dark mode or not.
+ */
 const PrimMaze = async (input) => {
-  const { dark, grid, maxRow, maxCol, duration } = input;
-  deltaTime = duration;
+  const { dark, grid, maxRow, maxCol, timeRatio } = input;
+  deltaTime = timeRatio;
+
+  // the algorithm looped at least one time.
   let isStarted = false;
+
+  // get a random node.
   let row = Math.floor(rand(maxRow / 3, maxRow - 2) / 2) * 2 + 1;
   let col = Math.floor(rand(maxCol / 2, maxCol - 2) / 2) * 2 + 1;
-  let pretendNodes = [grid[row][col]];
-  while (!!pretendNodes.length) {
-    let current = pretendNodes[rand(0, pretendNodes.length - 1)];
+
+  // initialize the queue.
+  let queue = [grid[row][col]];
+
+  // loop until the queue is empty.
+  while (!!queue.length) {
+    // randomly get a node from queue and remove it from queue.
+    let current = queue[rand(0, queue.length - 1)];
+    queue = queue.filter((e) => e !== current);
+
+    // if the algorithm looped at least one time,
+    // connect two nodes.
     if (isStarted) {
       await connectTwoNode(dark, grid, current, maxRow, maxCol);
     }
-    pretendNodes = pretendNodes.filter((e) => e !== current);
+
     let crow = current.row;
     let ccol = current.col;
     if (!(current.isStart || current.isEnd)) {
@@ -24,19 +49,32 @@ const PrimMaze = async (input) => {
       }
       changeClassName(dark, grid[crow][ccol]);
       await delay(deltaTime);
+
+      // get the allowed direction of current.
       let dir = await getPrimDir(dark, grid, current, maxRow, maxCol);
       if (dir.length !== 0) {
         for (let direction of dir) {
           let col = ccol + colDir[direction] * 2;
           let row = crow + rowDir[direction] * 2;
-          pretendNodes.push(grid[row][col]);
+
+          // add new node to queue
+          queue.push(grid[row][col]);
         }
       }
     }
+    // the algorithm looped at least once.
     isStarted = true;
   }
 };
 
+/**
+ * A function to connect two node of the grid.
+ * @param {Boolean} dark Whether currently is dark mode or not.
+ * @param {Array<Array<Object>>} grid The grid to be cleaned.
+ * @param {Object} toNode The node to be connected.
+ * @param {Number} maxRow The maximum row of the grid.
+ * @param {Number} maxCol The maximum column of the grid.
+ */
 const connectTwoNode = async (dark, grid, toNode, maxRow, maxCol) => {
   let toRow = toNode.row;
   let toCol = toNode.col;
@@ -94,6 +132,15 @@ const connectTwoNode = async (dark, grid, toNode, maxRow, maxCol) => {
   }
 };
 
+/**
+ * A function to get the direction that the node can be connected.
+ * @param {Boolean} dark Whether currently is dark mode or not.
+ * @param {Array<Array<Object>>} grid The grid to be cleaned.
+ * @param {Object} node The node to be connected.
+ * @param {Number} maxRow The maximum row of the grid.
+ * @param {Number} maxCol The maximum column of the grid.
+ * @returns {Array<Object>} The direction that the node can be connected.
+ */
 const getPrimDir = async (dark, grid, node, maxRow, maxCol) => {
   let row = node.row;
   let col = node.col;

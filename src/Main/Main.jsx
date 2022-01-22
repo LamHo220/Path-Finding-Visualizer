@@ -5,6 +5,7 @@ import Result from "./Result";
 import { Paper, createTheme, ThemeProvider } from "@mui/material";
 
 const Main = (props) => {
+  // initialize the state
   const [steps, setSteps] = useState(0);
   const [pathLength, setPathLength] = useState(0);
   const [allowDiagonal, setAllowDiagonal] = useState(false);
@@ -20,24 +21,31 @@ const Main = (props) => {
   const [isWeighted, setIsWeighted] = useState(false);
   const [isBidirection, setIsBidirection] = useState(true);
 
+  // if allowDiagonal changes, set the heuristic to "Euclidean".
   useEffect(() => {
     setHeuristic("Euclidean");
   }, [allowDiagonal]);
 
-  
+  /**
+   * Hanlder of when slice value change update the time ratio.
+   * @param {Event} event the event.
+   */
   const handleSlice = (event) => {
     let value = event.target.value;
     setTimeRatio(value);
   };
-  
+
+  // the theme of the GUI.
   const theme = createTheme({
     palette: {
       mode: darkMode ? "dark" : "light",
     },
   });
-  useEffect(()=>{
-    document.body.style.backgroundColor = theme.palette.background.default
-  }, [darkMode])
+
+  // if darkMode changes, change the background color of html.
+  useEffect(() => {
+    document.body.style.backgroundColor = theme.palette.background.default;
+  }, [darkMode]);
 
   return (
     <ThemeProvider theme={theme}>

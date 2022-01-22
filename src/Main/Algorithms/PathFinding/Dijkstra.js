@@ -1,123 +1,238 @@
-import { getNeighbours, distance, getPath } from "../../utilities/utilities";
+import {
+  getNeighbours,
+  distance,
+  getPath,
+  getPathBi,
+  getVisitedNodesBi,
+} from "../../utilities/utilities";
 
 /**
- * A greedy algorithm to find the shortest path.
- * @param {Object} start - the start node
- * @returns {Object} - an object that contains: visitedNodes and shortestPath
+ * A star algorithm, a famous path finding algorithm.
+ * @author LamHo220 <https://github.com/LamHo220>
+ * @param {Object} input The input arguments.
+ * @param {Object} input.start The start node.
+ * @param {Object} input.end The end node.
+ * @param {Array<Array<Object>>} input.grid The grid to be used.
+ * @param {Boolean} input.isBidirection Whether the function is bi-direction.
+ * @param {Boolean} input.allowDiagonal Whether diagonal movement is allowed.
+ * @param {String} input.heuristic The selected heuristic.
+ * @returns {Object} The array of visited nodes and the array of shortest path of a star
  */
 export default function dijkstra(input) {
-  const { grid, allowDiagonal, isBidirection, start, end} = input;
+  const { grid, allowDiagonal, isBidirection, start, end } = input;
 
+  // get the unvisited nodes.
   let unvisitedNodes = grid
-  .flat()
-  .filter((e) => !e.isWall)
-  .map((e) => {
-    e.f = Infinity;
-    return e;
-  });
+    .flat()
+    .filter((e) => !e.isWall)
+    .map((e) => {
+      e.f = Infinity;
+      return e;
+    });
 
-  let visitedNodes=[];
-  if (isBidirection){
-    start.f=0;
-    end.f = 0
-    let unvisitedNodesA = [start];
-    let unvisitedNodesB = [end];
-    let visitedNodesA = [];
-    let visitedNodesB = [];
-    let neighbors, curA, curB;
-    while (unvisitedNodesA.length!==0 || unvisitedNodesB.length!==0){
-      unvisitedNodesA.sort((a,b)=>a.f-b.f);
-      curA = unvisitedNodesA.shift();
-      if (curA){
-        neighbors = getNeighbours(grid, curA,allowDiagonal).filter(e=>
-        !e.isWall && !visitedNodesA.includes(e)
-        )
-        visitedNodesA.push(curA);
+  // initial the visited nodes.
+  let visitedNodes = [];
+
+  // start's f is 0 initially.
+  start.f = 0;
+
+  let neighbors, tempF;
+
+  // if the algorithm is bi-direction.
+  if (isBidirection) {
+    // end's f is 0 initially.
+    end.f = 0;
+
+    // initial the unvisited nodes of start and end.
+    let unvisitedNodesFromStart = [start];
+    let unvisitedNodesFromEnd = [end];
+    let visitedNodesFromStart = [];
+    let visitedNodesFromEnd = [];
+    let curA, curB;
+
+    // while one of them is not empty
+    while (
+      unvisitedNodesFromStart.length !== 0 ||
+      unvisitedNodesFromEnd.length !== 0
+    ) {
+      // sort the unvisited nodes
+      unvisitedNodesFromStart.sort((a, b) => a.f - b.f);
+
+      // get the node with minimum f.
+      // and remove it from the unvisited nodes.
+      curA = unvisitedNodesFromStart.shift();
+
+      // if current is not undefined, we muse have neighbor(s).
+      if (curA) {
+        // get neighbors of current node and filter the wall nodes and visitednodes that start from start node.
+        neighbors = getNeighbours(grid, curA, allowDiagonal).filter(
+          (e) => !e.isWall && !visitedNodesFromStart.includes(e)
+        );
+
+        // current node is visited from start node.
+        visitedNodesFromStart.push(curA);
+
+        // do the following for each neighbor:
         for (let neighbor of neighbors) {
-          if (visitedNodesB.includes(neighbor)){
-            visitedNodes = visitedNodesA
-                            .map((e,i)=>{
-                              return [e,i];
-                            })
-                            .concat(visitedNodesB
-                                    .map((e,i)=>{
-                                      return [e,i];
-                                    })
-                            );
-            visitedNodes.sort((a,b)=>a[1]-b[1]);
-            visitedNodes = visitedNodes.map(e=>{
-              return e[0];
-            })
-            return {shortestPath:getPath(curA).concat(getPath(neighbor).reverse()), 
-              visitedNodes};
+          // if neighbor already visited in end unvisited nodes.,
+          // return the visited node and shortest path.
+          if (visitedNodesFromEnd.includes(neighbor)) {
+            return {
+              // get the shortest path.
+              shortestPath: getPathBi(curA, neighbor),
+
+              // get the visited nodes in order.
+              visitedNodes: getVisitedNodesBi(
+                visitedNodesFromStart.map((e, i) => {
+                  return [e, i];
+                }),
+                visitedNodesFromEnd.map((e, i) => {
+                  return [e, i];
+                }),
+                (a, b) => a[1] - b[1]
+              ).map((e) => {
+                return e[0];
+              }),
+            };
           }
-          const temp = curA.f + neighbor.weight + distance(curA, neighbor);
-          if (temp < neighbor.f) {
-            neighbor.f = temp;
+
+          // calculate the potential f of this neighbor
+          tempF = curA.f + neighbor.weight + distance(curA, neighbor);
+
+          // do if the potential f is smaller then the current f
+          if (tempF < neighbor.f) {
+            // set neighbor's f to this f.
+            neighbor.f = tempF;
+
+            // set the neighbor's previous to current node.
             neighbor.previous = curA;
           }
-          if (!unvisitedNodesA.includes(neighbor)){
-            unvisitedNodesA.push(neighbor);
-            visitedNodesA.push(neighbor);
+
+          // add the neighbor to the unvisited nodes
+          // if it have not been the current node yet.
+          if (!unvisitedNodesFromStart.includes(neighbor)) {
+            unvisitedNodesFromStart.push(neighbor);
+            visitedNodesFromStart.push(neighbor);
           }
         }
       }
 
-      unvisitedNodesB.sort((a,b)=>a.f-b.f);
-      curB = unvisitedNodesB.shift();
-      if (curB){
-        neighbors = getNeighbours(grid, curB,allowDiagonal).filter(e=>
-          !e.isWall && !visitedNodesB.includes(e)
-        )
-        visitedNodesB.push(curB);
+      // sort the unvisited nodes
+      unvisitedNodesFromEnd.sort((a, b) => a.f - b.f);
+
+      // get the node with minimum f.
+      // and remove it from the unvisited nodes.
+      curB = unvisitedNodesFromEnd.shift();
+
+      // if current is not undefined, we muse have neighbor(s).
+      if (curB) {
+        // get neighbors of current node and filter the wall nodes and visitednodes that start from start node.
+        neighbors = getNeighbours(grid, curB, allowDiagonal).filter(
+          (e) => !e.isWall && !visitedNodesFromEnd.includes(e)
+        );
+
+        // current node is visited from start node.
+        visitedNodesFromEnd.push(curB);
+
+        // do the following for each neighbor:
         for (let neighbor of neighbors) {
-          if (visitedNodesA.includes(neighbor)){
-            visitedNodes = visitedNodesA
-                            .map((e,i)=>{
-                              return [e,i];
-                            })
-                            .concat(visitedNodesB
-                                    .map((e,i)=>{
-                                      return [e,i];
-                                    })
-                            );
-            visitedNodes.sort((a,b)=>a[1]-b[1]);
-            visitedNodes = visitedNodes.map(e=>{
-              return e[0];
-            });
-            return {shortestPath:getPath(neighbor).concat(getPath(curB).reverse()), 
-              visitedNodes}
+          // if neighbor already visited in end unvisited nodes.,
+          // return the visited node and shortest path.
+          if (visitedNodesFromStart.includes(neighbor)) {
+            return {
+              // get the shortest path.
+              shortestPath: getPathBi(neighbor, curB),
+
+              // get the visited nodes in order.
+              visitedNodes: getVisitedNodesBi(
+                visitedNodesFromStart.map((e, i) => {
+                  return [e, i];
+                }),
+                visitedNodesFromEnd.map((e, i) => {
+                  return [e, i];
+                }),
+                (a, b) => a[1] - b[1]
+              ).map((e) => {
+                return e[0];
+              }),
+            };
           }
-          const temp = curB.f + neighbor.weight + distance(curB, neighbor);
-          if (temp < neighbor.f) {
-            neighbor.f = temp;
+
+          // calculate the potential f of this neighbor
+          tempF = curB.f + neighbor.weight + distance(curB, neighbor);
+
+          // do if the potential f is smaller then the current f
+          if (tempF < neighbor.f) {
+            // set neighbor's f to this f.
+            neighbor.f = tempF;
+
+            // set the neighbor's previous to current node.
             neighbor.previous = curB;
           }
-          if (!unvisitedNodesB.includes(neighbor)){
-            unvisitedNodesB.push(neighbor);
-            visitedNodesB.push(neighbor);
+
+          // add the neighbor to the unvisited nodes
+          // if it have not been the current node yet.
+          if (!unvisitedNodesFromEnd.includes(neighbor)) {
+            unvisitedNodesFromEnd.push(neighbor);
+            visitedNodesFromEnd.push(neighbor);
           }
         }
       }
     }
-    return {visitedNodes:[], shortestPath:[]};
+
+    // return because we cannot reach the end node.
+    return {
+      visitedNodes: getVisitedNodesBi(
+        visitedNodesFromStart.map((e, i) => {
+          return [e, i];
+        }),
+        visitedNodesFromEnd.map((e, i) => {
+          return [e, i];
+        }),
+        (a, b) => a[1] - b[1]
+      ).map((e) => {
+        return e[0];
+      }),
+      shortestPath: [],
+    };
   }
-  start.f = 0;
+  let current;
+  // while unvisitedNodes is not empty
   while (!!unvisitedNodes) {
+    // sort the unvisited nodes
     unvisitedNodes.sort((a, b) => a.f - b.f);
-    let current = unvisitedNodes.shift();
+
+    // get the node with minimum f.
+    // and remove it from the unvisited nodes.
+    current = unvisitedNodes.shift();
+
+    // if current is the end node, return result.
     if (current.isEnd) {
       return { visitedNodes, shortestPath: getPath(current, false) };
     }
-    let neighbors = getNeighbours(grid, current, allowDiagonal).filter(e=>!visitedNodes.includes(e));
+
+    // get neighbors of current node and filter the visitednodes that start from start node.
+    neighbors = getNeighbours(grid, current, allowDiagonal).filter(
+      (e) => !visitedNodes.includes(e)
+    );
+
+    // do the following for each neighbor:
     for (let neighbor of neighbors) {
-      const temp = current.f + neighbor.weight + distance(current, neighbor);
-      if (temp < neighbor.f) {
-        neighbor.f = temp;
+      // calculate the potential f of this neighbor
+      tempF = current.f + neighbor.weight + distance(current, neighbor);
+      // do if the potential f is smaller then the current f
+      if (tempF < neighbor.f) {
+        // set neighbor's f to this f.
+        neighbor.f = tempF;
+
+        // set the neighbor's previous to current node.
         neighbor.previous = current;
       }
     }
+
+    // current node is visited.
     visitedNodes.push(current);
   }
+  // return because we cannot reach the end node.
   return { visitedNodes, shortestPath: [] };
 }

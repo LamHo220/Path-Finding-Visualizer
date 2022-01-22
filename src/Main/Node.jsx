@@ -1,5 +1,20 @@
 import React from "react";
 
+/**
+ * A component of node.
+ * @param {Object} props The props of this component.
+ * @param {String} props.id The id of the node.
+ * @param {Boolean} props.isStart Whether this node is a start node or not
+ * @param {Boolean} props.isEnd Whether this node is a end node or not
+ * @param {Boolean} props.isWall Whether this node is a wall node or not
+ * @param {Number} props.row The row of this node.
+ * @param {Number} props.col The column of this node.
+ * @param {Function} props.onMouseDown The mouse down event.
+ * @param {Function} props.onMouseEnter The mouse enter event.
+ * @param {Function} props.onMouseUp The mouse up event.
+ * @param {Boolean} props.dark Whether currently is dark mode or node.
+ * @returns {JSX.Element} A node in a grid.
+ */
 const Node = (props) => {
   const {
     id,

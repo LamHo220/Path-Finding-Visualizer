@@ -1,3 +1,6 @@
+/**
+ * Export a object that contains the heuristic functions.
+ */
 export default {
   Manhattan: (dx, dy) => {
     return dx + dy;

@@ -6,6 +6,15 @@ import Kruskal from "./Kruskal";
 import RecursiveDivisionMaze from "./RecursiveDivision";
 import RecursiveBacktrackingMaze from "./RecursiveBacktracking";
 
+/**
+ * A function to reverse the grid
+ * @param {Object} input The input of the function.
+ * @param {Array<Array<Object>>} input.grid The grid to be used.
+ * @param {Boolean} input.dark Whether currently is dark mode or not.
+ * @param {Number} input.maxRow The maximum row of the grid.
+ * @param {Number} input.maxCol The maximum column of the grid.
+ * @param {Number} input.timeRatio The time to be waited.
+ */
 const Reverse = async (input) => {
   const {dark, grid, maxRow, maxCol, timeRatio} = input
   for (let row = 0; row < maxRow; ++row) {
@@ -22,6 +31,15 @@ const Reverse = async (input) => {
   await delay(Math.max(timeRatio, 30) * (maxRow + maxCol));
 };
 
+/**
+ * A function to add boundary wall to the grid.
+ * @param {Object} input The input of the function.
+ * @param {Array<Array<Object>>} input.grid The grid to be used.
+ * @param {Boolean} input.dark Whether currently is dark mode or not.
+ * @param {Number} input.maxRow The maximum row of the grid.
+ * @param {Number} input.maxCol The maximum column of the grid.
+ * @param {Number} input.timeRatio The time to be waited.
+ */
 const Boundary = async (input) => {
   const {dark, grid, maxRow, maxCol, timeRatio} = input
   for (let i = 0; i < maxRow; ++i) {
@@ -55,30 +73,33 @@ const Boundary = async (input) => {
   await delay(timeRatio * Math.max(maxRow, maxCol));
 };
 
+/**
+ * export a object that contains the maze generating algorithm
+ */
 export default {
-  RecursiveBacktrackingMaze: async (input) => {
+  "Recursive Backtracking": async (input) => {
     await NoWalls(input);
     await Reverse(input);
     await RecursiveBacktrackingMaze(input);
   },
-  RecursiveDivisionMaze: async (input) => {
+  "Recursive Division": async (input) => {
     await NoWalls(input);
     await Boundary(input);
     await RecursiveDivisionMaze(input);
   },
-  PrimMaze: async (input) => {
+  "Prim's Algorithm": async (input) => {
     await NoWalls(input);
     await Reverse(input);
     await PrimMaze(input);
   },
-  SimpleRandomWalls: async (input) => {
+  "Simple Random Walls": async (input) => {
     await NoWalls(input);
     SimpleRandomWalls(input);
   },
-  Kruskal: async (input) => {
+  "Kruskal's Algorithm": async (input) => {
     await NoWalls(input);
     await Boundary(input);
     await Kruskal(input);
   },
-  NoWalls: NoWalls,
+  "No Walls": NoWalls,
 };

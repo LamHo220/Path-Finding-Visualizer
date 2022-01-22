@@ -3,125 +3,237 @@ import {
   getNeighbours,
   distance,
   getPath,
+  getPathBi,
+  getVisitedNodesBi,
 } from "../../utilities/utilities";
 
+/**
+ * A star algorithm, a famous path finding algorithm.
+ * @author LamHo220 <https://github.com/LamHo220>
+ * @param {Object} input The input arguments.
+ * @param {Object} input.start The start node.
+ * @param {Object} input.end The end node.
+ * @param {Array<Array<Object>>} input.grid The grid to be used.
+ * @param {Boolean} input.allowDiagonal Whether diagonal movement is allowed.
+ * @param {Boolean} input.isBidirection Whether the function is bi-direction.
+ * @param {String} input.heuristic The selected heuristic.
+ * @returns {Object} The array of visited nodes and the array of shortest path of a star
+ */
 export default function aStar(input) {
-  const { start, end, grid, isBidirection, allowDiagonal, heuristic } =
-    input;
+  const { start, end, grid, isBidirection, allowDiagonal, heuristic } = input;
 
   const startRow = start.row;
   const startCol = start.col;
   const endRow = end.row;
   const endCol = end.col;
 
+  // dx and dy are used for calculating initial heuristic of start and end.
+  const dx = Math.abs(startCol - endCol);
+  const dy = Math.abs(startRow - endRow);
+
+  // initial the current node and the neighbors of current node.
+  let current, neighborsOfCurrent, tempG;
+
+  // if this is bidirection, do this
   if (isBidirection) {
-    let visitedNodesA = [];
-    let visitedNodesB = [];
+    // the visited nodes started from start node and end node.
+    let visitedNodesFromStart = [];
+    let visitedNodesFromEnd = [];
+
+    // the open set started from start node.
+    // initially, f = g + h = h.
     start.g = 0;
+    start.f = Heuristic[heuristic](dx, dy);
+    let startOpenSet = [start];
+
+    // the open set started from end node.
+    // initially, f = g + h = h.
     end.g = 0;
-    start.f = 0;
-    end.f = 0;
-    let openA = [start];
-    let openB = [end];
-    while (openA.length!==0 || openB.length!==0) {
-      let node, neighbors;
-      openA.sort((a, b) => a.f - b.f);
-      node = openA.shift();
-      if (node){
-        visitedNodesA.push(node);
-        let neighbors = getNeighbours(grid, node, allowDiagonal).filter(
-          (e) => !e.isWall && !visitedNodesA.includes(e) 
+    end.f = Heuristic[heuristic](dx, dy);
+    let endOpenSet = [end];
+
+    // loop untill two open set are empty.
+    while (startOpenSet.length !== 0 || endOpenSet.length !== 0) {
+      // sort the start open set
+      startOpenSet.sort((a, b) => a.f - b.f);
+
+      // get the current node with the minimum f in statr open set.
+      // and remove it from the open set
+      current = startOpenSet.shift();
+
+      // if current is not undefined, we muse have neighbor(s).
+      if (current) {
+        // current node is came from start node.
+        visitedNodesFromStart.push(current);
+
+        // get neighbors of current node and filter the wall and visitednodes that start from start node.
+        neighborsOfCurrent = getNeighbours(grid, current, allowDiagonal).filter(
+          (e) => !e.isWall && !visitedNodesFromStart.includes(e)
         );
-        for (let neighbor of neighbors) {
-          if (visitedNodesB.includes(neighbor)) {
-            let visitedNodes = visitedNodesA.concat(visitedNodesB);
-            visitedNodes.sort((a,b)=>a.g-b.g);
+
+        // do the following for each neighbor:
+        for (let neighbor of neighborsOfCurrent) {
+          // if neighbor already visited in end open set,
+          // return the visited node and shortest path.
+          if (visitedNodesFromEnd.includes(neighbor)) {
             return {
-              visitedNodes,
-              shortestPath: getPath(node).concat(getPath(neighbor).reverse()),
+              // get the visited nodes in order.
+              visitedNodes: getVisitedNodesBi(
+                visitedNodesFromStart,
+                visitedNodesFromEnd,
+                (a, b) => a.g - b.g
+              ),
+
+              // get the shortest path.
+              shortestPath: getPathBi(current, neighbor),
             };
           }
-          let tempG = node.g + distance(node, neighbor) + neighbor.weight;
+
+          // calculate the potential g.
+          tempG = current.g + distance(current, neighbor);
+
+          // check if g is smaller than current g of neighbor or not in open set.
           if (
             tempG < neighbor.g ||
-            !openA.includes(neighbor) ||
-            !openB.includes(neighbor)
+            !startOpenSet.includes(neighbor) ||
+            !endOpenSet.includes(neighbor)
           ) {
+            // set neighbor's g to this g.
             neighbor.g = tempG;
+
+            // update the neighbor's f.
             const dx = Math.abs(neighbor.col - endCol);
             const dy = Math.abs(neighbor.row - endRow);
-            neighbor.f = tempG + Heuristic[heuristic](dx, dy);
-            neighbor.previous = node;
-            if (!openA.includes(neighbor)) {
-              openA.push(neighbor);
-              visitedNodesA.push(neighbor);
+            neighbor.f = tempG + Heuristic[heuristic](dx, dy) + neighbor.weight;
+
+            // set the neighbor's previous to current node.
+            neighbor.previous = current;
+
+            // add to open set if neighbor not in open set.
+            if (!startOpenSet.includes(neighbor)) {
+              startOpenSet.push(neighbor);
+              visitedNodesFromStart.push(neighbor);
             }
           }
         }
       }
-      openB.sort((a, b) => a.f - b.f);
-      node = openB.shift();
-      if (node){
-        visitedNodesB.push(node);
-        neighbors = getNeighbours(grid, node, allowDiagonal).filter(
-          (e) => !e.isWall && !visitedNodesB.includes(e)
+      // sort the end open set.
+      endOpenSet.sort((a, b) => a.f - b.f);
+
+      // get the current node with the minimum f in end open set.
+      // and remove it from the open set
+      current = endOpenSet.shift();
+
+      // if current is not undefined, we muse have neighbor(s).
+      if (current) {
+        // current node is came from end node.
+        visitedNodesFromEnd.push(current);
+
+        // get neighbors of current node and filter the wall and visitednodes that start from start node.
+        neighborsOfCurrent = getNeighbours(grid, current, allowDiagonal).filter(
+          (e) => !e.isWall && !visitedNodesFromEnd.includes(e)
         );
-        for (let neighbor of neighbors) {
-          if (visitedNodesA.includes(neighbor)) {
-            let visitedNodes = visitedNodesA.concat(visitedNodesB);
-            visitedNodes.sort((a,b)=>a.g-b.g);
+
+        // do the following for each neighbor:
+        for (let neighbor of neighborsOfCurrent) {
+          // if neighbor already visited in start open set,
+          // return the visited node and shortest path.
+          if (visitedNodesFromStart.includes(neighbor)) {
             return {
-              visitedNodes,
-              shortestPath: getPath(neighbor).concat(getPath(node).reverse()),
+              // get the visited nodes in order.
+              visitedNodes: getVisitedNodesBi(
+                visitedNodesFromStart,
+                visitedNodesFromEnd,
+                (a, b) => a.g - b.g
+              ),
+
+              // get the shortest path.
+              shortestPath: getPathBi(neighbor, current),
             };
           }
-          let tempG = node.g + distance(node, neighbor) + neighbor.weight;
+
+          // calculate the potential g.
+          tempG =  current.g + distance(current, neighbor);
           if (
             tempG < neighbor.g ||
-            !openA.includes(neighbor) ||
-            !openB.includes(neighbor)
+            !startOpenSet.includes(neighbor) ||
+            !endOpenSet.includes(neighbor)
           ) {
+            // set neighbor's g to this g.
             neighbor.g = tempG;
+
+            // update the neighbor's f.
             const dx = Math.abs(neighbor.col - startCol);
             const dy = Math.abs(neighbor.row - startRow);
-            neighbor.f = tempG + Heuristic[heuristic](dx, dy);
-            neighbor.previous = node;
-            if (!openB.includes(neighbor)) {
-              openB.push(neighbor);
-              visitedNodesB.push(neighbor);
+            neighbor.f = tempG + Heuristic[heuristic](dx, dy) + neighbor.weight;
+
+            // set the neighbor's previous to current node.
+            neighbor.previous = current;
+
+            // add to open set if neighbor not in open set.
+            if (!endOpenSet.includes(neighbor)) {
+              endOpenSet.push(neighbor);
+              visitedNodesFromEnd.push(neighbor);
             }
           }
         }
       }
     }
-    let visitedNodes = visitedNodesA.concat(visitedNodesB);
-    visitedNodes.sort((a,b)=>a.f-b.f);
+    // return because we cannot reach the end node.
+    let visitedNodes = visitedNodesFromStart.concat(visitedNodesFromEnd);
+    visitedNodes.sort((a, b) => a.f - b.f);
     return { shortestPath: [], visitedNodes };
   }
 
+  // the visited nodes to be returned.
   let visitedNodes = [];
-  let openSet = [start];
-  start.g = 0;
-  start.f = 0;
 
+  // the open set started from start node.
+  // initially, f = g + h = h.
+  start.g = 0;
+  start.f = Heuristic[heuristic](dx, dy);
+  let openSet = [start];
+
+  // loop untill open set is empty.
   while (!!openSet) {
+    // sort the open set
     openSet.sort((a, b) => a.f - b.f);
-    let current = openSet.shift();
+
+    // get the current node with the minimum f in open set.
+    current = openSet.shift();
+
+    // return the result if current is the end node.
     if (current.isEnd) {
       return { visitedNodes, shortestPath: getPath(current, false) };
     }
+
+    // current node is visited.
     visitedNodes.push(current);
-    let neighbors = getNeighbours(grid, current, allowDiagonal).filter(
+
+    // get neighbors of current node and filter the wall and visitednodes.
+    neighborsOfCurrent = getNeighbours(grid, current, allowDiagonal).filter(
       (e) => !visitedNodes.includes(e) && !e.isWall
     );
-    for (let neighbor of neighbors) {
-      let tempG = current.g + neighbor.weight + distance(current, neighbor);
+
+    // do the following for each neighbor:
+    for (let neighbor of neighborsOfCurrent) {
+      // calculate the potential g.
+      tempG = current.g + neighbor.weight + distance(current, neighbor);
+
+      // check if g is smaller than current g of neighbor or not in open set.
       if (tempG < neighbor.g || !openSet.includes(neighbor)) {
+        // set neighbor's g to this g.
         neighbor.g = tempG;
+
+        // update the neighbor's f.
         const dx = Math.abs(neighbor.col - endCol);
         const dy = Math.abs(neighbor.row - endRow);
         neighbor.f = tempG + Heuristic[heuristic](dx, dy);
+
+        // set the neighbor's previous to current.
         neighbor.previous = current;
+
+        // add to open set if neighbor not in open set.
         if (!openSet.includes(neighbor)) {
           openSet.push(neighbor);
           visitedNodes.push(neighbor);
@@ -129,5 +241,6 @@ export default function aStar(input) {
       }
     }
   }
+  // return because we cannot reach the end node.
   return { visitedNodes, shortestPath: [] };
 }
