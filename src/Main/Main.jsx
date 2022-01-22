@@ -4,6 +4,11 @@ import Head from "./Head";
 import Result from "./Result";
 import { Paper, createTheme, ThemeProvider } from "@mui/material";
 
+/**
+ * The main component of the GUI
+ * @param {Object} props The props of the component
+ * @returns The main component
+ */
 const Main = (props) => {
   // initialize the state
   const [steps, setSteps] = useState(0);

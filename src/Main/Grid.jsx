@@ -204,7 +204,7 @@ const Grid = (props) => {
         startNode,
         endNode,
         darkMode,
-        10 * timeRatio,
+        2 * timeRatio,
         isBidirection,
         allowDiagonal,
         heuristic
@@ -250,7 +250,7 @@ const Grid = (props) => {
         maxCol,
         start,
         end,
-        timeRatio: 10 * timeRatio,
+        timeRatio: 2 * timeRatio,
         density: 0.3,
       };
       await Mazes[pattern](input);
