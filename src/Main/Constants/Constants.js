@@ -32,3 +32,17 @@ export const patterns = [
   "Kruskal's Algorithm",
   "Recursive Backtracking",
 ];
+
+function Pause () {
+  this.flag = false;
+}
+
+Pause.prototype.setFlag = function (flag) {
+  this.flag = flag;
+}
+
+Pause.prototype.getFlag = function(){
+  return this.flag;
+}
+
+export var pause = (new Pause());

@@ -3,6 +3,7 @@ import Grid from "./Grid";
 import Head from "./Head";
 import Result from "./Result";
 import { Paper, createTheme, ThemeProvider } from "@mui/material";
+import Swal from "sweetalert2";
 
 /**
  * The main component of the GUI
@@ -24,7 +25,8 @@ const Main = (props) => {
   const [disable, setDisable] = useState(false);
   const [clearPath, setClearPath] = useState(false);
   const [isWeighted, setIsWeighted] = useState(false);
-  const [isBidirection, setIsBidirection] = useState(true);
+  const [isBidirection, setIsBidirection] = useState(false);
+  const [isTutorial, setIsTutorial] = useState(true);
 
   // if allowDiagonal changes, set the heuristic to "Euclidean".
   useEffect(() => {
@@ -52,10 +54,76 @@ const Main = (props) => {
     document.body.style.backgroundColor = theme.palette.background.default;
   }, [darkMode]);
 
+  // if pattern change, change the pattern back to "".
+  useEffect(() => {
+    if (pattern !== "") {
+      setPattern("");
+    }
+  }, [pattern]);
+
+  // if is tutorial is true, show the tutorial.
+  useEffect(() => {
+    // if true, open the tutorial.
+    if (isTutorial) {
+      Swal.fire({
+        title: "Tutorial",
+        text: "Left Click the Nodes to Change It to Wall or a Road!",
+        showDenyButton: true,
+        confirmButtonText: "Next",
+        denyButtonText: `Skip`,
+        color: theme.palette.primary.main,
+        background: theme.palette.background.default,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Tutorial",
+            text: "Left Click Start (blue) or End (red) Node to Move It!",
+            showDenyButton: true,
+            confirmButtonText: "Next",
+            denyButtonText: `Skip`,
+            color: theme.palette.primary.main,
+            background: theme.palette.background.default,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Tutorial",
+                text: "Left Click Start button to start, Pause button to pause and Cleaning Services to Clean the Path!",
+                showDenyButton: true,
+                confirmButtonText: "Next",
+                denyButtonText: `Skip`,
+                color: theme.palette.primary.main,
+                background: theme.palette.background.default,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  Swal.fire({
+                    title: "Tutorial",
+                    text: "In the menu, you can configurate the algorithm and grid",
+                    showDenyButton: true,
+                    confirmButtonText: "Next",
+                    denyButtonText: `Skip`,
+                    color: theme.palette.primary.main,
+                    background: theme.palette.background.default,
+                  });
+                } else {
+                  setIsTutorial(false);
+                }
+              });
+            } else {
+              setIsTutorial(false);
+            }
+          });
+        } else {
+          setIsTutorial(false);
+        }
+      });
+    }
+  }, [isTutorial]);
+
   return (
     <ThemeProvider theme={theme}>
       <Paper>
         <Head
+          theme={theme}
           disable={disable}
           algorithm={algorithm}
           allowDiagonal={allowDiagonal}
@@ -64,6 +132,7 @@ const Main = (props) => {
           isWeighted={isWeighted}
           pattern={pattern}
           isBidirection={isBidirection}
+          onIsTutorial={setIsTutorial}
           onStart={() => {
             setStart(!start);
             setDisable(!disable);

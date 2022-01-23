@@ -6,7 +6,7 @@ import {
   Slider,
   Box,
 } from "@mui/material";
-import { heuristics, algorithms, patterns } from "./Constants/Constants";
+import { heuristics, algorithms, patterns, pause } from "./Constants/Constants";
 import { useState } from "react";
 import { DrawerGroupButtons, DrawerTwoWaysButton, Setting } from "./Setting";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -15,10 +15,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
+import Swal from "sweetalert2";
 
 /**
  * A component of Head, which is an App bar.
  * @param {Object} props The props of this component.
+ * @param {Object} props.theme The current theme.
  * @param {Boolean} props.disable Whether the elements should be disabled.
  * @param {String} props.algorithm The props of this component.
  * @param {Boolean} props.allowDiagonal Whether we allow diagonal movements.
@@ -27,6 +29,7 @@ import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
  * @param {Boolean} props.isWeighted Whether the grid should be weighted.
  * @param {String} props.pattern The props of this component.
  * @param {Boolean} props.isBidirection Whether the algorithm should be bi-direction.
+ * @param {Function} props.onIsTutorial The function to change is Tutorial.
  * @param {Function} props.onStart The function to change start.
  * @param {Function} props.onStartMaze The function to change startMaze.
  * @param {Function} props.onHeuristic The function to change heuristic.
@@ -42,6 +45,7 @@ import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
  */
 const Head = (props) => {
   const {
+    theme,
     disable,
     algorithm,
     allowDiagonal,
@@ -50,6 +54,7 @@ const Head = (props) => {
     isWeighted,
     pattern,
     isBidirection,
+    onIsTutorial,
     onStart,
     onStartMaze,
     onHeuristic,
@@ -102,7 +107,23 @@ const Head = (props) => {
             edge="start"
             color="inherit"
             aria-label="pause"
-            onClick={() => window.alert("pused")}
+            onClick={() => {
+              // the pause alert
+              pause.setFlag(true);
+              Swal.mixin({
+                toast: true,
+                position: 'top',
+                showConfirmButton: true,
+              }).fire({
+                icon: 'info',
+                title: 'Paused',
+                confirmButtonText: 'Resume',
+                color: theme.palette.primary.main,
+                background: theme.palette.background.default,
+              }).then(()=>{
+                pause.setFlag(false);
+              })
+            }}
           >
             <PauseIcon />
           </IconButton>
@@ -145,7 +166,7 @@ const Head = (props) => {
           >
             <DarkModeOutlinedIcon />
           </IconButton>
-          
+
           {/* open the tutorial */}
           <IconButton
             disabled={disable}
@@ -153,7 +174,7 @@ const Head = (props) => {
             edge="start"
             color="inherit"
             aria-label="tutorial"
-            // onClick={() => tutorial()}
+            onClick={()=>onIsTutorial(true)}
           >
             <QuestionMarkIcon />
           </IconButton>

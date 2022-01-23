@@ -1,4 +1,5 @@
 import PathFinding from "../Algorithms/PathFinding/PathFinding";
+import { pause } from "../Constants/Constants";
 
 /**
  * A promise that delay for some ms.
@@ -186,6 +187,9 @@ export const visualize = async (
 
   // visualize the vistited nodes.
   for (let i = 0; i < n; ++i) {
+    while (pause.getFlag()){
+      await delay(10);
+    };
     const node = res.visitedNodes[i];
     if (!(node.isStart || node.isEnd)) {
       changeClassName(
@@ -200,6 +204,9 @@ export const visualize = async (
 
   // visualize the shortest path.
   for (let i = 0; i < m; ++i) {
+    while (pause.getFlag()){
+      await delay(10);
+    };
     const node = res.shortestPath[i];
     if (!(node.isStart || node.isEnd)) {
       changeClassName(
