@@ -33,16 +33,30 @@ export const patterns = [
   "Recursive Backtracking",
 ];
 
+/**
+ * A Object of pause.
+ */
 function Pause () {
   this.flag = false;
 }
 
+/**
+ * Set the flag to the input.
+ * @param {Boolean} flag 
+ */
 Pause.prototype.setFlag = function (flag) {
   this.flag = flag;
 }
 
+/**
+ * A function to get the value of flag
+ * @returns {Boolean} value of flag 
+ */
 Pause.prototype.getFlag = function(){
   return this.flag;
 }
 
+/**
+ * Export pause.
+ */
 export var pause = (new Pause());
