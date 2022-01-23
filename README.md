@@ -8,7 +8,7 @@ Currently, there are two algorithms that can be visualized:  A* and Dijkstra.
 - [Dijkstra](https://github.com/LamHo220/path-finding-visualizer/blob/main/src/Main/Algorithms/PathFinding/Dijkstra.js)
 
 ## Maze Generating Algorithms
-Currently, there are four maze generating algorithms that can be visualized:
+Currently, there are five maze generating algorithms that can be visualized:
 - [Simple Random Walls](https://github.com/LamHo220/path-finding-visualizer/blob/main/src/Main/Algorithms/Maze/SimpleRandomWalls.js)
 - [Recursive Division](https://github.com/LamHo220/path-finding-visualizer/blob/main/src/Main/Algorithms/Maze/RecursiveDivision.js)
 - [Recursive Backtracking](https://github.com/LamHo220/path-finding-visualizer/blob/main/src/Main/Algorithms/Maze/RecursiveBacktracking.js)
