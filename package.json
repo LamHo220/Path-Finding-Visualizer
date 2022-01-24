@@ -2,7 +2,7 @@
   "name": "path-finding-visualizer",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://lamho220.github.io/path-finding-visualizer/",
+  "homepage": "https://lamho220.github.io/Path-Finding-Visualizer/",
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
