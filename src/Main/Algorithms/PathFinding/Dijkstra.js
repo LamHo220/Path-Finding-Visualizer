@@ -4,22 +4,22 @@ import {
   getPath,
   getPathBi,
   getVisitedNodesBi,
-} from "../../utilities/utilities";
+} from "./utilities/utilities";
 
 /**
  * A star algorithm, a famous path finding algorithm.
  * @author LamHo220 <https://github.com/LamHo220>
  * @param {Object} input The input arguments.
- * @param {Object} input.start The start node.
- * @param {Object} input.end The end node.
+ * @param {Object} input.startNode The start node.
+ * @param {Object} input.endNode The end node.
  * @param {Array<Array<Object>>} input.grid The grid to be used.
- * @param {Boolean} input.isBidirection Whether the function is bi-direction.
- * @param {Boolean} input.allowDiagonal Whether diagonal movement is allowed.
+ * @param {Boolean} input.isBiDirection Whether the function is bi-direction.
+ * @param {Boolean} input.isDiagonal Whether diagonal movement is allowed.
  * @param {String} input.heuristic The selected heuristic.
  * @returns {Object} The array of visited nodes and the array of shortest path of a star
  */
 export default function dijkstra(input) {
-  const { grid, allowDiagonal, isBidirection, start, end } = input;
+  const { grid, isDiagonal, isBiDirection, startNode, endNode } = input;
 
   // get the unvisited nodes.
   let unvisitedNodes = grid
@@ -34,18 +34,18 @@ export default function dijkstra(input) {
   let visitedNodes = [];
 
   // start's f is 0 initially.
-  start.f = 0;
+  startNode.f = 0;
 
   let neighbors, tempF;
 
   // if the algorithm is bi-direction.
-  if (isBidirection) {
+  if (isBiDirection) {
     // end's f is 0 initially.
-    end.f = 0;
+    endNode.f = 0;
 
     // initial the unvisited nodes of start and end.
-    let unvisitedNodesFromStart = [start];
-    let unvisitedNodesFromEnd = [end];
+    let unvisitedNodesFromStart = [startNode];
+    let unvisitedNodesFromEnd = [endNode];
     let visitedNodesFromStart = [];
     let visitedNodesFromEnd = [];
     let curA, curB;
@@ -65,7 +65,7 @@ export default function dijkstra(input) {
       // if current is not undefined, we muse have neighbor(s).
       if (curA) {
         // get neighbors of current node and filter the wall nodes and visitednodes that start from start node.
-        neighbors = getNeighbours(grid, curA, allowDiagonal).filter(
+        neighbors = getNeighbours(grid, curA, isDiagonal).filter(
           (e) => !e.isWall && !visitedNodesFromStart.includes(e)
         );
 
@@ -127,7 +127,7 @@ export default function dijkstra(input) {
       // if current is not undefined, we muse have neighbor(s).
       if (curB) {
         // get neighbors of current node and filter the wall nodes and visitednodes that start from start node.
-        neighbors = getNeighbours(grid, curB, allowDiagonal).filter(
+        neighbors = getNeighbours(grid, curB, isDiagonal).filter(
           (e) => !e.isWall && !visitedNodesFromEnd.includes(e)
         );
 
@@ -212,7 +212,7 @@ export default function dijkstra(input) {
     }
 
     // get neighbors of current node and filter the visitednodes that start from start node.
-    neighbors = getNeighbours(grid, current, allowDiagonal).filter(
+    neighbors = getNeighbours(grid, current, isDiagonal).filter(
       (e) => !visitedNodes.includes(e)
     );
 

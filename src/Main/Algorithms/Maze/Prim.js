@@ -10,14 +10,17 @@ var deltaTime;
  * A function to generate a maze by Randomized Prim's algorithm.
  * @param {Object} input The input of the algorithm.
  * @param {Array<Array<Object>>} input.grid The grid to be used.
- * @param {Number} input.maxRow The maximum row of the grid.
- * @param {Number} input.maxCol The maximum column of the grid.
- * @param {Number} input.timeRatio The thime to be waited.
+ * @param {Object} input.maxDimension The maximum row and column of the grid.
+ * @param {Object} input.maxDimension.maxRow The maximum row of the grid.
+ * @param {Object} input.maxDimension.maxCol The maximum column of the grid.
+ * @param {Number} input.duration The thime to be waited.
  * @param {Boolean} input.dark Whether currently is dark mode or not.
  */
 const PrimMaze = async (input) => {
-  const { dark, grid, maxRow, maxCol, timeRatio } = input;
-  deltaTime = timeRatio;
+  const { dark, grid, maxDimension, duration } = input;
+  const { maxRow, maxCol } = maxDimension;
+  
+  deltaTime = duration;
 
   // the algorithm looped at least one time.
   let isStarted = false;
@@ -139,7 +142,7 @@ const connectTwoNode = async (dark, grid, toNode, maxRow, maxCol) => {
  * @param {Object} node The node to be connected.
  * @param {Number} maxRow The maximum row of the grid.
  * @param {Number} maxCol The maximum column of the grid.
- * @returns {Array<Object>} The direction that the node can be connected.
+ * @returns {Promise<Array<Object>>} The direction that the node can be connected.
  */
 const getPrimDir = async (dark, grid, node, maxRow, maxCol) => {
   let row = node.row;

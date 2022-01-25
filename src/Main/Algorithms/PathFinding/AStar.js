@@ -5,7 +5,7 @@ import {
   getPath,
   getPathBi,
   getVisitedNodesBi,
-} from "../../utilities/utilities";
+} from "./utilities/utilities";
 
 /**
  * A star algorithm, a famous path finding algorithm.
@@ -14,18 +14,19 @@ import {
  * @param {Object} input.start The start node.
  * @param {Object} input.end The end node.
  * @param {Array<Array<Object>>} input.grid The grid to be used.
- * @param {Boolean} input.allowDiagonal Whether diagonal movement is allowed.
- * @param {Boolean} input.isBidirection Whether the function is bi-direction.
+ * @param {Boolean} input.isDiagonal Whether diagonal movement is allowed.
+ * @param {Boolean} input.isBiDirection Whether the function is bi-direction.
  * @param {String} input.heuristic The selected heuristic.
  * @returns {Object} The array of visited nodes and the array of shortest path of a star
  */
 export default function aStar(input) {
-  const { start, end, grid, isBidirection, allowDiagonal, heuristic } = input;
+  const { startNode, endNode, grid, isBiDirection, isDiagonal, heuristic } =
+    input;
 
-  const startRow = start.row;
-  const startCol = start.col;
-  const endRow = end.row;
-  const endCol = end.col;
+  const startRow = startNode.row;
+  const startCol = startNode.col;
+  const endRow = endNode.row;
+  const endCol = endNode.col;
 
   // dx and dy are used for calculating initial heuristic of start and end.
   const dx = Math.abs(startCol - endCol);
@@ -35,22 +36,22 @@ export default function aStar(input) {
   let current, neighborsOfCurrent, tempG;
 
   // if this is bidirection, do this
-  if (isBidirection) {
+  if (isBiDirection) {
     // the visited nodes started from start node and end node.
     let visitedNodesFromStart = [];
     let visitedNodesFromEnd = [];
 
     // the open set started from start node.
     // initially, f = g + h = h.
-    start.g = 0;
-    start.f = Heuristic[heuristic](dx, dy);
-    let startOpenSet = [start];
+    startNode.g = 0;
+    startNode.f = Heuristic[heuristic](dx, dy);
+    let startOpenSet = [startNode];
 
     // the open set started from end node.
     // initially, f = g + h = h.
-    end.g = 0;
-    end.f = Heuristic[heuristic](dx, dy);
-    let endOpenSet = [end];
+    endNode.g = 0;
+    endNode.f = Heuristic[heuristic](dx, dy);
+    let endOpenSet = [endNode];
 
     // loop untill two open set are empty.
     while (startOpenSet.length !== 0 || endOpenSet.length !== 0) {
@@ -67,7 +68,7 @@ export default function aStar(input) {
         visitedNodesFromStart.push(current);
 
         // get neighbors of current node and filter the wall and visitednodes that start from start node.
-        neighborsOfCurrent = getNeighbours(grid, current, allowDiagonal).filter(
+        neighborsOfCurrent = getNeighbours(grid, current, isDiagonal).filter(
           (e) => !e.isWall && !visitedNodesFromStart.includes(e)
         );
 
@@ -130,7 +131,7 @@ export default function aStar(input) {
         visitedNodesFromEnd.push(current);
 
         // get neighbors of current node and filter the wall and visitednodes that start from start node.
-        neighborsOfCurrent = getNeighbours(grid, current, allowDiagonal).filter(
+        neighborsOfCurrent = getNeighbours(grid, current, isDiagonal).filter(
           (e) => !e.isWall && !visitedNodesFromEnd.includes(e)
         );
 
@@ -153,7 +154,7 @@ export default function aStar(input) {
           }
 
           // calculate the potential g.
-          tempG =  current.g + distance(current, neighbor);
+          tempG = current.g + distance(current, neighbor);
           if (
             tempG < neighbor.g ||
             !startOpenSet.includes(neighbor) ||
@@ -190,9 +191,9 @@ export default function aStar(input) {
 
   // the open set started from start node.
   // initially, f = g + h = h.
-  start.g = 0;
-  start.f = Heuristic[heuristic](dx, dy);
-  let openSet = [start];
+  startNode.g = 0;
+  startNode.f = Heuristic[heuristic](dx, dy);
+  let openSet = [startNode];
 
   // loop untill open set is empty.
   while (!!openSet) {
@@ -211,7 +212,7 @@ export default function aStar(input) {
     visitedNodes.push(current);
 
     // get neighbors of current node and filter the wall and visitednodes.
-    neighborsOfCurrent = getNeighbours(grid, current, allowDiagonal).filter(
+    neighborsOfCurrent = getNeighbours(grid, current, isDiagonal).filter(
       (e) => !visitedNodes.includes(e) && !e.isWall
     );
 

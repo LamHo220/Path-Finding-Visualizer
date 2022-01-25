@@ -10,19 +10,22 @@ var deltaTime;
  * A maze generating algorithm by recursive backtracking.
  * @param {Object} input The input of this function.
  * @param {Array<Array<Object>>} input.grid The grid to be used.
- * @param {Object} input.start The start node.
- * @param {Object} input.end The end node.
- * @param {Number} input.maxRow The maximum row of the grid.
- * @param {Number} input.maxCol The maximum column of the grid.
- * @param {Number} input.timeRatio The thime to be waited.
+ * @param {Object} input.startNode The start node.
+ * @param {Object} input.endNode The end node.
+ * @param {Object} input.maxDimension The maximum row and column of the grid.
+ * @param {Object} input.maxDimension.maxRow The maximum row of the grid.
+ * @param {Object} input.maxDimension.maxCol The maximum column of the grid.
+ * @param {Number} input.duration The thime to be waited.
  * @param {Boolean} input.dark Whether currently is dark mode or not.
  */
 const RecursiveBacktrackingMaze = async (input) => {
-  const { dark, grid, maxRow, maxCol, timeRatio, start, end } = input;
+  const { dark, grid, maxDimension, duration, startNode, endNode } = input;
+  const { maxRow, maxCol } = maxDimension;
+
   // set the start and end node to wall node .
-  start.isWall = true;
-  end.isWall = true;
-  deltaTime = timeRatio;
+  startNode.isWall = true;
+  endNode.isWall = true;
+  deltaTime = duration;
   
   // get a random node from the grid.
   const randCol = Math.floor(rand(0, maxCol - 1) / 2) * 2 + 1;
@@ -35,8 +38,8 @@ const RecursiveBacktrackingMaze = async (input) => {
   await doRecursiveBacktracker(dark, grid, node, maxRow, maxCol);
 
   // set the start and end node to non wall node back.
-  start.isWall = false;
-  end.isWall = false;
+  startNode.isWall = false;
+  endNode.isWall = false;
 };
 
 /**

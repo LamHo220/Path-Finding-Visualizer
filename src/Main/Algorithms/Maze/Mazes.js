@@ -11,12 +11,14 @@ import RecursiveBacktrackingMaze from "./RecursiveBacktracking";
  * @param {Object} input The input of the function.
  * @param {Array<Array<Object>>} input.grid The grid to be used.
  * @param {Boolean} input.dark Whether currently is dark mode or not.
- * @param {Number} input.maxRow The maximum row of the grid.
- * @param {Number} input.maxCol The maximum column of the grid.
- * @param {Number} input.timeRatio The time to be waited.
+ * @param {Object} input.maxDimension The maximum row and column of the grid.
+ * @param {Object} input.maxDimension.maxRow The maximum row of the grid.
+ * @param {Object} input.maxDimension.maxCol The maximum column of the grid.
+ *@param {Number} input.duration The time to be waited.
  */
 const Reverse = async (input) => {
-  const {dark, grid, maxRow, maxCol, timeRatio} = input
+  const { dark, grid, maxDimension, duration } = input;
+  const { maxRow, maxCol } = maxDimension;
   for (let row = 0; row < maxRow; ++row) {
     for (let col = 0; col < maxCol; ++col) {
       setTimeout(() => {
@@ -25,10 +27,10 @@ const Reverse = async (input) => {
           node.isWall = !node.isWall;
           changeClassName(dark, node);
         }
-      }, Math.max(timeRatio, 30) * (row + col));
+      }, Math.max(duration, 30) * (row + col));
     }
   }
-  await delay(Math.max(timeRatio, 30) * (maxRow + maxCol));
+  await delay(Math.max(duration, 30) * (maxRow + maxCol));
 };
 
 /**
@@ -36,12 +38,15 @@ const Reverse = async (input) => {
  * @param {Object} input The input of the function.
  * @param {Array<Array<Object>>} input.grid The grid to be used.
  * @param {Boolean} input.dark Whether currently is dark mode or not.
- * @param {Number} input.maxRow The maximum row of the grid.
- * @param {Number} input.maxCol The maximum column of the grid.
- * @param {Number} input.timeRatio The time to be waited.
+ * @param {Object} input.maxDimension The maximum row and column of the grid.
+ * @param {Object} input.maxDimension.maxRow The maximum row of the grid.
+ * @param {Object} input.maxDimension.maxCol The maximum column of the grid.
+ *@param {Number} input.duration The time to be waited.
  */
 const Boundary = async (input) => {
-  const {dark, grid, maxRow, maxCol, timeRatio} = input
+  const { dark, grid, maxDimension, duration } = input;
+  const { maxRow, maxCol } = maxDimension;
+
   for (let i = 0; i < maxRow; ++i) {
     setTimeout(() => {
       let node = grid[i][0];
@@ -54,7 +59,7 @@ const Boundary = async (input) => {
         node.isWall = true;
         changeClassName(dark, node);
       }
-    }, timeRatio * i);
+    }, duration * i);
   }
   for (let j = 0; j < maxCol; ++j) {
     setTimeout(() => {
@@ -68,14 +73,15 @@ const Boundary = async (input) => {
         node.isWall = true;
         changeClassName(dark, node);
       }
-    }, timeRatio * j);
+    }, duration * j);
   }
-  await delay(timeRatio * Math.max(maxRow, maxCol));
+  await delay(duration * Math.max(maxRow, maxCol));
 };
 
 /**
  * export a object that contains the maze generating algorithm
  */
+/* eslint import/no-anonymous-default-export: [2, {"allowObject": true}] */
 export default {
   "Recursive Backtracking": async (input) => {
     await NoWalls(input);

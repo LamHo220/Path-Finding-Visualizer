@@ -16,73 +16,58 @@ import PathFinding from "./Algorithms/PathFinding/PathFinding";
 /**
  * A component of grid.
  * @param {Object} props The props of this component
- * @param {Boolean} props.allowDiagonal Whether we allow the diagonal move
- * @param {String} props.heuristic The selected heuristic.
- * @param {String} props.algorithm The selected algorithm.
- * @param {Number} props.timeRatio The time to be waited.
- * @param {Boolean} props.start Whether we should start visualizing the path finding algorithm.
- * @param {Boolean} props.startMaze Whether we should start visualizing the maze generating algorithm.
- * @param {String} props.pattern The selected pattern 
- * @param {Boolean} props.darkMode Whether currently is dark mode or not.
- * @param {Boolean} props.clear Whether we should clear the path or not.
- * @param {Boolean} props.isWeighted Whether the nodes should be weighted.
- * @param {Boolean} props.isBidirection Whether the algorithm should viualized in bi-direction.
- * @param {Function} props.onStart A function to change the start.
- * @param {Function} props.onClearPath A function to set clear the path.
- * @param {Function} props.onSteps A function to set the steps of the result.
- * @param {Function} props.onPathLength A function to set the length of the path of the result.
+ * @param {Object} flags The flags in the main
+ * @param {Object} parameters The parameters for the algorithms.
+ * @param {Function} props.onChangeIsStart A function to change the isStart.
+ * @param {Function} props.onChangeIsStartMaze A function to change the isStartMaze.
+ * @param {Function} props.onChangeIsClearPath A function to set clear the path.
+ * @param {Function} props.onChangeNumberOfSteps A function to set the steps of the result.
+ * @param {Function} props.onChangeLengthOfPath A function to set the length of the path of the result.
+ * @param {Function} props.onChangeAllResults A function to set the steps of the result and the length of the path of the result.
  * @returns {JSX.Element} A Grid component
  */
 const Grid = (props) => {
   const style = getComputedStyle(document.body);
   // initalize the state
-  const [maxRow, setMaxRow] = useState(
-    parseInt(style.getPropertyValue("--max-row"))
+  const height = Math.floor(
+    (0.9 * window.innerHeight) / parseInt(style.getPropertyValue("--node-size"))
   );
-  const [maxCol, setMaxCol] = useState(
-    parseInt(style.getPropertyValue("--max-col"))
+
+  const width = Math.floor(
+    window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
   );
-  const [startRow, setStartRow] = useState(
-    parseInt(style.getPropertyValue("--node-start-row"))
-  );
-  const [startCol, setStartCol] = useState(
-    parseInt(style.getPropertyValue("--node-start-col"))
-  );
-  const [endRow, setEndRow] = useState(
-    parseInt(style.getPropertyValue("--node-end-row"))
-  );
-  const [endCol, setEndCol] = useState(
-    parseInt(style.getPropertyValue("--node-end-col"))
-  );
+  const [maxDimension, setMaxDimension] = useState({
+    maxRow: height - (height % 2 === 0 ? 1 : 2),
+    maxCol: width - (width % 2 === 0 ? 1 : 2),
+  });
+
+  const [start, setStart] = useState({
+    row: Math.floor(maxDimension.maxRow / 2),
+    col: Math.floor(maxDimension.maxCol / 3),
+  });
+
+  const [end, setEnd] = useState({
+    row: Math.floor(maxDimension.maxRow / 2),
+    col: Math.floor((maxDimension.maxCol * 2) / 3),
+  });
+
   const [prev, setPrev] = useState(null);
   const [visualized, setVisualized] = useState(false);
 
   const {
-    allowDiagonal,
-    heuristic,
-    algorithm,
-    timeRatio,
-    start,
-    startMaze,
-    pattern,
-    darkMode,
-    clear,
-    isWeighted,
-    isBidirection,
-    onStart,
-    onStartMaze,
-    onClearPath,
-    onSteps,
-    onPathLength,
+    animationSpeed,
+    flags,
+    parameters,
+    onChangeIsStart,
+    onChangeIsStartMaze,
+    onChangeIsClearPath,
+    onChangeNumberOfSteps,
+    onChangeLengthOfPath,
+    onChangeAllResults,
   } = props;
 
   const [grid, setGrid] = useState(
-    initGrid(
-      maxRow,
-      maxCol,
-      { row: startRow, col: startCol },
-      { row: endRow, col: endCol }
-    )
+    initGrid(maxDimension.maxRow, maxDimension.maxCol, start, end)
   );
 
   /**
@@ -96,23 +81,12 @@ const Grid = (props) => {
     event = event || window.event;
     event.preventDefault();
     if (!(initNode.isStart || initNode.isEnd)) {
-      switch (event.buttons) {
-        case 1:
-          const isWall = initNode.isWall;
-          setPrev(!isWall);
-          initNode.isWall = !isWall;
-          changeClassName(darkMode, initNode);
-          break;
-        default:
-          break;
-      }
+      const isWall = initNode.isWall;
+      setPrev(!isWall);
+      initNode.isWall = !isWall;
+      changeClassName(flags.isDarkMode, initNode);
     } else {
-      switch (event.buttons) {
-        case 1:
-          setPrev(initNode);
-        default:
-          break;
-      }
+      setPrev(initNode);
     }
   };
 
@@ -127,40 +101,35 @@ const Grid = (props) => {
     event = event || window.event;
     event.preventDefault();
     if (!(node.isStart || node.isEnd) && !node.isWall === prev) {
-      switch (event.buttons) {
-        case 1:
-          node.isWall = prev;
-          changeClassName(darkMode, node);
-          break;
-        default:
-          break;
-      }
+      node.isWall = prev;
+      changeClassName(flags.isDarkMode, node);
+      setGrid(grid.slice());
     } else if (node.isWall === prev) {
       // pass
     } else if (node.isStart || node.isEnd) {
       // pass
     } else if (prev !== null && !node.isWall) {
       // swap two node
-      switch (event.buttons) {
-        case 1:
-          node.isStart = prev.isStart;
-          node.isEnd = prev.isEnd;
-          prev.isStart = false;
-          prev.isEnd = false;
-          if (node.isStart) {
-            setStartRow(row);
-            setStartCol(col);
-          }
-          if (node.isEnd) {
-            setEndRow(row);
-            setEndCol(col);
-          }
-          setPrev(node);
-          break;
-
-        default:
-          break;
+      node.isStart = prev.isStart;
+      node.isEnd = prev.isEnd;
+      prev.isStart = false;
+      prev.isEnd = false;
+      if (node.isStart) {
+        setStart((r) => {
+          r.row = row;
+          r.col = col;
+          return r;
+        });
       }
+      if (node.isEnd) {
+        setEnd((r) => {
+          r.row = row;
+          r.col = col;
+          return r;
+        });
+      }
+      setPrev(node);
+      setGrid(grid.slice());
     }
   };
 
@@ -171,12 +140,18 @@ const Grid = (props) => {
    */
   const handleMouseUp = (row, col) => {
     if (grid[row][col].isStart) {
-      setStartCol(col);
-      setStartRow(row);
+      setStart((r) => {
+        r.row = row;
+        r.col = col;
+        return r;
+      });
     }
     if (grid[row][col].isEnd) {
-      setEndCol(col);
-      setEndRow(row);
+      setEnd((r) => {
+        r.row = row;
+        r.col = col;
+        return r;
+      });
     }
     setGrid(grid.slice());
     setPrev(null);
@@ -191,104 +166,162 @@ const Grid = (props) => {
   };
 
   // if the start is changed and it is false, visualize.
-  useEffect(async () => {
-    if (start) {
-      onPathLength(0);
-      onSteps(0);
-      await clearPath(darkMode, grid);
-      const startNode = grid[startRow][startCol];
-      const endNode = grid[endRow][endCol];
-      const { visited, path } = await visualize(
-        algorithm,
-        grid,
-        startNode,
-        endNode,
-        darkMode,
-        2 * timeRatio,
-        isBidirection,
-        allowDiagonal,
-        heuristic
-      );
-      onPathLength(visited);
-      onSteps(path);
-      setVisualized(true);
-      onStart();
+  useEffect(() => {
+    async function visualIt() {
+      if (flags.isStart) {
+        onChangeLengthOfPath(0);
+        onChangeNumberOfSteps(0);
+        await clearPath(flags.isDarkMode, grid);
+        const startNode = grid[start.row][start.col];
+        const endNode = grid[end.row][end.col];
+        const { visited, path } = await visualize(
+          flags,
+          parameters,
+          grid,
+          startNode,
+          endNode,
+          2 * animationSpeed
+        );
+        onChangeLengthOfPath(visited);
+        onChangeNumberOfSteps(path);
+        setVisualized(true);
+        onChangeIsStart(false);
+      }
     }
-  }, [start]);
+    visualIt();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flags.isStart]);
 
   // if the grid,algorithm, isBidirection, darkMode is changed and it is visualized, refresh.
   useEffect(() => {
+    clearPath(flags.isDarkMode, grid);
     if (visualized) {
-      clearPath(darkMode, grid);
-      const startNode = grid[startRow][startCol];
-      const endNode = grid[endRow][endCol];
+      const startNode = grid[start.row][start.col];
+      const endNode = grid[end.row][end.col];
       const input = {
-        start: startNode,
-        end: endNode,
+        startNode,
+        endNode,
         grid,
-        isBidirection,
-        allowDiagonal,
-        heuristic,
+        isBiDirection: flags.isBiDirection,
+        isDiagonal: flags.isDiagonal,
+        heuristic: parameters.heuristic,
       };
-      let res = PathFinding[algorithm](input);
-      refresh(darkMode, res.visitedNodes, res.shortestPath);
-      onPathLength(res.shortestPath.length - 1);
-      onSteps(res.visitedNodes.length - 1);
+      let res = PathFinding[parameters.algorithm](input);
+      refresh(flags.isDarkMode, res.visitedNodes, res.shortestPath);
+      onChangeAllResults(
+        res.visitedNodes.length - 1,
+        res.shortestPath.length - 1
+      );
     }
-  }, [grid, algorithm, isBidirection, darkMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grid, parameters.algorithm, flags.isBiDirection, flags.isDarkMode]);
 
   // if the startMaze is changed and it is true, gnerate the maze.
-  useEffect(async () => {
-    setVisualized(false);
-    if (startMaze) {
-      const start = grid[startRow][startCol];
-      const end = grid[endRow][endCol];
-      const input = {
-        dark: darkMode,
-        grid,
-        maxRow,
-        maxCol,
-        start,
-        end,
-        timeRatio: 2 * timeRatio,
-        density: 0.3,
-      };
-      await Mazes[pattern](input);
-      onStartMaze();
+  useEffect(() => {
+    async function generateMaze() {
+      setVisualized(false);
+      if (flags.isStartMaze) {
+        const startNode = grid[start.row][start.col];
+        const endNode = grid[end.row][end.col];
+        const input = {
+          dark: flags.isDarkMode,
+          grid,
+          maxDimension,
+          startNode,
+          endNode,
+          duration: 2 * animationSpeed,
+          density: 0.3,
+        };
+        await Mazes[parameters.pattern](input);
+        onChangeIsStartMaze();
+      }
     }
-  }, [startMaze]);
+    generateMaze();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flags.isStartMaze]);
 
   // if the clear is changed and it is true, clear the path.
   useEffect(() => {
-    if (clear) {
-      clearPath(darkMode, grid);
+    if (flags.isClearPath) {
+      clearPath(flags.isDarkMode, grid);
       setVisualized(false);
-      onClearPath(false);
+      onChangeIsClearPath(false);
     }
-  }, [clear]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flags.isClearPath]);
 
   // if the isWeighted is changed and it is true, weight or unweight the grid.
   useEffect(() => {
-    if (isWeighted) {
+    clearPath(flags.isDarkMode, grid);
+    if (flags.isWeightedGrid) {
       setGrid((prevGrid) => randomWeight(prevGrid));
     } else {
       setGrid((prevGrid) => clearWeight(prevGrid));
     }
-  }, [isWeighted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flags.isWeightedGrid]);
+
+  const handleResize = () => {
+    setVisualized(false);
+    setMaxDimension((prev) => {
+      const height = Math.floor(
+        (0.9 * window.innerHeight) /
+          parseInt(style.getPropertyValue("--node-size"))
+      );
+      const width = Math.floor(
+        window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
+      );
+
+      prev.maxRow = height - (height % 2 === 0 ? 1 : 2);
+      prev.maxCol = width - (width % 2 === 0 ? 1 : 2);
+      return prev;
+    });
+    setStart((prev) => {
+      prev.row = Math.floor(maxDimension.maxRow / 2);
+      prev.col = Math.floor(maxDimension.maxCol / 3);
+      return prev;
+    });
+    setEnd((prev) => {
+      prev.row = Math.floor(maxDimension.maxRow / 2);
+      prev.col = Math.floor((maxDimension.maxCol * 2) / 3);
+      return prev;
+    });
+    setGrid((prev) => {
+      const newGrid = initGrid(
+        maxDimension.maxRow,
+        maxDimension.maxCol,
+        start,
+        end
+      );
+      prev = newGrid;
+      return prev;
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div onContextMenu={handleContextMenu}>
+    <div
+      onContextMenu={handleContextMenu}
+      className={flags.isDisabled ? "pointer-events-none" : ""}
+    >
       <Box
         display="grid"
-        gridTemplateColumns={`repeat(${maxCol}, 1fr)`}
-        gridTemplateRows={`repeat(${maxRow}, 3vh)`}
+        gridTemplateColumns={`repeat(${maxDimension.maxCol}, 40px)`}
+        gridTemplateRows={`repeat(${maxDimension.maxRow}, 40px)`}
+        sx={{
+          width: window.innerWidth,
+        }}
       >
         {grid.map((row, y) => {
           return row.map((node, x) => {
             const { isStart, isEnd, isWall } = node;
             return (
               <Node
-                dark={darkMode}
+                dark={flags.isDarkMode}
                 row={y}
                 col={x}
                 isWall={isWall}

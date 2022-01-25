@@ -99,10 +99,10 @@ export const DrawerGroupButtons = (props) => {
  * @param {Function} props.toggleDrawer A function to toggle the drawer.
  * @returns 
  */
-export const Setting = (props) => {
+export const MenuDrawer = (props) => {
   const { open, toggleDrawer } = props;
   return (
-    <Drawer anchor="right" open={open} onClose={toggleDrawer}>
+    <Drawer anchor="left" open={open} onClose={toggleDrawer}>
       {props.children}
     </Drawer>
   );
