@@ -1,0 +1,187 @@
+import React, { useState, useEffect } from "react";
+import Grid from "./Grid";
+import Head from "./Head";
+import Result from "./Result";
+import { Paper, createTheme, ThemeProvider } from "@mui/material";
+import Swal from "sweetalert2";
+
+/**
+ * The main component of the GUI
+ * @param {Object} props The props of the component
+ * @returns The main component
+ */
+const Main = (props) => {
+  // initialize the state
+  const [steps, setSteps] = useState(0);
+  const [pathLength, setPathLength] = useState(0);
+  const [allowDiagonal, setAllowDiagonal] = useState(false);
+  const [heuristic, setHeuristic] = useState("Euclidean");
+  const [algorithm, setAlgorithm] = useState("A*");
+  const [pattern, setPattern] = useState("");
+  const [start, setStart] = useState(false);
+  const [startMaze, setStartMaze] = useState(false);
+  const [timeRatio, setTimeRatio] = useState(5);
+  const [darkMode, setDarkMode] = useState(true);
+  const [disable, setDisable] = useState(false);
+  const [clearPath, setClearPath] = useState(false);
+  const [isWeighted, setIsWeighted] = useState(false);
+  const [isBidirection, setIsBidirection] = useState(false);
+  const [isTutorial, setIsTutorial] = useState(true);
+
+  // if allowDiagonal changes, set the heuristic to "Euclidean".
+  useEffect(() => {
+    setHeuristic("Euclidean");
+  }, [allowDiagonal]);
+
+  /**
+   * Hanlder of when slice value change update the time ratio.
+   * @param {Event} event the event.
+   */
+  const handleSlice = (event) => {
+    let value = event.target.value;
+    setTimeRatio(value);
+  };
+
+  // the theme of the GUI.
+  const theme = createTheme({
+    palette: {
+      mode: darkMode ? "dark" : "light",
+    },
+  });
+
+  // if darkMode changes, change the background color of html.
+  useEffect(() => {
+    document.body.style.backgroundColor = theme.palette.background.default;
+  }, [darkMode]);
+
+  // if pattern change, change the pattern back to "".
+  useEffect(() => {
+    if (pattern !== "") {
+      setPattern("");
+    }
+  }, [pattern]);
+
+  // if is tutorial is true, show the tutorial.
+  useEffect(() => {
+    // if true, open the tutorial.
+    if (isTutorial) {
+      Swal.fire({
+        title: "Tutorial",
+        text: "Left Click the Nodes to Change It to Wall or a Road!",
+        showDenyButton: true,
+        confirmButtonText: "Next",
+        denyButtonText: `Skip`,
+        color: theme.palette.primary.main,
+        background: theme.palette.background.default,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Tutorial",
+            text: "Left Click Start (blue) or End (red) Node to Move It!",
+            showDenyButton: true,
+            confirmButtonText: "Next",
+            denyButtonText: `Skip`,
+            color: theme.palette.primary.main,
+            background: theme.palette.background.default,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Tutorial",
+                text: "Left Click Start button to start, Pause button to pause and Cleaning Services to Clean the Path!",
+                showDenyButton: true,
+                confirmButtonText: "Next",
+                denyButtonText: `Skip`,
+                color: theme.palette.primary.main,
+                background: theme.palette.background.default,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  Swal.fire({
+                    title: "Tutorial",
+                    text: "In the menu, you can configurate the algorithm and grid",
+                    showDenyButton: true,
+                    confirmButtonText: "Next",
+                    denyButtonText: `Skip`,
+                    color: theme.palette.primary.main,
+                    background: theme.palette.background.default,
+                  });
+                } else {
+                  setIsTutorial(false);
+                }
+              });
+            } else {
+              setIsTutorial(false);
+            }
+          });
+        } else {
+          setIsTutorial(false);
+        }
+      });
+    }
+  }, [isTutorial]);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Paper>
+        <Head
+          theme={theme}
+          disable={disable}
+          algorithm={algorithm}
+          allowDiagonal={allowDiagonal}
+          darkMode={darkMode}
+          heuristic={heuristic}
+          isWeighted={isWeighted}
+          pattern={pattern}
+          isBidirection={isBidirection}
+          onIsTutorial={setIsTutorial}
+          onStart={() => {
+            setStart(!start);
+            setDisable(!disable);
+          }}
+          onStartMaze={() => {
+            setStartMaze(!startMaze);
+            setDisable(!disable);
+          }}
+          onHeuristic={setHeuristic}
+          onAllowDiagonal={() => setAllowDiagonal(!allowDiagonal)}
+          onAlgorithm={setAlgorithm}
+          onPattern={setPattern}
+          onDarkMode={setDarkMode}
+          onSlice={handleSlice}
+          onIsWeighted={setIsWeighted}
+          onClearPath={setClearPath}
+          onIsBidirection={setIsBidirection}
+        />
+        <Result steps={steps} pathLength={pathLength} />
+        <div className={disable ? "pointer-events-none" : ""}>
+          <Grid
+            allowDiagonal={allowDiagonal}
+            heuristic={heuristic}
+            algorithm={algorithm}
+            timeRatio={timeRatio}
+            start={start}
+            startMaze={startMaze}
+            pattern={pattern}
+            darkMode={darkMode}
+            clear={clearPath}
+            isWeighted={isWeighted}
+            isBidirection={isBidirection}
+            onClearPath={setClearPath}
+            onSteps={setSteps}
+            onPathLength={setPathLength}
+            onStart={() => {
+              setStart(!start);
+              setDisable(!disable);
+            }}
+            onStartMaze={() => {
+              setStartMaze(false);
+              setDisable(!disable);
+            }}
+            onDisable={() => setDisable(!disable)}
+          />
+        </div>
+      </Paper>
+    </ThemeProvider>
+  );
+};
+
+export default Main;
