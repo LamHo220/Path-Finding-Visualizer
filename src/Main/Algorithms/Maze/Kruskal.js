@@ -1,9 +1,9 @@
 import {
-  rand,
   changeClassName,
   delay,
-  isHorizontalCut,
+  rand
 } from "../../utilities/utilities";
+import { isHorizontalCut } from "./utilities/utilities";
 
 /**
  * The time to be waited.
@@ -14,18 +14,22 @@ var deltaTime;
  * A function to generate a maze by Randomized Kruskal algorithm.
  * @param {Object} input The input of the algorithm.
  * @param {Array<Array<Object>>} input.grid The grid to be used.
- * @param {Number} input.maxRow The maximum row of the grid.
- * @param {Number} input.maxCol The maximum column of the grid.
- * @param {Number} input.timeRatio The thime to be waited.
+ * @param {Object} input.maxDimension The maximum row and column of the grid.
+ * @param {Object} input.maxDimension.maxRow The maximum row of the grid.
+ * @param {Object} input.maxDimension.maxCol The maximum column of the grid.
+ * @param {Number} input.duration The time to be waited.
  * @param {Boolean} input.dark Whether currently is dark mode or not.
+ * @param {Object} input.startNode The start node.
+ * @param {Object} input.endNode The end node.
  */
 const Kruskal = async (input) => {
-  const { dark, grid, maxRow, maxCol, timeRatio } = input;
-  deltaTime = timeRatio;
+  const { dark, grid, maxDimension, duration, startNode, endNode } = input;
+  const { maxCol, maxRow } = maxDimension;
+  deltaTime = duration;
 
   // initalize the following:
   // the closed set.
-  let closed = [];
+  let closed = [startNode, endNode];
 
   // the groups of set.
   // groups := {idx:set}
@@ -158,7 +162,7 @@ const combineGroup = async (dark, node, nodeA, nodeB, groups) => {
   // if idx of the nearest nodes are the same,
   // there will be the closed loop,
   // thus return false
-  if (nodeA.idx === nodeB.idx) {
+  if (nodeA.idx === nodeB.idx || nodeA.isStart || nodeA.isEnd|| nodeB.isStart || nodeB.isEnd) {
     return false;
   }
 

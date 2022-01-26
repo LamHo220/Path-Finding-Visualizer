@@ -1,9 +1,9 @@
 import {
   rand,
   changeClassName,
-  isHorizontalCut,
   delay,
 } from "../../utilities/utilities";
+import { isHorizontalCut } from "./utilities/utilities";
 
 /**
  * The time to be waited.
@@ -14,14 +14,17 @@ var deltaTime;
  * A function to generate a maze by Recursive Division.
  * @param {Object} input The input of the algorithm.
  * @param {Array<Array<Object>>} input.grid The grid to be used.
- * @param {Number} input.maxRow The maximum row of the grid.
- * @param {Number} input.maxCol The maximum column of the grid.
- * @param {Number} input.timeRatio The thime to be waited.
+ * @param {Object} input.maxDimension The maximum row and column of the grid.
+ * @param {Object} input.maxDimension.maxRow The maximum row of the grid.
+ * @param {Object} input.maxDimension.maxCol The maximum column of the grid.
+ * @param {Number} input.duration The thime to be waited.
  * @param {Boolean} input.dark Whether currently is dark mode or not.
  */
 const RecursiveDivisionMaze = async (input) => {
-  const { dark, grid, maxRow, maxCol, timeRatio } = input;
-  deltaTime = timeRatio;
+  const { dark, grid, maxDimension, duration } = input;
+  const { maxRow, maxCol } = maxDimension;
+
+  deltaTime = duration;
   // start recirsive division the grid.
   await doRecuresiveDivision(
     dark,
@@ -35,10 +38,10 @@ const RecursiveDivisionMaze = async (input) => {
 };
 
 /**
- * 
+ *
  * @param {Boolean} dark Whether currently is dark mode or not.
  * @param {*Array<Array<Object>>} grid The grid to be used.
- * @param {Number} fromRow The start row of the sub-grid. 
+ * @param {Number} fromRow The start row of the sub-grid.
  * @param {Number} fromCol The start column of the sub-grid.
  * @param {Number} toRow The end row of the sub-grid.
  * @param {Number} toCol The end column of the sub-grid.
@@ -92,7 +95,7 @@ const doRecuresiveDivision = async (
     // get the randomized column of wall.
     const wallCol = Math.floor(rand(fromCol + 1, toCol - 1) / 2) * 2;
     await verticalCut(dark, grid, fromRow, toRow, wallCol);
-    
+
     // cut this grid to two sub-grid.
     await doRecuresiveDivision(
       dark,

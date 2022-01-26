@@ -1,6 +1,7 @@
 /**
  * Export a object that contains the heuristic functions.
  */
+/* eslint import/no-anonymous-default-export: [2, {"allowObject": true}] */
 export default {
   Manhattan: (dx, dy) => {
     return dx + dy;

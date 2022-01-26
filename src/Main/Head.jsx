@@ -8,7 +8,11 @@ import {
 } from "@mui/material";
 import { heuristics, algorithms, patterns, pause } from "./Constants/Constants";
 import { useState } from "react";
-import { DrawerGroupButtons, DrawerTwoWaysButton, Setting } from "./Setting";
+import {
+  DrawerGroupButtons,
+  DrawerTwoWaysButton,
+  MenuDrawer,
+} from "./MenuDrawer";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -20,52 +24,39 @@ import Swal from "sweetalert2";
 /**
  * A component of Head, which is an App bar.
  * @param {Object} props The props of this component.
- * @param {Object} props.theme The current theme.
- * @param {Boolean} props.disable Whether the elements should be disabled.
- * @param {String} props.algorithm The props of this component.
- * @param {Boolean} props.allowDiagonal Whether we allow diagonal movements.
- * @param {Boolean} props.darkMode Whether currently is darkmode.
- * @param {String} props.heuristic The props of this component.
- * @param {Boolean} props.isWeighted Whether the grid should be weighted.
- * @param {String} props.pattern The props of this component.
- * @param {Boolean} props.isBidirection Whether the algorithm should be bi-direction.
+ * @param {Object} flags The flags in the main
+ * @param {Object} parameters The The parameters for the algorithms.
  * @param {Function} props.onIsTutorial The function to change is Tutorial.
- * @param {Function} props.onStart The function to change start.
- * @param {Function} props.onStartMaze The function to change startMaze.
- * @param {Function} props.onHeuristic The function to change heuristic.
- * @param {Function} props.onAllowDiagonal The function to change allowDiagonal.
- * @param {Function} props.onAlgorithm The function to change algorithm.
- * @param {Function} props.onPattern The function to change oattern.
- * @param {Function} props.onDarkMode The function to change darkmode or not.
+ * @param {Function} props.onChangeIsStart The function to change start.
+ * @param {Function} props.onChangeIsStartMaze The function to change startMaze.
+ * @param {Function} props.onChangeHeuristic The function to change heuristic.
+ * @param {Function} props.onChangeIsDiagonal The function to change allowDiagonal.
+ * @param {Function} props.onChangeAlgorithm The function to change algorithm.
+ * @param {Function} props.onChangePattern The function to change oattern.
+ * @param {Function} props.onChangeIsDarkMode The function to change darkmode or not.
  * @param {Function} props.onSlice The function to change the time ratio.
- * @param {Function} props.onIsWeighted The function to change isWeighted.
- * @param {Function} props.onClearPath The function to change clearPath.
- * @param {Function} props.onIsBidirection The function to change isBidirection.
+ * @param {Function} props.onChangeIsWeightedGrid The function to change isWeighted.
+ * @param {Function} props.onChangeIsClearPath The function to change clearPath.
+ * @param {Function} props.onChangeIsBiDirection The function to change isBidirection.
  * @returns {JSX.Element} A component of Head, which is an App bar.
  */
 const Head = (props) => {
   const {
     theme,
-    disable,
-    algorithm,
-    allowDiagonal,
-    darkMode,
-    heuristic,
-    isWeighted,
-    pattern,
-    isBidirection,
+    flags,
+    parameters,
     onIsTutorial,
-    onStart,
-    onStartMaze,
-    onHeuristic,
-    onAllowDiagonal,
-    onAlgorithm,
-    onPattern,
-    onDarkMode,
+    onChangeIsStart,
+    onChangeIsStartMaze,
+    onChangeHeuristic,
+    onChangeIsDiagonal,
+    onChangeAlgorithm,
+    onChangePattern,
+    onChangeIsDarkMode,
     onSlice,
-    onIsWeighted,
-    onClearPath,
-    onIsBidirection,
+    onChangeIsWeightedGrid,
+    onChangeIsClearPath,
+    onChangeIsBiDirection,
   } = props;
 
   const [open, setOpen] = useState(false);
@@ -84,25 +75,36 @@ const Head = (props) => {
     <>
       <AppBar position="static" open={open} color="default">
         <Toolbar>
+          {/* Call the menu */}
+          <IconButton
+            disabled={flags.isDisabled}
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="setting"
+            onClick={toggleDrawer(true)}
+          >
+            <MenuIcon />
+          </IconButton>
           <Typography noWrap sx={{ flexGrow: 1 }} variant="h6" component="div">
             Path Finding Visualizer
           </Typography>
 
           {/* Start button */}
           <IconButton
-            disabled={disable}
+            disabled={flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
             aria-label="start"
-            onClick={() => onStart()}
+            onClick={() => onChangeIsStart(true)}
           >
             <PlayArrowIcon />
           </IconButton>
 
           {/* Pause button */}
           <IconButton
-            disabled={!disable}
+            disabled={!flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
@@ -112,17 +114,19 @@ const Head = (props) => {
               pause.setFlag(true);
               Swal.mixin({
                 toast: true,
-                position: 'top',
+                position: "top",
                 showConfirmButton: true,
-              }).fire({
-                icon: 'info',
-                title: 'Paused',
-                confirmButtonText: 'Resume',
-                color: theme.palette.primary.main,
-                background: theme.palette.background.default,
-              }).then(()=>{
-                pause.setFlag(false);
               })
+                .fire({
+                  icon: "info",
+                  title: "Paused",
+                  confirmButtonText: "Resume",
+                  color: theme.palette.primary.main,
+                  background: theme.palette.background.default,
+                })
+                .then(() => {
+                  pause.setFlag(false);
+                });
             }}
           >
             <PauseIcon />
@@ -130,12 +134,12 @@ const Head = (props) => {
 
           {/* Clean path button */}
           <IconButton
-            disabled={disable}
+            disabled={flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
             aria-label="clearPath"
-            onClick={() => onClearPath(true)}
+            onClick={() => onChangeIsClearPath(true)}
           >
             <CleaningServicesIcon />
           </IconButton>
@@ -144,7 +148,7 @@ const Head = (props) => {
           <Box sx={{ width: 200, px: 4 }}>
             <Typography>Animation Speed</Typography>
             <Slider
-              disabled={disable}
+              disabled={flags.isDisabled}
               aria-label="Speed"
               defaultValue={5}
               valueLabelDisplay="off"
@@ -157,48 +161,38 @@ const Head = (props) => {
 
           {/* Set dark mode or not */}
           <IconButton
-            disabled={disable}
+            disabled={flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
             aria-label="isDarkMode"
-            onClick={() => onDarkMode(!darkMode)}
+            onClick={() => onChangeIsDarkMode(!flags.isDarkMode)}
           >
             <DarkModeOutlinedIcon />
           </IconButton>
 
           {/* open the tutorial */}
           <IconButton
-            disabled={disable}
+            disabled={flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
             aria-label="tutorial"
-            onClick={()=>onIsTutorial(true)}
+            onClick={() => onIsTutorial(true)}
           >
             <QuestionMarkIcon />
           </IconButton>
 
-          {/* Call the menu */}
-          <IconButton
-            disabled={disable}
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="setting"
-            onClick={toggleDrawer(true)}
-          >
-            <MenuIcon />
-          </IconButton>
+          <IconButton></IconButton>
         </Toolbar>
       </AppBar>
       {/* Drawer of setting */}
-      <Setting open={open} toggleDrawer={toggleDrawer(false)}>
+      <MenuDrawer open={open} toggleDrawer={toggleDrawer(false)}>
         {/* Set whether the grid should be weighted */}
         <DrawerTwoWaysButton
           name="Weights"
-          flag={isWeighted}
-          setFlag={onIsWeighted}
+          flag={flags.onChangeIsWeightedGrid}
+          setFlag={onChangeIsWeightedGrid}
           toggleDrawer={toggleDrawer(false)}
           flagName1="Not Weighted"
           flagName2="Randomly Weighted"
@@ -209,17 +203,17 @@ const Head = (props) => {
           name="Algorithm"
           toggleDrawer={toggleDrawer(false)}
           list={algorithms}
-          curr={algorithm}
-          setCurr={onAlgorithm}
+          curr={parameters.algorithm}
+          setCurr={onChangeAlgorithm}
         />
 
         {/* Set the heuristic */}
         <DrawerGroupButtons
           name="Heuristic"
           toggleDrawer={toggleDrawer(false)}
-          list={heuristics[allowDiagonal]}
-          curr={heuristic}
-          setCurr={onHeuristic}
+          list={heuristics[flags.isDiagonal]}
+          curr={parameters.heuristic}
+          setCurr={onChangeHeuristic}
         />
 
         {/* Set the pattern */}
@@ -227,18 +221,18 @@ const Head = (props) => {
           name="Maze"
           toggleDrawer={(event) => {
             toggleDrawer(false)(event);
-            onStartMaze();
+            onChangeIsStartMaze(true);
           }}
           list={patterns}
-          curr={pattern}
-          setCurr={onPattern}
+          curr={parameters.pattern}
+          setCurr={onChangePattern}
         />
 
         {/* Set the allow diagonal */}
         <DrawerTwoWaysButton
           name="Allow Diagonal"
-          flag={allowDiagonal}
-          setFlag={onAllowDiagonal}
+          flag={flags.isDiagonal}
+          setFlag={onChangeIsDiagonal}
           toggleDrawer={toggleDrawer(false)}
           flagName1="Not Allowed"
           flagName2="Allowed"
@@ -247,13 +241,13 @@ const Head = (props) => {
         {/* Set the bi-direction */}
         <DrawerTwoWaysButton
           name="Bidirection?"
-          flag={isBidirection}
-          setFlag={onIsBidirection}
+          flag={flags.isBiDirection}
+          setFlag={onChangeIsBiDirection}
           toggleDrawer={toggleDrawer(false)}
           flagName1="No"
           flagName2="Yes"
         />
-      </Setting>
+      </MenuDrawer>
     </>
   );
 };

@@ -3,18 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --max-col: 65;
-  --max-row: 27;
-  --node-start-row: 15;
-  --node-start-col: 14;
-  --node-end-row: 15;
-  --node-end-col: 50;
+  --node-size: 40;
 }
+
 .fade-in {
   animation: in;
   animation-duration: 0.2s;
   animation-fill-mode: forwards;
 }
+
+.node {
+  text-align: center;
+}
+
 @keyframes in {
   0% {
     opacity: 0;
