@@ -53,6 +53,9 @@ export const changeClassName = (
 export const clearPath = async (darkMode, grid) => {
   for (let row of grid) {
     for (let node of row) {
+      node.previous = null;
+      node.g = Infinity;
+      node.f = Infinity;
       changeClassName(darkMode, node);
     }
   }

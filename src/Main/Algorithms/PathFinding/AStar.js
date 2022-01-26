@@ -196,7 +196,7 @@ export default function aStar(input) {
   let openSet = [startNode];
 
   // loop untill open set is empty.
-  while (!!openSet) {
+  while (openSet.length!==0) {
     // sort the open set
     openSet.sort((a, b) => a.f - b.f);
 
