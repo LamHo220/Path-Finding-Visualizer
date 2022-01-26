@@ -37,8 +37,8 @@ const Grid = (props) => {
     window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
   );
   const [maxDimension, setMaxDimension] = useState({
-    maxRow: height - (height % 2 === 0 ? 1 : 2),
-    maxCol: width - (width % 2 === 0 ? 1 : 2),
+    maxRow: height - (height % 2 === 0 ? 1 : 0),
+    maxCol: width - (width % 2 === 0 ? 1 : 0),
   });
 
   const [start, setStart] = useState({
@@ -272,8 +272,8 @@ const Grid = (props) => {
         window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
       );
 
-      prev.maxRow = height - (height % 2 === 0 ? 1 : 2);
-      prev.maxCol = width - (width % 2 === 0 ? 1 : 2);
+      prev.maxRow = height - (height % 2 === 0 ? 1 : 0);
+      prev.maxCol = width - (width % 2 === 0 ? 1 : 0);
       return prev;
     });
     setStart((prev) => {

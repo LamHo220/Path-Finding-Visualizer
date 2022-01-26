@@ -17,7 +17,9 @@ var deltaTime;
  * @param {Boolean} input.dark Whether currently is dark mode or not.
  */
 const PrimMaze = async (input) => {
-  const { dark, grid, maxDimension, duration } = input;
+  const { dark, grid, maxDimension, duration, startNode, endNode } = input;
+  startNode.isWall = true;
+  endNode.isWall = true;
   const { maxRow, maxCol } = maxDimension;
   
   deltaTime = duration;
@@ -46,10 +48,7 @@ const PrimMaze = async (input) => {
 
     let crow = current.row;
     let ccol = current.col;
-    if (!(current.isStart || current.isEnd)) {
-      if (!(current.isStart || current.isEnd)) {
-        current.isWall = false;
-      }
+      current.isWall = false;
       changeClassName(dark, grid[crow][ccol]);
       await delay(deltaTime);
 
@@ -64,10 +63,11 @@ const PrimMaze = async (input) => {
           queue.push(grid[row][col]);
         }
       }
-    }
     // the algorithm looped at least once.
     isStarted = true;
   }
+  startNode.isWall = false;
+  endNode.isWall = false;
 };
 
 /**
@@ -86,28 +86,28 @@ const connectTwoNode = async (dark, grid, toNode, maxRow, maxCol) => {
   let tempNode;
   if (toRow - 2 >= 0) {
     tempNode = grid[toRow - 2][toCol];
-    if (!tempNode.isWall && !tempNode.isStart && !tempNode.isEnd)
+    if (!tempNode.isWall)
       fromArr.push(tempNode);
   }
   if (toRow + 2 < maxRow) {
     tempNode = grid[toRow + 2][toCol];
-    if (!tempNode.isWall && !tempNode.isStart && !tempNode.isEnd)
+    if (!tempNode.isWall)
       fromArr.push(tempNode);
   }
   if (toCol + 2 < maxCol) {
     tempNode = grid[toRow][toCol + 2];
-    if (!tempNode.isWall && !tempNode.isStart && !tempNode.isEnd)
+    if (!tempNode.isWall)
       fromArr.push(tempNode);
   }
   if (toCol - 2 >= 0) {
     tempNode = grid[toRow][toCol - 2];
-    if (!tempNode.isWall && !tempNode.isStart && !tempNode.isEnd)
+    if (!tempNode.isWall)
       fromArr.push(tempNode);
   }
   fromNode = fromArr[rand(0, fromArr.length - 1)];
   let fromRow = fromNode.row;
   let fromCol = fromNode.col;
-  if (!(toNode.isEnd || toNode.isStart)) {
+  // if (!(toNode.isEnd || toNode.isStart)) {
     let next;
     if (toRow - fromRow === 2) {
       // South
@@ -122,17 +122,13 @@ const connectTwoNode = async (dark, grid, toNode, maxRow, maxCol) => {
       // West
       next = grid[fromRow][fromCol - 1];
     }
-    if (!(next.isStart || next.isEnd)) {
       next.isWall = false;
       changeClassName(dark, next);
-    }
     await delay(deltaTime);
-    if (!(toNode.isStart || toNode.isEnd)) {
       toNode.isWall = false;
       changeClassName(dark, toNode);
-    }
     await delay(deltaTime);
-  }
+  // }
 };
 
 /**
@@ -151,7 +147,7 @@ const getPrimDir = async (dark, grid, node, maxRow, maxCol) => {
   let next;
   if (row - 2 >= 0) {
     next = grid[row - 2][col];
-    if (next.isWall && !next.isStart && !next.isEnd) {
+    if (next.isWall) {
       result.push("N");
       changeClassName(dark, grid[row - 2][col], "bg-cyan-500", true);
       await delay(deltaTime);
@@ -159,7 +155,7 @@ const getPrimDir = async (dark, grid, node, maxRow, maxCol) => {
   }
   if (row + 2 < maxRow) {
     next = grid[row + 2][col];
-    if (next.isWall && !next.isStart && !next.isEnd) {
+    if (next.isWall) {
       result.push("S");
       changeClassName(dark, grid[row + 2][col], "bg-cyan-500", true);
       await delay(deltaTime);
@@ -167,7 +163,7 @@ const getPrimDir = async (dark, grid, node, maxRow, maxCol) => {
   }
   if (col + 2 < maxCol) {
     next = grid[row][col + 2];
-    if (next.isWall && !next.isStart && !next.isEnd) {
+    if (next.isWall) {
       result.push("E");
       changeClassName(dark, grid[row][col + 2], "bg-cyan-500", true);
       await delay(deltaTime);
@@ -175,7 +171,7 @@ const getPrimDir = async (dark, grid, node, maxRow, maxCol) => {
   }
   if (col - 2 >= 0) {
     next = grid[row][col - 2];
-    if (next.isWall && !next.isStart && !next.isEnd) {
+    if (next.isWall) {
       result.push("W");
       changeClassName(dark, grid[row][col - 2], "bg-cyan-500", true);
       await delay(deltaTime);
