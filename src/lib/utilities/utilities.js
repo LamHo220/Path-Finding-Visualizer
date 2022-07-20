@@ -1,4 +1,4 @@
-import PathFinding from "../Algorithms/PathFinding/PathFinding";
+import PathFinding from "../PathFinding/PathFinding";
 import { pause } from "../Constants/Constants";
 
 /**

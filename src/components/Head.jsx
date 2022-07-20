@@ -6,7 +6,7 @@ import {
   Slider,
   Box,
 } from "@mui/material";
-import { heuristics, algorithms, patterns, pause } from "./Constants/Constants";
+import { heuristics, algorithms, patterns, pause } from "../lib/Constants/Constants";
 import { useState } from "react";
 import {
   DrawerGroupButtons,

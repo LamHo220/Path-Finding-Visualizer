@@ -1,5 +1,5 @@
-import { rand, changeClassName, delay } from "../../utilities/utilities";
-import { rowDir, colDir } from "../../Constants/Constants";
+import { rand, changeClassName, delay } from "../utilities/utilities";
+import { rowDir, colDir } from "../Constants/Constants";
 
 /**
  * The time to be waited.

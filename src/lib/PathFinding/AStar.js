@@ -1,4 +1,4 @@
-import Heuristic from "../../Heuristic/Heuristic";
+import Heuristic from "../Heuristic/Heuristic";
 import {
   getNeighbours,
   distance,

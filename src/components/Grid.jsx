@@ -9,9 +9,9 @@ import {
   visualize,
   randomWeight,
   clearWeight,
-} from "./utilities/utilities";
-import Mazes from "./Algorithms/Maze/Mazes";
-import PathFinding from "./Algorithms/PathFinding/PathFinding";
+} from "../lib/utilities/utilities";
+import Mazes from "../lib/Maze/Mazes";
+import PathFinding from "../lib/PathFinding/PathFinding";
 
 /**
  * A component of grid.

@@ -2,7 +2,7 @@ import {
   rand,
   changeClassName,
   delay,
-} from "../../utilities/utilities";
+} from "../utilities/utilities";
 import { isHorizontalCut } from "./utilities/utilities";
 
 /**

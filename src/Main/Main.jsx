@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Grid from "./Grid";
-import Head from "./Head";
-import Result from "./Result";
+import Grid from "../components/Grid";
+import Head from "../components/Head";
+import Result from "../components/Result";
 import { Paper, createTheme, ThemeProvider } from "@mui/material";
 import Swal from "sweetalert2";
 

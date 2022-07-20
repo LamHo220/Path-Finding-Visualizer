@@ -1,4 +1,4 @@
-import { changeClassName, delay } from "../../utilities/utilities";
+import { changeClassName, delay } from "../utilities/utilities";
 
 /**
  * A function to clean the walls os of grid.

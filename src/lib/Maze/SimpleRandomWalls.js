@@ -1,4 +1,4 @@
-import { changeClassName } from "../../utilities/utilities";
+import { changeClassName } from "../utilities/utilities";
 
 /**
  * A function that simply generate some wall on the grid.
