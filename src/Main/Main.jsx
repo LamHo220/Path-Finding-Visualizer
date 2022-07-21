@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import Grid from "../components/Grid";
 import Head from "../components/Head";
 import Result from "../components/Result";
-import { Paper, createTheme, ThemeProvider } from "@mui/material";
+import { Paper, createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 import Swal from "sweetalert2";
+import { ColorModeContext, CurrentSelections } from "../context/Context";
+import { useMemo } from "react";
 
 /**
  * The main component of the GUI
@@ -11,6 +13,25 @@ import Swal from "sweetalert2";
  * @returns The main component
  */
 const Main = (props) => {
+  const [mode, setMode] = useState("light");
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+      },
+    }),
+    []
+  );
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+        },
+      }),
+    [mode]
+  );
   // initialize the state
   const [results, setResults] = useState({
     numberOfSteps: 0,
@@ -40,11 +61,11 @@ const Main = (props) => {
   const [settings, setSettings] = useState({});
 
   // the theme of the GUI.
-  const theme = createTheme({
-    palette: {
-      mode: flags.isDarkMode ? "dark" : "light",
-    },
-  });
+  // const theme = createTheme({
+  //   palette: {
+  //     mode: flags.isDarkMode ? "dark" : "light",
+  //   },
+  // });
 
   /**
    * Hanlder of when slice value change update the animation speed.
@@ -62,10 +83,10 @@ const Main = (props) => {
   const handleChangeLengthOfPath = (lengthOfPath) => {
     setResults({ ...results, lengthOfPath });
   };
-  
-  const handleChangeAllResults = (numberOfSteps, lengthOfPath)=>{
-    setResults({numberOfSteps, lengthOfPath});
-  }
+
+  const handleChangeAllResults = (numberOfSteps, lengthOfPath) => {
+    setResults({ numberOfSteps, lengthOfPath });
+  };
 
   const handleChangeAlgorithm = (algorithm) => {
     setParameters({ ...parameters, algorithm });
@@ -173,42 +194,45 @@ const Main = (props) => {
   }, [flags.isDarkMode]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Paper>
-        <Head
-          theme={theme}
-          flags={flags}
-          parameters={parameters}
-          onIsTutorial={handleChangeIsTutorial}
-          onChangeIsStart={handleChangeIsStart}
-          onChangeIsStartMaze={handleChangeIsStartMaze}
-          onChangeHeuristic={handleChangeHeuristic}
-          onChangeIsDiagonal={() => handleChangeIsDiagonal(!flags.isDiagonal)}
-          onChangeAlgorithm={handleChangeAlgorithm}
-          onChangePattern={handleChangePattern}
-          onChangeIsDarkMode={handleChangeIsDarkMode}
-          onSlice={handleSlice}
-          onChangeIsWeightedGrid={handleChangeIsWeightedGrid}
-          onChangeIsClearPath={handleChangeIsClearPath}
-          onChangeIsBiDirection={handleChangeIsBiDirection}
-        />
-        <Result
-          numberOfSteps={results.numberOfSteps}
-          lengthOfPath={results.lengthOfPath}
-        />
-        <Grid
-          flags={flags}
-          parameters={parameters}
-          animationSpeed={animationSpeed}
-          onChangeIsClearPath={handleChangeIsClearPath}
-          onChangeNumberOfSteps={handleChangeNumberOfSteps}
-          onChangeLengthOfPath={handleChangeLengthOfPath}
-          onChangeIsStart={handleChangeIsStart}
-          onChangeIsStartMaze={handleChangeIsStartMaze}
-          onChangeAllResults={handleChangeAllResults}
-        />
-      </Paper>
-    </ThemeProvider>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+          <CssBaseline enableColorScheme />
+        <Paper>
+          <Head
+            theme={theme}
+            flags={flags}
+            parameters={parameters}
+            onIsTutorial={handleChangeIsTutorial}
+            onChangeIsStart={handleChangeIsStart}
+            onChangeIsStartMaze={handleChangeIsStartMaze}
+            onChangeHeuristic={handleChangeHeuristic}
+            onChangeIsDiagonal={() => handleChangeIsDiagonal(!flags.isDiagonal)}
+            onChangeAlgorithm={handleChangeAlgorithm}
+            onChangePattern={handleChangePattern}
+            onChangeIsDarkMode={handleChangeIsDarkMode}
+            onSlice={handleSlice}
+            onChangeIsWeightedGrid={handleChangeIsWeightedGrid}
+            onChangeIsClearPath={handleChangeIsClearPath}
+            onChangeIsBiDirection={handleChangeIsBiDirection}
+          />
+          <Result
+            numberOfSteps={results.numberOfSteps}
+            lengthOfPath={results.lengthOfPath}
+          />
+          <Grid
+            flags={flags}
+            parameters={parameters}
+            animationSpeed={animationSpeed}
+            onChangeIsClearPath={handleChangeIsClearPath}
+            onChangeNumberOfSteps={handleChangeNumberOfSteps}
+            onChangeLengthOfPath={handleChangeLengthOfPath}
+            onChangeIsStart={handleChangeIsStart}
+            onChangeIsStartMaze={handleChangeIsStartMaze}
+            onChangeAllResults={handleChangeAllResults}
+          />
+        </Paper>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 };
 

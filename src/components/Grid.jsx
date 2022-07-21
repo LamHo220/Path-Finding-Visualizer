@@ -12,6 +12,9 @@ import {
 } from "../lib/utilities/utilities";
 import Mazes from "../lib/Maze/Mazes";
 import PathFinding from "../lib/PathFinding/PathFinding";
+import { useContext } from "react";
+import { useTheme } from "@emotion/react";
+import { ColorModeContext } from "../context/Context";
 
 /**
  * A component of grid.
@@ -27,28 +30,32 @@ import PathFinding from "../lib/PathFinding/PathFinding";
  * @returns {JSX.Element} A Grid component
  */
 const Grid = (props) => {
+  const theme = useTheme();
+  const colorMode = useContext(ColorModeContext);
   const style = getComputedStyle(document.body);
   // initalize the state
-  const height = Math.floor(
-    (0.9 * window.innerHeight) / parseInt(style.getPropertyValue("--node-size"))
-  );
+  // const height = Math.floor(
+  //   (0.9 * window.innerHeight) / parseInt(style.getPropertyValue("--node-size"))
+  // );
 
-  const width = Math.floor(
-    window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
-  );
-  const [maxDimension, setMaxDimension] = useState({
-    maxRow: height - (height % 2 === 0 ? 1 : 0),
-    maxCol: width - (width % 2 === 0 ? 1 : 0),
-  });
+  // const width = Math.floor(
+  //   window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
+  // );
+  // const [maxDimension, setMaxDimension] = useState({
+  //   maxRow: height - (height % 2 === 0 ? 1 : 0),
+  //   maxCol: width - (width % 2 === 0 ? 1 : 0),
+  // });
 
   const [start, setStart] = useState({
-    row: Math.floor(maxDimension.maxRow / 2),
-    col: Math.floor(maxDimension.maxCol / 3),
+    // row: Math.floor(maxDimension.maxRow / 2),
+    // col: Math.floor(maxDimension.maxCol / 3),
+    row: Math.floor(20 / 2),
+    col: Math.floor(50 / 3),
   });
 
   const [end, setEnd] = useState({
-    row: Math.floor(maxDimension.maxRow / 2),
-    col: Math.floor((maxDimension.maxCol * 2) / 3),
+    row: Math.floor(20 / 2),
+    col: Math.floor((50 * 2) / 3),
   });
 
   const [prev, setPrev] = useState(null);
@@ -66,9 +73,7 @@ const Grid = (props) => {
     onChangeAllResults,
   } = props;
 
-  const [grid, setGrid] = useState(
-    initGrid(maxDimension.maxRow, maxDimension.maxCol, start, end)
-  );
+  const [grid, setGrid] = useState(initGrid(20, 50, start, end));
 
   /**
    * A function that handle the mouse down event.
@@ -84,7 +89,7 @@ const Grid = (props) => {
       const isWall = initNode.isWall;
       setPrev(!isWall);
       initNode.isWall = !isWall;
-      changeClassName(flags.isDarkMode, initNode);
+      changeClassName(theme.palette.mode === "dark", initNode);
     } else {
       setPrev(initNode);
     }
@@ -102,7 +107,7 @@ const Grid = (props) => {
     event.preventDefault();
     if (!(node.isStart || node.isEnd) && !node.isWall === prev) {
       node.isWall = prev;
-      changeClassName(flags.isDarkMode, node);
+      changeClassName(theme.palette.mode === "dark", node);
       setGrid(grid.slice());
     } else if (node.isWall === prev) {
       // pass
@@ -171,11 +176,15 @@ const Grid = (props) => {
       if (flags.isStart) {
         onChangeLengthOfPath(0);
         onChangeNumberOfSteps(0);
-        await clearPath(flags.isDarkMode, grid);
+        await clearPath(theme.palette.mode === "dark", grid);
         const startNode = grid[start.row][start.col];
         const endNode = grid[end.row][end.col];
         const { visited, path } = await visualize(
-          flags,
+          {
+            isDarkMode: theme.palette.mode === "dark",
+            isDiagonal: flags.isDiagonal,
+            isBiDirection: flags.isBiDirection,
+          },
           parameters,
           grid,
           startNode,
@@ -194,7 +203,7 @@ const Grid = (props) => {
 
   // if the grid,algorithm, isBidirection, darkMode is changed and it is visualized, refresh.
   useEffect(() => {
-    clearPath(flags.isDarkMode, grid);
+    clearPath(theme.palette.mode === "dark", grid);
     if (visualized) {
       const startNode = grid[start.row][start.col];
       const endNode = grid[end.row][end.col];
@@ -207,14 +216,18 @@ const Grid = (props) => {
         heuristic: parameters.heuristic,
       };
       let res = PathFinding[parameters.algorithm](input);
-      refresh(flags.isDarkMode, res.visitedNodes, res.shortestPath);
+      refresh(
+        theme.palette.mode === "dark",
+        res.visitedNodes,
+        res.shortestPath
+      );
       onChangeAllResults(
         res.visitedNodes.length - 1,
         res.shortestPath.length - 1
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grid, parameters.algorithm, flags.isBiDirection, flags.isDarkMode]);
+  }, [grid, parameters.algorithm, flags.isBiDirection, theme.palette.mode]);
 
   // if the startMaze is changed and it is true, gnerate the maze.
   useEffect(() => {
@@ -224,9 +237,9 @@ const Grid = (props) => {
         const startNode = grid[start.row][start.col];
         const endNode = grid[end.row][end.col];
         const input = {
-          dark: flags.isDarkMode,
+          dark: theme.palette.mode === "dark",
           grid,
-          maxDimension,
+          maxDimension: { maxRow: 20, maxCol: 50 },
           startNode,
           endNode,
           duration: 2 * animationSpeed,
@@ -243,7 +256,7 @@ const Grid = (props) => {
   // if the clear is changed and it is true, clear the path.
   useEffect(() => {
     if (flags.isClearPath) {
-      clearPath(flags.isDarkMode, grid);
+      clearPath(theme.palette.mode === "dark", grid);
       setVisualized(false);
       onChangeIsClearPath(false);
     }
@@ -252,7 +265,7 @@ const Grid = (props) => {
 
   // if the isWeighted is changed and it is true, weight or unweight the grid.
   useEffect(() => {
-    clearPath(flags.isDarkMode, grid);
+    clearPath(theme.palette.mode === "dark", grid);
     if (flags.isWeightedGrid) {
       setGrid((prevGrid) => randomWeight(prevGrid));
     } else {
@@ -261,81 +274,76 @@ const Grid = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flags.isWeightedGrid]);
 
-  const handleResize = () => {
-    setVisualized(false);
-    setMaxDimension((prev) => {
-      const height = Math.floor(
-        (0.9 * window.innerHeight) /
-          parseInt(style.getPropertyValue("--node-size"))
-      );
-      const width = Math.floor(
-        window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
-      );
+  // const handleResize = () => {
+  //   setVisualized(false);
+  //   setMaxDimension((prev) => {
+  //     const height = Math.floor(
+  //       (0.9 * window.innerHeight) /
+  //         parseInt(style.getPropertyValue("--node-size"))
+  //     );
+  //     const width = Math.floor(
+  //       window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
+  //     );
 
-      prev.maxRow = height - (height % 2 === 0 ? 1 : 0);
-      prev.maxCol = width - (width % 2 === 0 ? 1 : 0);
-      return prev;
-    });
-    setStart((prev) => {
-      prev.row = Math.floor(maxDimension.maxRow / 2);
-      prev.col = Math.floor(maxDimension.maxCol / 3);
-      return prev;
-    });
-    setEnd((prev) => {
-      prev.row = Math.floor(maxDimension.maxRow / 2);
-      prev.col = Math.floor((maxDimension.maxCol * 2) / 3);
-      return prev;
-    });
-    setGrid((prev) => {
-      const newGrid = initGrid(
-        maxDimension.maxRow,
-        maxDimension.maxCol,
-        start,
-        end
-      );
-      prev = newGrid;
-      return prev;
-    });
-  };
+  //     prev.maxRow = height - (height % 2 === 0 ? 1 : 0);
+  //     prev.maxCol = width - (width % 2 === 0 ? 1 : 0);
+  //     return prev;
+  //   });
+  //   setStart((prev) => {
+  //     prev.row = Math.floor(maxDimension.maxRow / 2);
+  //     prev.col = Math.floor(maxDimension.maxCol / 3);
+  //     return prev;
+  //   });
+  //   setEnd((prev) => {
+  //     prev.row = Math.floor(maxDimension.maxRow / 2);
+  //     prev.col = Math.floor((maxDimension.maxCol * 2) / 3);
+  //     return prev;
+  //   });
+  //   setGrid((prev) => {
+  //     const newGrid = initGrid(
+  //       maxDimension.maxRow,
+  //       maxDimension.maxCol,
+  //       start,
+  //       end
+  //     );
+  //     prev = newGrid;
+  //     return prev;
+  //   });
+  // };
 
-  useEffect(() => {
-    window.addEventListener("resize", handleResize, false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener("resize", handleResize, false);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <div
       onContextMenu={handleContextMenu}
       className={flags.isDisabled ? "pointer-events-none" : ""}
     >
-      <Box
-        display="grid"
-        gridTemplateColumns={`repeat(${maxDimension.maxCol}, 40px)`}
-        gridTemplateRows={`repeat(${maxDimension.maxRow}, 40px)`}
-        sx={{
-          width: window.innerWidth,
-        }}
-      >
-        {grid.map((row, y) => {
-          return row.map((node, x) => {
-            const { isStart, isEnd, isWall } = node;
-            return (
-              <Node
-                dark={flags.isDarkMode}
-                row={y}
-                col={x}
-                isWall={isWall}
-                isStart={isStart}
-                isEnd={isEnd}
-                id={y + "-" + x}
-                onMouseDown={handleMouseDown}
-                onMouseEnter={handleMouseEnter}
-                onMouseUp={handleMouseUp}
-              />
-            );
-          });
-        })}
-      </Box>
+      {grid.map((row, y) => {
+        return (
+          <div>
+            {row.map((node, x) => {
+              const { isStart, isEnd, isWall } = node;
+              return (
+                <Node
+                  dark={theme.palette.mode === "dark"}
+                  row={y}
+                  col={x}
+                  isWall={isWall}
+                  isStart={isStart}
+                  isEnd={isEnd}
+                  id={y + "-" + x}
+                  onMouseDown={handleMouseDown}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseUp={handleMouseUp}
+                />
+              );
+            })}
+          </div>
+        );
+      })}
     </div>
   );
 };

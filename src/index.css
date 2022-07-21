@@ -1,9 +1,9 @@
-@tailwind base;
+/* @tailwind base; */
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --node-size: 40;
+  --node-size: 2vw;
 }
 
 .fade-in {
@@ -14,6 +14,10 @@
 
 .node {
   text-align: center;
+  width: var(--node-size);
+  height: var(--node-size);
+  display: table-cell;
+  border: 1px gray dotted;
 }
 
 @keyframes in {
@@ -44,4 +48,9 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }

@@ -5,6 +5,7 @@ import {
   IconButton,
   Slider,
   Box,
+  useTheme,
 } from "@mui/material";
 import { heuristics, algorithms, patterns, pause } from "../lib/Constants/Constants";
 import { useState } from "react";
@@ -20,6 +21,8 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import Swal from "sweetalert2";
+import { ColorModeContext } from "../context/Context";
+import { useContext } from "react";
 
 /**
  * A component of Head, which is an App bar.
@@ -33,7 +36,6 @@ import Swal from "sweetalert2";
  * @param {Function} props.onChangeIsDiagonal The function to change allowDiagonal.
  * @param {Function} props.onChangeAlgorithm The function to change algorithm.
  * @param {Function} props.onChangePattern The function to change oattern.
- * @param {Function} props.onChangeIsDarkMode The function to change darkmode or not.
  * @param {Function} props.onSlice The function to change the time ratio.
  * @param {Function} props.onChangeIsWeightedGrid The function to change isWeighted.
  * @param {Function} props.onChangeIsClearPath The function to change clearPath.
@@ -41,8 +43,10 @@ import Swal from "sweetalert2";
  * @returns {JSX.Element} A component of Head, which is an App bar.
  */
 const Head = (props) => {
+  const theme = useTheme();
+  const colorMode = useContext(ColorModeContext);
+
   const {
-    theme,
     flags,
     parameters,
     onIsTutorial,
@@ -52,7 +56,6 @@ const Head = (props) => {
     onChangeIsDiagonal,
     onChangeAlgorithm,
     onChangePattern,
-    onChangeIsDarkMode,
     onSlice,
     onChangeIsWeightedGrid,
     onChangeIsClearPath,
@@ -73,7 +76,7 @@ const Head = (props) => {
 
   return (
     <>
-      <AppBar position="static" open={open} color="default">
+      <AppBar position="static" open={open}>
         <Toolbar>
           {/* Call the menu */}
           <IconButton
@@ -166,7 +169,7 @@ const Head = (props) => {
             edge="start"
             color="inherit"
             aria-label="isDarkMode"
-            onClick={() => onChangeIsDarkMode(!flags.isDarkMode)}
+            onClick={colorMode.toggleColorMode}
           >
             <DarkModeOutlinedIcon />
           </IconButton>
