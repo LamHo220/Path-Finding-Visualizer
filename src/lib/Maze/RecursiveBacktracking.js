@@ -1,5 +1,5 @@
 import { rand, changeClassName, delay } from "../utilities/utilities";
-import { rowDir, colDir } from "../Constants/Constants";
+import { rowDir, colDir, pause } from "../Constants/Constants";
 
 /**
  * The time to be waited.
@@ -75,6 +75,9 @@ const getDirection = (grid, row, col) => {
  * @param {Number} maxCol The maximum column of the grid.
  */
 const doRecursiveBacktracker = async (dark, grid, node, maxRow, maxCol) => {
+  while (pause.getFlag()) {
+    await delay(10);
+  }
   const row = node.row;
   const col = node.col;
 

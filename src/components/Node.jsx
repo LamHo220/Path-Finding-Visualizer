@@ -32,22 +32,22 @@ const Node = (props) => {
   } = props;
 
   const name = isStart
-    ? !theme.palette.mode==="dark"
+    ? theme.palette.mode!=="dark"
       ? "bg-blue-400"
       : "bg-blue-700"
     : isEnd
-    ? !theme.palette.mode==="dark"
+    ? theme.palette.mode!=="dark"
       ? "bg-pink-400"
       : "bg-pink-700"
     : isWall
-    ? (!theme.palette.mode==="dark" ? "bg-gray-400" : "bg-gray-600") + " fade-in"
+    ? (theme.palette.mode!=="dark" ? "bg-gray-400" : "bg-gray-600") + " fade-in"
     : "hover:bg-orange-300";
 
   return (
     <div
       id={id}
       className={`node ${name} border ${
-        !theme.palette.mode==="dark" ? "border-gray-200" : "border-gray-700"
+        theme.palette.mode!=="dark" ? "border-gray-200" : "border-gray-700"
       } m-0 p-0 hover:bg-orange-300`}
       onMouseDown={(event) => onMouseDown(event, row, col)}
       onMouseOverCapture={(event) => onMouseEnter(event, row, col)}

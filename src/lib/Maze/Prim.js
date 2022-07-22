@@ -1,5 +1,5 @@
 import { rand, changeClassName, delay } from "../utilities/utilities";
-import { rowDir, colDir } from "../Constants/Constants";
+import { rowDir, colDir, pause } from "../Constants/Constants";
 
 /**
  * The time to be waited.
@@ -36,6 +36,10 @@ const PrimMaze = async (input) => {
 
   // loop until the queue is empty.
   while (!!queue.length) {
+    while (pause.getFlag()) {
+      console.log(pause.getFlag());
+      await delay(10);
+    }
     // randomly get a node from queue and remove it from queue.
     let current = queue[rand(0, queue.length - 1)];
     queue = queue.filter((e) => e !== current);

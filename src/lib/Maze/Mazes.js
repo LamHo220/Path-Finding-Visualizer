@@ -5,6 +5,7 @@ import PrimMaze from "./Prim";
 import Kruskal from "./Kruskal";
 import RecursiveDivisionMaze from "./RecursiveDivision";
 import RecursiveBacktrackingMaze from "./RecursiveBacktracking";
+import { pause } from "../Constants/Constants";
 
 /**
  * A function to reverse the grid
@@ -21,7 +22,10 @@ const Reverse = async (input) => {
   const { maxRow, maxCol } = maxDimension;
   for (let row = 0; row < maxRow; ++row) {
     for (let col = 0; col < maxCol; ++col) {
-      setTimeout(() => {
+      setTimeout(async() => {
+        while (pause.getFlag()) {
+          await delay(10);
+        }
         let node = grid[row][col];
         if (!(node.isStart || node.isEnd)) {
           node.isWall = !node.isWall;

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Node from "./Node";
-import { Box } from "@mui/system";
 import {
   changeClassName,
   refresh,
@@ -14,7 +13,7 @@ import Mazes from "../lib/Maze/Mazes";
 import PathFinding from "../lib/PathFinding/PathFinding";
 import { useContext } from "react";
 import { useTheme } from "@emotion/react";
-import { ColorModeContext } from "../context/Context";
+import { ColorModeContext, CurrentSelections } from "../context/Context";
 
 /**
  * A component of grid.
@@ -32,7 +31,8 @@ import { ColorModeContext } from "../context/Context";
 const Grid = (props) => {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
-  const style = getComputedStyle(document.body);
+  const selections = useContext(CurrentSelections);
+  // const style = getComputedStyle(document.body);
   // initalize the state
   // const height = Math.floor(
   //   (0.9 * window.innerHeight) / parseInt(style.getPropertyValue("--node-size"))
@@ -63,14 +63,14 @@ const Grid = (props) => {
 
   const {
     animationSpeed,
-    flags,
-    parameters,
-    onChangeIsStart,
-    onChangeIsStartMaze,
-    onChangeIsClearPath,
-    onChangeNumberOfSteps,
-    onChangeLengthOfPath,
-    onChangeAllResults,
+    // flags,
+    // parameters,
+    // onChangeIsStart,
+    // onChangeIsStartMaze,
+    // onChangeIsClearPath,
+    // onChangeNumberOfSteps,
+    // onChangeLengthOfPath,
+    // onChangeAllResults,
   } = props;
 
   const [grid, setGrid] = useState(initGrid(20, 50, start, end));
@@ -173,33 +173,43 @@ const Grid = (props) => {
   // if the start is changed and it is false, visualize.
   useEffect(() => {
     async function visualIt() {
-      if (flags.isStart) {
-        onChangeLengthOfPath(0);
-        onChangeNumberOfSteps(0);
+      if (selections.flags.isStart) {
+        selections.setResults((prev) => {
+          return { ...prev, numberOfSteps: 0 };
+        });
+        selections.setResults((prev) => {
+          return { ...prev, lengthOfPath: 0 };
+        });
         await clearPath(theme.palette.mode === "dark", grid);
         const startNode = grid[start.row][start.col];
         const endNode = grid[end.row][end.col];
         const { visited, path } = await visualize(
           {
             isDarkMode: theme.palette.mode === "dark",
-            isDiagonal: flags.isDiagonal,
-            isBiDirection: flags.isBiDirection,
+            isDiagonal: selections.flags.isDiagonal,
+            isBiDirection: selections.flags.isBiDirection,
           },
-          parameters,
+          selections.parameters,
           grid,
           startNode,
           endNode,
           2 * animationSpeed
         );
-        onChangeLengthOfPath(visited);
-        onChangeNumberOfSteps(path);
+        selections.setResults((prev) => {
+          return { ...prev, numberOfSteps: path.length };
+        });
+        selections.setResults((prev) => {
+          return { ...prev, lengthOfPath: visited.length };
+        });
         setVisualized(true);
-        onChangeIsStart(false);
+        selections.setFlags((prev) => {
+          return { ...prev, isStart: false, isDisabled: false };
+        });
       }
     }
     visualIt();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flags.isStart]);
+  }, [selections.flags.isStart]);
 
   // if the grid,algorithm, isBidirection, darkMode is changed and it is visualized, refresh.
   useEffect(() => {
@@ -211,29 +221,36 @@ const Grid = (props) => {
         startNode,
         endNode,
         grid,
-        isBiDirection: flags.isBiDirection,
-        isDiagonal: flags.isDiagonal,
-        heuristic: parameters.heuristic,
+        isBiDirection: selections.flags.isBiDirection,
+        isDiagonal: selections.flags.isDiagonal,
+        heuristic: selections.parameters.heuristic,
       };
-      let res = PathFinding[parameters.algorithm](input);
+      let res = PathFinding[selections.parameters.algorithm](input);
       refresh(
         theme.palette.mode === "dark",
         res.visitedNodes,
         res.shortestPath
       );
-      onChangeAllResults(
-        res.visitedNodes.length - 1,
-        res.shortestPath.length - 1
-      );
+      selections.setResults((prev) => {
+        return {
+          numberOfSteps: res.visitedNodes.length - 1,
+          lengthOfPath: res.shortestPath.length - 1,
+        };
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [grid, parameters.algorithm, flags.isBiDirection, theme.palette.mode]);
+  }, [
+    grid,
+    selections.parameters.algorithm,
+    selections.flags.isBiDirection,
+    theme.palette.mode,
+  ]);
 
   // if the startMaze is changed and it is true, gnerate the maze.
   useEffect(() => {
     async function generateMaze() {
       setVisualized(false);
-      if (flags.isStartMaze) {
+      if (selections.flags.isStartMaze) {
         const startNode = grid[start.row][start.col];
         const endNode = grid[end.row][end.col];
         const input = {
@@ -245,81 +262,55 @@ const Grid = (props) => {
           duration: 2 * animationSpeed,
           density: 0.3,
         };
-        await Mazes[parameters.pattern](input);
-        onChangeIsStartMaze();
+        await Mazes[selections.parameters.pattern](input);
+        selections.setFlags((prev) => {
+          return {
+            ...prev,
+            isStartMaze: false,
+            isDisabled: false,
+          };
+        });
+        selections.setParameters((prev) => {
+          return {
+            heuristic: selections.parameters.heuristic,
+            pattern: "",
+            algorithm: selections.parameters.algorithm,
+          };
+        });
       }
     }
     generateMaze();
+    console.log(theme.palette.mode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flags.isStartMaze]);
+  }, [selections.flags.isStartMaze]);
 
   // if the clear is changed and it is true, clear the path.
   useEffect(() => {
-    if (flags.isClearPath) {
+    if (selections.flags.isClearPath) {
       clearPath(theme.palette.mode === "dark", grid);
       setVisualized(false);
-      onChangeIsClearPath(false);
+      selections.setFlags((prev) => {
+        return { ...prev, isClearPath: true };
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flags.isClearPath]);
+  }, [selections.flags.isClearPath]);
 
   // if the isWeighted is changed and it is true, weight or unweight the grid.
   useEffect(() => {
     clearPath(theme.palette.mode === "dark", grid);
-    if (flags.isWeightedGrid) {
+    if (selections.flags.isWeightedGrid) {
       setGrid((prevGrid) => randomWeight(prevGrid));
     } else {
       setGrid((prevGrid) => clearWeight(prevGrid));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flags.isWeightedGrid]);
-
-  // const handleResize = () => {
-  //   setVisualized(false);
-  //   setMaxDimension((prev) => {
-  //     const height = Math.floor(
-  //       (0.9 * window.innerHeight) /
-  //         parseInt(style.getPropertyValue("--node-size"))
-  //     );
-  //     const width = Math.floor(
-  //       window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
-  //     );
-
-  //     prev.maxRow = height - (height % 2 === 0 ? 1 : 0);
-  //     prev.maxCol = width - (width % 2 === 0 ? 1 : 0);
-  //     return prev;
-  //   });
-  //   setStart((prev) => {
-  //     prev.row = Math.floor(maxDimension.maxRow / 2);
-  //     prev.col = Math.floor(maxDimension.maxCol / 3);
-  //     return prev;
-  //   });
-  //   setEnd((prev) => {
-  //     prev.row = Math.floor(maxDimension.maxRow / 2);
-  //     prev.col = Math.floor((maxDimension.maxCol * 2) / 3);
-  //     return prev;
-  //   });
-  //   setGrid((prev) => {
-  //     const newGrid = initGrid(
-  //       maxDimension.maxRow,
-  //       maxDimension.maxCol,
-  //       start,
-  //       end
-  //     );
-  //     prev = newGrid;
-  //     return prev;
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   window.addEventListener("resize", handleResize, false);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  }, [selections.flags.isWeightedGrid]);
 
   return (
     <div
       onContextMenu={handleContextMenu}
-      className={flags.isDisabled ? "pointer-events-none" : ""}
+      className={selections.flags.isDisabled ? "pointer-events-none" : ""}
     >
       {grid.map((row, y) => {
         return (

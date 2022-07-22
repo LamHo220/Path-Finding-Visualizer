@@ -1,3 +1,4 @@
+import { pause } from "../Constants/Constants";
 import {
   changeClassName,
   delay,
@@ -112,6 +113,9 @@ const Kruskal = async (input) => {
 
   // loop until the open set is empty.
   while (open.length !== 0) {
+    while (pause.getFlag()) {
+      await delay(10);
+    }
     // randomly determin this node should horizontally divide the sub-grid or not.
     const isHorizontal = isHorizontalCut(0, 0);
 

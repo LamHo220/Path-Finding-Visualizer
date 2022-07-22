@@ -1,3 +1,4 @@
+import { pause } from "../Constants/Constants";
 import {
   rand,
   changeClassName,
@@ -57,6 +58,9 @@ const doRecuresiveDivision = async (
   toCol,
   isHorizontal
 ) => {
+  while (pause.getFlag()) {
+    await delay(10);
+  }
   if (isHorizontal) {
     // base case
     if (toCol - fromCol < 2) {

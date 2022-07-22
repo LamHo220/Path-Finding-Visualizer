@@ -58,15 +58,6 @@ const Main = (props) => {
 
   const [animationSpeed, setAnimationSpeed] = useState(5);
 
-  const [settings, setSettings] = useState({});
-
-  // the theme of the GUI.
-  // const theme = createTheme({
-  //   palette: {
-  //     mode: flags.isDarkMode ? "dark" : "light",
-  //   },
-  // });
-
   /**
    * Hanlder of when slice value change update the animation speed.
    * @param {Event} event the event.
@@ -76,61 +67,8 @@ const Main = (props) => {
     setAnimationSpeed(value);
   };
 
-  const handleChangeNumberOfSteps = (numberOfSteps) => {
-    setResults({ ...results, numberOfSteps });
-  };
-
-  const handleChangeLengthOfPath = (lengthOfPath) => {
-    setResults({ ...results, lengthOfPath });
-  };
-
-  const handleChangeAllResults = (numberOfSteps, lengthOfPath) => {
-    setResults({ numberOfSteps, lengthOfPath });
-  };
-
-  const handleChangeAlgorithm = (algorithm) => {
-    setParameters({ ...parameters, algorithm });
-  };
-
   const handleChangeHeuristic = (heuristic) => {
     setParameters({ ...parameters, heuristic });
-  };
-
-  const handleChangePattern = (pattern) => {
-    setParameters({ ...parameters, pattern });
-  };
-
-  const handleChangeIsDiagonal = (isDiagonal) => {
-    setFlags({ ...flags, isDiagonal });
-  };
-
-  const handleChangeIsStart = (isStart) => {
-    setFlags({ ...flags, isStart, isDisabled: isStart });
-  };
-
-  const handleChangeIsStartMaze = (isStartMaze) => {
-    setFlags({ ...flags, isStartMaze, isDisabled: isStartMaze });
-    setParameters({
-      heuristic: parameters.heuristic,
-      pattern: "",
-      algorithm: parameters.algorithm,
-    });
-  };
-
-  const handleChangeIsDarkMode = (isDarkMode) => {
-    setFlags({ ...flags, isDarkMode });
-  };
-
-  const handleChangeIsClearPath = (isClearPath) => {
-    setFlags({ ...flags, isClearPath });
-  };
-
-  const handleChangeIsWeightedGrid = (isWeightedGrid) => {
-    setFlags({ ...flags, isWeightedGrid });
-  };
-
-  const handleChangeIsBiDirection = (isBiDirection) => {
-    setFlags({ ...flags, isBiDirection });
   };
 
   const handleChangeIsTutorial = (isTutorial) => {
@@ -191,47 +129,34 @@ const Main = (props) => {
   useEffect(() => {
     document.body.style.backgroundColor = theme.palette.background.default;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flags.isDarkMode]);
-
+  }, [theme.palette.theme]);
+  const selections = {
+    flags,
+    parameters,
+    results,
+    setResults,
+    setParameters,
+    setFlags,
+  };
   return (
     <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
+      <CurrentSelections.Provider value={selections}>
+        <ThemeProvider theme={theme}>
           <CssBaseline enableColorScheme />
-        <Paper>
-          <Head
-            theme={theme}
-            flags={flags}
-            parameters={parameters}
-            onIsTutorial={handleChangeIsTutorial}
-            onChangeIsStart={handleChangeIsStart}
-            onChangeIsStartMaze={handleChangeIsStartMaze}
-            onChangeHeuristic={handleChangeHeuristic}
-            onChangeIsDiagonal={() => handleChangeIsDiagonal(!flags.isDiagonal)}
-            onChangeAlgorithm={handleChangeAlgorithm}
-            onChangePattern={handleChangePattern}
-            onChangeIsDarkMode={handleChangeIsDarkMode}
-            onSlice={handleSlice}
-            onChangeIsWeightedGrid={handleChangeIsWeightedGrid}
-            onChangeIsClearPath={handleChangeIsClearPath}
-            onChangeIsBiDirection={handleChangeIsBiDirection}
-          />
-          <Result
-            numberOfSteps={results.numberOfSteps}
-            lengthOfPath={results.lengthOfPath}
-          />
-          <Grid
-            flags={flags}
-            parameters={parameters}
-            animationSpeed={animationSpeed}
-            onChangeIsClearPath={handleChangeIsClearPath}
-            onChangeNumberOfSteps={handleChangeNumberOfSteps}
-            onChangeLengthOfPath={handleChangeLengthOfPath}
-            onChangeIsStart={handleChangeIsStart}
-            onChangeIsStartMaze={handleChangeIsStartMaze}
-            onChangeAllResults={handleChangeAllResults}
-          />
-        </Paper>
-      </ThemeProvider>
+          <Paper>
+            <Head
+              onSlice={handleSlice}
+            />
+            <Result
+              numberOfSteps={results.numberOfSteps}
+              lengthOfPath={results.lengthOfPath}
+            />
+            <Grid
+              animationSpeed={animationSpeed}
+            />
+          </Paper>
+        </ThemeProvider>
+      </CurrentSelections.Provider>
     </ColorModeContext.Provider>
   );
 };

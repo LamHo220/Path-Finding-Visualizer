@@ -7,7 +7,12 @@ import {
   Box,
   useTheme,
 } from "@mui/material";
-import { heuristics, algorithms, patterns, pause } from "../lib/Constants/Constants";
+import {
+  heuristics,
+  algorithms,
+  patterns,
+  pause,
+} from "../lib/Constants/Constants";
 import { useState } from "react";
 import {
   DrawerGroupButtons,
@@ -21,13 +26,13 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import Swal from "sweetalert2";
-import { ColorModeContext } from "../context/Context";
+import { ColorModeContext, CurrentSelections } from "../context/Context";
 import { useContext } from "react";
 
 /**
  * A component of Head, which is an App bar.
  * @param {Object} props The props of this component.
- * @param {Object} flags The flags in the main
+ * @param {Object} selections.flags The selections.flags in the main
  * @param {Object} parameters The The parameters for the algorithms.
  * @param {Function} props.onIsTutorial The function to change is Tutorial.
  * @param {Function} props.onChangeIsStart The function to change start.
@@ -45,21 +50,10 @@ import { useContext } from "react";
 const Head = (props) => {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
+  const selections = useContext(CurrentSelections);
 
   const {
-    flags,
-    parameters,
-    onIsTutorial,
-    onChangeIsStart,
-    onChangeIsStartMaze,
-    onChangeHeuristic,
-    onChangeIsDiagonal,
-    onChangeAlgorithm,
-    onChangePattern,
     onSlice,
-    onChangeIsWeightedGrid,
-    onChangeIsClearPath,
-    onChangeIsBiDirection,
   } = props;
 
   const [open, setOpen] = useState(false);
@@ -80,7 +74,7 @@ const Head = (props) => {
         <Toolbar>
           {/* Call the menu */}
           <IconButton
-            disabled={flags.isDisabled}
+            disabled={selections.flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
@@ -95,19 +89,23 @@ const Head = (props) => {
 
           {/* Start button */}
           <IconButton
-            disabled={flags.isDisabled}
+            disabled={selections.flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
             aria-label="start"
-            onClick={() => onChangeIsStart(true)}
+            onClick={() =>
+              selections.setFlags((prev) => {
+                return { ...prev, isStart: true, isDisabled: true };
+              })
+            }
           >
             <PlayArrowIcon />
           </IconButton>
 
           {/* Pause button */}
           <IconButton
-            disabled={!flags.isDisabled}
+            disabled={!selections.flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
@@ -137,12 +135,16 @@ const Head = (props) => {
 
           {/* Clean path button */}
           <IconButton
-            disabled={flags.isDisabled}
+            disabled={selections.flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
             aria-label="clearPath"
-            onClick={() => onChangeIsClearPath(true)}
+            onClick={() =>
+              selections.setFlags((prev) => {
+                return { ...prev, isClearPath: true };
+              })
+            }
           >
             <CleaningServicesIcon />
           </IconButton>
@@ -151,7 +153,7 @@ const Head = (props) => {
           <Box sx={{ width: 200, px: 4 }}>
             <Typography>Animation Speed</Typography>
             <Slider
-              disabled={flags.isDisabled}
+              disabled={selections.flags.isDisabled}
               aria-label="Speed"
               defaultValue={5}
               valueLabelDisplay="off"
@@ -164,7 +166,7 @@ const Head = (props) => {
 
           {/* Set dark mode or not */}
           <IconButton
-            disabled={flags.isDisabled}
+            disabled={selections.flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
@@ -176,12 +178,16 @@ const Head = (props) => {
 
           {/* open the tutorial */}
           <IconButton
-            disabled={flags.isDisabled}
+            disabled={selections.flags.isDisabled}
             size="large"
             edge="start"
             color="inherit"
             aria-label="tutorial"
-            onClick={() => onIsTutorial(true)}
+            onClick={() =>
+              selections.setFlag((prev) => {
+                return { ...prev, isTutorial: true };
+              })
+            }
           >
             <QuestionMarkIcon />
           </IconButton>
@@ -194,8 +200,12 @@ const Head = (props) => {
         {/* Set whether the grid should be weighted */}
         <DrawerTwoWaysButton
           name="Weights"
-          flag={flags.onChangeIsWeightedGrid}
-          setFlag={onChangeIsWeightedGrid}
+          flag={selections.flags.onChangeIsWeightedGrid}
+          setFlag={(f) =>
+            selections.setFlags((prev) => {
+              return { ...prev, isWeightedGrid: f };
+            })
+          }
           toggleDrawer={toggleDrawer(false)}
           flagName1="Not Weighted"
           flagName2="Randomly Weighted"
@@ -206,17 +216,25 @@ const Head = (props) => {
           name="Algorithm"
           toggleDrawer={toggleDrawer(false)}
           list={algorithms}
-          curr={parameters.algorithm}
-          setCurr={onChangeAlgorithm}
+          curr={selections.parameters.algorithm}
+          setCurr={(algo) =>
+            selections.setParameters((prev) => {
+              return { ...prev, algorithm: algo };
+            })
+          }
         />
 
         {/* Set the heuristic */}
         <DrawerGroupButtons
           name="Heuristic"
           toggleDrawer={toggleDrawer(false)}
-          list={heuristics[flags.isDiagonal]}
-          curr={parameters.heuristic}
-          setCurr={onChangeHeuristic}
+          list={heuristics[selections.flags.isDiagonal]}
+          curr={selections.parameters.heuristic}
+          setCurr={(heur) =>
+            selections.setParameters((prev) => {
+              return { ...prev, heuristic: heur };
+            })
+          }
         />
 
         {/* Set the pattern */}
@@ -224,18 +242,35 @@ const Head = (props) => {
           name="Maze"
           toggleDrawer={(event) => {
             toggleDrawer(false)(event);
-            onChangeIsStartMaze(true);
+            selections.setFlags((prev) => {
+              return {
+                ...prev,
+                isStartMaze: true,
+                isDisabled: true,
+              };
+            });
+            selections.setParameters({
+              heuristic: selections.parameters.heuristic,
+              pattern: "",
+              algorithm: selections.parameters.algorithm,
+            });
           }}
           list={patterns}
-          curr={parameters.pattern}
-          setCurr={onChangePattern}
+          curr={selections.parameters.pattern}
+          setCurr={(pattern) =>
+            selections.setParameters((prev) => {
+              return { ...prev, pattern: pattern };
+            })
+          }
         />
 
         {/* Set the allow diagonal */}
         <DrawerTwoWaysButton
           name="Allow Diagonal"
-          flag={flags.isDiagonal}
-          setFlag={onChangeIsDiagonal}
+          flag={selections.flags.isDiagonal}
+          setFlag={(f)=>selections.setFlags(prev=>{
+            return {...prev, isDiagonal:f}
+          })}
           toggleDrawer={toggleDrawer(false)}
           flagName1="Not Allowed"
           flagName2="Allowed"
@@ -244,8 +279,10 @@ const Head = (props) => {
         {/* Set the bi-direction */}
         <DrawerTwoWaysButton
           name="Bidirection?"
-          flag={flags.isBiDirection}
-          setFlag={onChangeIsBiDirection}
+          flag={selections.flags.isBiDirection}
+          setFlag={(f)=>selections.setFlags(prev=>{
+            return {...prev, isBiDirection:f}
+          })}
           toggleDrawer={toggleDrawer(false)}
           flagName1="No"
           flagName2="Yes"

@@ -4,18 +4,29 @@ const ColorModeContext = createContext({
 });
 
 const CurrentSelections = createContext({
-  algorithm: 'A Star',
-  heuristic: 'Manhattan',
-  maze: 'Self-Defined',
-  weighted: false,
-  diagonal: false,
-  biDirection: false,
-  setAlgorithm: (props) => {},
-  setHeuristic: (props) => {},
-  setMaze: (props) => {},
-  setWeighted: (props) => {},
-  setDiagonal: (props) => {},
-  setBiDirection: (props) => {},
+  flags: {
+    isDiagonal: false,
+    isStart: false,
+    isStartMaze: false,
+    isDarkMode: true,
+    isDisabled: false,
+    isClearPath: false,
+    isWeightedGrid: false,
+    isBiDirection: false,
+    isTutorial: true,
+  },
+  parameters:{
+    algorithm: "A*",
+    heuristic: "Euclidean",
+    pattern: "",
+  },
+  results:{
+    numberOfSteps: 0,
+    lengthOfPath: 0,
+  },
+  setResults:(props)=>{},
+  setParameters:(props)=>{},
+  setFlags:(props)=>{},
 })
 
 export { ColorModeContext, CurrentSelections };
