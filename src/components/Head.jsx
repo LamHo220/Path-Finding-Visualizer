@@ -139,7 +139,7 @@ const Head = (props) => {
         {/* Set whether the grid should be weighted */}
         <DrawerTwoWaysButton
           name="Weights"
-          flag={selections.flags.onChangeIsWeightedGrid}
+          flag={selections.flags.isWeightedGrid}
           setFlag={(f) =>
             selections.setFlags((prev) => {
               return { ...prev, isWeightedGrid: f };
