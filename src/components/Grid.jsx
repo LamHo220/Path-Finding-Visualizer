@@ -14,7 +14,16 @@ import PathFinding from "../lib/PathFinding/PathFinding";
 import { useContext } from "react";
 import { useTheme } from "@emotion/react";
 import { CurrentSelections } from "../context/Context";
-
+function debounce(fn, ms) {
+  let timer;
+  return (_) => {
+    clearTimeout(timer);
+    timer = setTimeout((_) => {
+      timer = null;
+      fn.apply(this, arguments);
+    }, ms);
+  };
+}
 /**
  * A component of grid.
  * @param {Number} props.animationSpeed The speed of animation
@@ -23,25 +32,109 @@ import { CurrentSelections } from "../context/Context";
 const Grid = (props) => {
   const theme = useTheme();
   const selections = useContext(CurrentSelections);
-
+  const [maxDimension, setMaxDimension] = useState({
+    maxRow: 20,
+    maxCol: 49,
+  });
   const [start, setStart] = useState({
-    row: Math.floor(20 / 2),
-    col: Math.floor(50 / 3),
+    row: Math.floor(maxDimension.maxRow / 2),
+    col: Math.floor(maxDimension.maxCol / 3),
   });
 
   const [end, setEnd] = useState({
-    row: Math.floor(20 / 2),
-    col: Math.floor((50 * 2) / 3),
+    row: Math.floor(maxDimension.maxRow / 2),
+    col: Math.floor((maxDimension.maxCol * 2) / 3),
   });
 
   const [prev, setPrev] = useState(null);
   const [visualized, setVisualized] = useState(false);
 
-  const {
-    animationSpeed,
-  } = props;
+  const { animationSpeed } = props;
 
-  const [grid, setGrid] = useState(initGrid(20, 50, start, end));
+  useEffect(() => {
+    
+    const debouncedHandleResize = debounce(function handleResize() {
+      if (window.innerHeight > window.innerWidth) {
+        document
+          .querySelector(":root")
+          .style.setProperty("--node-size", "4.7vw");
+        setMaxDimension({
+          maxRow: 35,
+          maxCol: 25,
+        });
+        setStart((p) => {
+          return {
+            row: 15,
+            col: 5,
+          };
+        });
+
+        setEnd((q) => {
+          return {
+            row: 15,
+            col: 20,
+          };
+        });
+        setGrid((prev) =>
+          initGrid(
+            35,
+            25,
+            {
+              row: 15,
+              col: 5,
+            },
+            {
+              row: 15,
+              col: 20,
+            }
+          )
+        );
+      } else {
+        document.querySelector(":root").style.setProperty("--node-size", "2vw");
+        setMaxDimension({
+          maxRow: 49,
+          maxCol: 19,
+        });
+        setStart((p) => {
+          return {
+            row: 10,
+            col: 15,
+          };
+        });
+
+        setEnd((q) => {
+          return {
+            row: 10,
+            col: 35,
+          };
+        });
+        setGrid((prev) =>
+          initGrid(
+            maxDimension.maxRow,
+            maxDimension.maxCol,
+            {
+              row: 10,
+              col: 15,
+            },
+            {
+              row: 10,
+              col: 35,
+            }
+          )
+        );
+      }
+    }, 1000);
+
+    window.addEventListener("resize", debouncedHandleResize);
+
+    return (_) => {
+      window.removeEventListener("resize", debouncedHandleResize);
+    };
+  }, []);
+
+  const [grid, setGrid] = useState(
+    initGrid(maxDimension.maxRow, maxDimension.maxCol, start, end)
+  );
 
   /**
    * A function that handle the mouse down event.
@@ -164,7 +257,7 @@ const Grid = (props) => {
           2 * animationSpeed
         );
         selections.setResults((prev) => {
-          return { ...prev, numberOfSteps: path};
+          return { ...prev, numberOfSteps: path };
         });
         selections.setResults((prev) => {
           return { ...prev, lengthOfPath: visited };
@@ -224,7 +317,7 @@ const Grid = (props) => {
         const input = {
           dark: theme.palette.mode === "dark",
           grid,
-          maxDimension: { maxRow: 20, maxCol: 50 },
+          maxDimension,
           startNode,
           endNode,
           duration: 2 * animationSpeed,
