@@ -13,42 +13,18 @@ import Mazes from "../lib/Maze/Mazes";
 import PathFinding from "../lib/PathFinding/PathFinding";
 import { useContext } from "react";
 import { useTheme } from "@emotion/react";
-import { ColorModeContext, CurrentSelections } from "../context/Context";
+import { CurrentSelections } from "../context/Context";
 
 /**
  * A component of grid.
- * @param {Object} props The props of this component
- * @param {Object} flags The flags in the main
- * @param {Object} parameters The parameters for the algorithms.
- * @param {Function} props.onChangeIsStart A function to change the isStart.
- * @param {Function} props.onChangeIsStartMaze A function to change the isStartMaze.
- * @param {Function} props.onChangeIsClearPath A function to set clear the path.
- * @param {Function} props.onChangeNumberOfSteps A function to set the steps of the result.
- * @param {Function} props.onChangeLengthOfPath A function to set the length of the path of the result.
- * @param {Function} props.onChangeAllResults A function to set the steps of the result and the length of the path of the result.
+ * @param {Number} props.animationSpeed The speed of animation
  * @returns {JSX.Element} A Grid component
  */
 const Grid = (props) => {
   const theme = useTheme();
-  const colorMode = useContext(ColorModeContext);
   const selections = useContext(CurrentSelections);
-  // const style = getComputedStyle(document.body);
-  // initalize the state
-  // const height = Math.floor(
-  //   (0.9 * window.innerHeight) / parseInt(style.getPropertyValue("--node-size"))
-  // );
-
-  // const width = Math.floor(
-  //   window.innerWidth / parseInt(style.getPropertyValue("--node-size"))
-  // );
-  // const [maxDimension, setMaxDimension] = useState({
-  //   maxRow: height - (height % 2 === 0 ? 1 : 0),
-  //   maxCol: width - (width % 2 === 0 ? 1 : 0),
-  // });
 
   const [start, setStart] = useState({
-    // row: Math.floor(maxDimension.maxRow / 2),
-    // col: Math.floor(maxDimension.maxCol / 3),
     row: Math.floor(20 / 2),
     col: Math.floor(50 / 3),
   });
@@ -63,14 +39,6 @@ const Grid = (props) => {
 
   const {
     animationSpeed,
-    // flags,
-    // parameters,
-    // onChangeIsStart,
-    // onChangeIsStartMaze,
-    // onChangeIsClearPath,
-    // onChangeNumberOfSteps,
-    // onChangeLengthOfPath,
-    // onChangeAllResults,
   } = props;
 
   const [grid, setGrid] = useState(initGrid(20, 50, start, end));
@@ -196,10 +164,10 @@ const Grid = (props) => {
           2 * animationSpeed
         );
         selections.setResults((prev) => {
-          return { ...prev, numberOfSteps: path.length };
+          return { ...prev, numberOfSteps: path};
         });
         selections.setResults((prev) => {
-          return { ...prev, lengthOfPath: visited.length };
+          return { ...prev, lengthOfPath: visited };
         });
         setVisualized(true);
         selections.setFlags((prev) => {
@@ -296,7 +264,7 @@ const Grid = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selections.flags.isClearPath]);
 
-  // if the isWeighted is changed and it is true, weight or unweight the grid.
+  // if the isWeighted is changed and it is true, weight or un-weight the grid.
   useEffect(() => {
     clearPath(theme.palette.mode === "dark", grid);
     if (selections.flags.isWeightedGrid) {

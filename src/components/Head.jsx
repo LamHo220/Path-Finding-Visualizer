@@ -22,12 +22,10 @@ import {
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import MenuIcon from "@mui/icons-material/Menu";
-import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
-import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import Swal from "sweetalert2";
 import { ColorModeContext, CurrentSelections } from "../context/Context";
 import { useContext } from "react";
+import Settings from "./Settings";
 
 /**
  * A component of Head, which is an App bar.
@@ -133,66 +131,7 @@ const Head = (props) => {
             <PauseIcon />
           </IconButton>
 
-          {/* Clean path button */}
-          <IconButton
-            disabled={selections.flags.isDisabled}
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="clearPath"
-            onClick={() =>
-              selections.setFlags((prev) => {
-                return { ...prev, isClearPath: true };
-              })
-            }
-          >
-            <CleaningServicesIcon />
-          </IconButton>
-
-          {/* Slice to change time ratio */}
-          <Box sx={{ width: 200, px: 4 }}>
-            <Typography>Animation Speed</Typography>
-            <Slider
-              disabled={selections.flags.isDisabled}
-              aria-label="Speed"
-              defaultValue={5}
-              valueLabelDisplay="off"
-              step={1}
-              min={1}
-              max={10}
-              onChange={onSlice}
-            />
-          </Box>
-
-          {/* Set dark mode or not */}
-          <IconButton
-            disabled={selections.flags.isDisabled}
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="isDarkMode"
-            onClick={colorMode.toggleColorMode}
-          >
-            <DarkModeOutlinedIcon />
-          </IconButton>
-
-          {/* open the tutorial */}
-          <IconButton
-            disabled={selections.flags.isDisabled}
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="tutorial"
-            onClick={() =>
-              selections.setFlag((prev) => {
-                return { ...prev, isTutorial: true };
-              })
-            }
-          >
-            <QuestionMarkIcon />
-          </IconButton>
-
-          <IconButton></IconButton>
+          <Settings onSlice={onSlice}/>
         </Toolbar>
       </AppBar>
       {/* Drawer of setting */}
