@@ -346,7 +346,6 @@ const Grid = (props) => {
       }
     }
     generateMaze();
-    console.log(theme.palette.mode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selections.flags.isStartMaze]);
 

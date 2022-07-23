@@ -13,7 +13,6 @@ import React from "react";
  * @param {Function} props.onMouseDown The mouse down event.
  * @param {Function} props.onMouseEnter The mouse enter event.
  * @param {Function} props.onMouseUp The mouse up event.
- * @param {Boolean} props.dark Whether currently is dark mode or node.
  * @returns {JSX.Element} A node in a grid.
  */
 const Node = (props) => {
@@ -28,7 +27,6 @@ const Node = (props) => {
     onMouseDown,
     onMouseEnter,
     onMouseUp,
-    dark,
   } = props;
 
   const name = isStart

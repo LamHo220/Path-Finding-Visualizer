@@ -127,9 +127,10 @@ const Main = (props) => {
 
   // if darkMode changes, change the background color of html.
   useEffect(() => {
+    console.log(theme,document.body.style.backgroundColor);
     document.body.style.backgroundColor = theme.palette.background.default;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme.palette.theme]);
+  }, [theme.palette.mode]);
   const selections = {
     flags,
     parameters,
