@@ -33,18 +33,23 @@ const Grid = (props) => {
   const theme = useTheme();
   const selections = useContext(CurrentSelections);
   const [maxDimension, setMaxDimension] = useState({
-    maxRow: 20,
-    maxCol: 49,
+    maxRow: window.innerHeight > window.innerWidth?31:19,
+    maxCol: window.innerHeight > window.innerWidth?19:49,
   });
   const [start, setStart] = useState({
-    row: Math.floor(maxDimension.maxRow / 2),
-    col: Math.floor(maxDimension.maxCol / 3),
+    row: window.innerHeight > window.innerWidth?15:10,
+    col: window.innerHeight > window.innerWidth?5:15,
   });
 
   const [end, setEnd] = useState({
-    row: Math.floor(maxDimension.maxRow / 2),
-    col: Math.floor((maxDimension.maxCol * 2) / 3),
+    row: window.innerHeight > window.innerWidth?15:10,
+    col: window.innerHeight > window.innerWidth?15:35,
   });
+
+  if (window.innerHeight > window.innerWidth) {
+    document
+      .querySelector(":root")
+      .style.setProperty("--node-size", "5vw");}
 
   const [prev, setPrev] = useState(null);
   const [visualized, setVisualized] = useState(false);
@@ -57,10 +62,10 @@ const Grid = (props) => {
       if (window.innerHeight > window.innerWidth) {
         document
           .querySelector(":root")
-          .style.setProperty("--node-size", "4.7vw");
+          .style.setProperty("--node-size", "5vw");
         setMaxDimension({
-          maxRow: 35,
-          maxCol: 25,
+          maxRow: 31,
+          maxCol: 19,
         });
         setStart((p) => {
           return {
@@ -72,28 +77,28 @@ const Grid = (props) => {
         setEnd((q) => {
           return {
             row: 15,
-            col: 20,
+            col: 15,
           };
         });
         setGrid((prev) =>
           initGrid(
-            35,
-            25,
+            31,
+            19,
             {
               row: 15,
               col: 5,
             },
             {
               row: 15,
-              col: 20,
+              col: 15,
             }
           )
         );
       } else {
         document.querySelector(":root").style.setProperty("--node-size", "2vw");
         setMaxDimension({
-          maxRow: 49,
-          maxCol: 19,
+          maxRow: 19,
+          maxCol: 49,
         });
         setStart((p) => {
           return {
@@ -110,8 +115,8 @@ const Grid = (props) => {
         });
         setGrid((prev) =>
           initGrid(
-            maxDimension.maxRow,
-            maxDimension.maxCol,
+            20,
+            49,
             {
               row: 10,
               col: 15,
@@ -371,7 +376,7 @@ const Grid = (props) => {
   return (
     <div
       onContextMenu={handleContextMenu}
-      className={selections.flags.isDisabled ? "pointer-events-none" : ""}
+      className={(selections.flags.isDisabled ? "pointer-events-none" : "")+" table mx-auto"}
     >
       {grid.map((row, y) => {
         return (

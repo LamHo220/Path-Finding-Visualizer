@@ -19,11 +19,11 @@ const Result = (props) => {
       >
         <Grid item>
           <b>Number of Steps:</b>
-          <div id="no-of-steps">{props.numberOfSteps}</div>
+          <span id="no-of-steps"> {props.numberOfSteps}</span>
         </Grid>
         <Grid item>
           <b>Length of Path:</b>
-          <div id="path-length">{props.lengthOfPath}</div>
+          <span id="path-length"> {props.lengthOfPath}</span>
         </Grid>
       </Grid>
     </Card>

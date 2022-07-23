@@ -8,7 +8,7 @@
 
 .fade-in {
   animation: in;
-  animation-duration: 0.2s;
+  animation-duration: 0.3s;
   animation-fill-mode: forwards;
 }
 
@@ -16,6 +16,8 @@
   text-align: center;
   width: var(--node-size);
   height: var(--node-size);
+  min-width: var(--node-size);
+  min-height: var(--node-size);
   display: table-cell;
   border: 1px gray dotted;
 }
