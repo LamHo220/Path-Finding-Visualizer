@@ -29,7 +29,7 @@ export default function ConfigDropdown() {
     <Dropdown closeOnSelect={false}>
       <Navbar.Item>
         <Dropdown.Button
-          disabled={status !== "idle"}
+          disabled={status !== "idle" && status !== "answered"}
           auto
           light
           css={{

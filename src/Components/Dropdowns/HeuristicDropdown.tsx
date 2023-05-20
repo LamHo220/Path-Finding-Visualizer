@@ -11,7 +11,7 @@ export default function HeuristicDropdown() {
     <Dropdown>
       <Navbar.Item>
         <Dropdown.Button
-          disabled={status !== "idle"}
+          disabled={status !== "idle" && status !== "answered"}
           auto
           light
           css={{

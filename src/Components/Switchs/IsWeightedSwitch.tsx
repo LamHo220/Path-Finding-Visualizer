@@ -16,7 +16,7 @@ export default function WeightedSwitch() {
   return (
     <Switch
       icon={<TbWeight />}
-      disabled={status !== "idle"}
+      disabled={status !== "idle" && status !== "answered"}
       checked={isWeighted}
       onChange={(e: SwitchEvent) => dispatch(setIsWeighted(e.target.checked))}
     />

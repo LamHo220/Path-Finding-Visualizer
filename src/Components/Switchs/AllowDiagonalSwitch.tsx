@@ -13,7 +13,7 @@ export default function AllowDiagonalSwitch() {
     <Switch
       icon={<TbArrowsDiagonal />}
       checked={allowDiagonal}
-      disabled={status !== "idle"}
+      disabled={status !== "idle" && status !== "answered"}
       onChange={(e: SwitchEvent) =>
         dispatch(setAllowDiagonal(e.target.checked))
       }

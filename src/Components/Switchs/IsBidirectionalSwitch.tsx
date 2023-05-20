@@ -15,7 +15,7 @@ export default function IsBidirectionalSwitch() {
       iconOn={<GiDirectionSigns />}
       iconOff={<GiDirectionSign />}
       checked={isBidirectional}
-      disabled={status !== "idle"}
+      disabled={status !== "idle" && status !== "answered"}
       onChange={(e: SwitchEvent) =>
         dispatch(setIsBirectional(e.target.checked))
       }
