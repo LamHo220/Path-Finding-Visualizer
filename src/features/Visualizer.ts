@@ -185,21 +185,50 @@ export const visualizerSlice = createSlice({
     },
     changeAlgorithm: (state, action: PayloadAction<Algorithm>) => {
       state.algorithm = action.payload;
+      
+      if (state.status === "answered") {
+        state.status = "searching";
+        AStar(state);
+      }
     },
     changeHeuristic: (state, action: PayloadAction<Heuristic>) => {
       state.heuristic = action.payload;
+      
+      if (state.status === "answered") {
+        state.status = "searching";
+        AStar(state);
+      }
     },
     changePattern: (state, action: PayloadAction<Pattern>) => {
       state.pattern = action.payload;
+      clearWall(state);
+      if (state.pattern==="Simple Random Walls") {
+        randomWall(state);
+      }
     },
     setIsBirectional: (state, action: PayloadAction<boolean>) => {
       state.isBidirectional = action.payload;
+      
+      if (state.status === "answered") {
+        state.status = "searching";
+        AStar(state);
+      }
     },
     setAllowDiagonal: (state, action: PayloadAction<boolean>) => {
       state.allowDiagonal = action.payload;
+      
+      if (state.status === "answered") {
+        state.status = "searching";
+        AStar(state);
+      }
     },
     setIsWeighted: (state, action: PayloadAction<boolean>) => {
       state.isWeighted = action.payload;
+      
+      if (state.status === "answered") {
+        state.status = "searching";
+        AStar(state);
+      }
     },
     startVisualizeSearchingAlgo: (state) => {
       if (state.algorithm === "A*") {
