@@ -13,10 +13,10 @@ export const getPath = (node: TNode, state: VisualizerState) => {
 };
 
 export const distance = (A: TNode, B: TNode) => {
-  let Acol = A.pos.col;
-  let Bcol = B.pos.col;
-  let Arow = A.pos.row;
-  let Brow = B.pos.row;
+  const Acol = A.pos.col;
+  const Bcol = B.pos.col;
+  const Arow = A.pos.row;
+  const Brow = B.pos.row;
 
   return Math.sqrt(Math.pow(Acol - Bcol, 2) + Math.pow(Arow - Brow, 2));
 };
