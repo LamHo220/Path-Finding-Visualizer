@@ -1,4 +1,5 @@
 import AStar, { AStarNext } from "@/algorithms/AStar";
+import Dijkstra, { DijkstraNext } from "@/algorithms/Dijkstra";
 import Heuristics from "@/algorithms/Heuristics";
 import { swap } from "@/algorithms/uttils";
 import { comparePos } from "@/utils";
@@ -22,7 +23,7 @@ export type Pos = { row: number; col: number };
 
 export type Grid = Array<Array<TNode>>;
 
-export type Status = "idle" | "visiting" | "answering" | "paused";
+export type Status = "idle" | "searching" | "answering" | "answered" | "paused";
 export type Algorithm = "A*" | "Dijkstra";
 export type Heuristic = "Euclidean" | "Octile" | "Chebyshev" | "Manhattan";
 export type Pattern =
@@ -90,6 +91,7 @@ export interface VisualizerState {
   isWeighted: boolean;
   frontier: TNode[];
   solution: TNode[];
+  animationSpeed: 10 | 100 | 500;
 }
 
 const initStartNode: TNode = {
@@ -150,6 +152,7 @@ const initialState: VisualizerState = {
   isWeighted: false,
   frontier: [],
   solution: [],
+  animationSpeed: 10,
 };
 
 export const visualizerSlice = createSlice({
@@ -199,17 +202,18 @@ export const visualizerSlice = createSlice({
       state.isWeighted = action.payload;
     },
     startVisualizeSearchingAlgo: (state) => {
-      state.status = "visiting";
-
       if (state.algorithm === "A*") {
         AStar(state);
-      } else {
+      } else if (state.algorithm === "Dijkstra") {
+        Dijkstra(state);
       }
+      state.status = "searching";
     },
     nextStateOfSearchingAlgo: (state) => {
       if (state.algorithm === "A*") {
         AStarNext(state);
-      } else {
+      } else if (state.algorithm === "Dijkstra") {
+        DijkstraNext(state);
       }
     },
     setStatus: (state, action: PayloadAction<Status>) => {
@@ -249,17 +253,21 @@ export const visualizerSlice = createSlice({
         return;
       }
       state.prev = undefined;
+
+      if (state.status === "answered") {
+        state.status = "searching";
+        AStar(state);
+      }
     },
     nextOfSolution: (state) => {
       const node = state.solution.shift();
       if (node) {
         state.grid[node.pos.row][node.pos.col].isPath = true;
-        state.pathLength += 1
+        state.pathLength += 1;
       }
-      if (state.solution.length===0) {
-        state.status = "idle"
+      if (state.solution.length === 0) {
+        state.status = "answered";
       }
-      
     },
     setVisited: (state, action: PayloadAction<Pos>) => {
       const pos = action.payload;
@@ -283,6 +291,9 @@ export const visualizerSlice = createSlice({
           })
         })
       }
+    },
+    setAnimationSpeed: (state,  action: PayloadAction<10 | 100 |500>)=> {
+      state.animationSpeed = action.payload
     }
   },
 });
@@ -311,7 +322,8 @@ export const {
   nextOfSolution,
   setVisited,
   setPath,
-  setGrid
+  setGrid,
+  setAnimationSpeed
 } = visualizerSlice.actions;
 
 export default visualizerSlice.reducer;

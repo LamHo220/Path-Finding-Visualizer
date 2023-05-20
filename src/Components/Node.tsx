@@ -20,21 +20,24 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
   const dispatch = useAppDispatch();
   const { isStart, isEnd, isWall, isPath, visited, weight, _visited } = node;
   const status = useAppSelector((state) => state.visualizer.status);
+  const animationSpeed = useAppSelector(
+    (state) => state.visualizer.animationSpeed
+  );
 
   useEffect(() => {
-    if (status === "visiting" && node.isStart) {
+    if (status === "searching" && node.isStart) {
       dispatch(setVisited(node.pos));
-      
+
       setTimeout(() => {
         dispatch(nextStateOfSearchingAlgo());
-      }, 100);
+      }, animationSpeed);
     }
-    if (status === "answering" && node.isStart){
-      dispatch(setPath(node.pos))
-      
+    if (status === "answering" && node.isStart) {
+      dispatch(setPath(node.pos));
+
       setTimeout(() => {
         dispatch(nextOfSolution());
-      }, 100);
+      }, animationSpeed);
     }
   }, [status]);
 
@@ -42,7 +45,7 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
     if (visited) {
       setTimeout(() => {
         dispatch(nextStateOfSearchingAlgo());
-      }, 100);
+      }, animationSpeed);
     }
   }, [visited]);
 
@@ -50,7 +53,7 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
     if (isPath) {
       setTimeout(() => {
         dispatch(nextOfSolution());
-      }, 100);
+      }, animationSpeed);
     }
   }, [isPath]);
 

@@ -1,22 +1,9 @@
 import { TNode, VisualizerState } from "@/features/Visualizer";
 import Heuristics from "./Heuristics";
-import { distance, getNeighbours, getPath } from "./uttils";
+import { distance, getNeighbours, getPath, resetSearching } from "./uttils";
 
 export default function AStar(state: VisualizerState) {
-  state.solution = [];
-  state.frontier = [];
-  state.exploredLength = 0;
-  state.pathLength = 0;
-  state.grid.forEach((e) => {
-    e.forEach((f) => {
-      f.g = Infinity;
-      f.f = Infinity;
-      f.isPath = false;
-      f.visited = false;
-      f._visited = false;
-      f.parent = undefined;
-    });
-  });
+  resetSearching(state);
   const startNode = state.grid
     .find((row) => row.find((node) => node.isStart))
     ?.find((e) => e.isStart);
@@ -45,6 +32,11 @@ export default function AStar(state: VisualizerState) {
   startNode.f = Heuristics[state.heuristic](dx, dy);
 
   state.frontier.push(startNode);
+  if (state.status === "answered") {
+    while (!state.frontier) {
+      AStarNext(state);
+    }
+  }
 }
 
 export const AStarNext = (state: VisualizerState) => {
@@ -93,7 +85,7 @@ export const AStarNext = (state: VisualizerState) => {
 
         if (!state.frontier.includes(neighbour)) {
           state.frontier.push(neighbour);
-          neighbour._visited = true
+          neighbour._visited = true;
         }
       }
     }
