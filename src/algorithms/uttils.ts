@@ -71,3 +71,20 @@ export const swap = (state: VisualizerState, action: PayloadAction<TNode>) => {
   next.isEnd = false;
   state.prev = node;
 };
+
+export const resetSearching = (state: VisualizerState) => {
+  state.solution = [];
+  state.frontier = [];
+  state.exploredLength = 0;
+  state.pathLength = 0;
+  state.grid.forEach((e) => {
+    e.forEach((f) => {
+      f.g = Infinity;
+      f.f = Infinity;
+      f.isPath = false;
+      f.visited = false;
+      f._visited = false;
+      f.parent = undefined;
+    });
+  });
+};

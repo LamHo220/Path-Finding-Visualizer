@@ -199,12 +199,12 @@ export const visualizerSlice = createSlice({
       state.isWeighted = action.payload;
     },
     startVisualizeSearchingAlgo: (state) => {
-      state.status = "visiting";
-
       if (state.algorithm === "A*") {
         AStar(state);
-      } else {
+      } else if (state.algorithm === "Dijkstra") {
+        Dijkstra(state);
       }
+      state.status = "searching";
     },
     nextStateOfSearchingAlgo: (state) => {
       if (state.algorithm === "A*") {
@@ -249,6 +249,11 @@ export const visualizerSlice = createSlice({
         return;
       }
       state.prev = undefined;
+
+      if (state.status === "answered") {
+        state.status = "searching";
+        AStar(state);
+      }
     },
     nextOfSolution: (state) => {
       const node = state.solution.shift();
