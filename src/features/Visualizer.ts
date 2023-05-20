@@ -1,6 +1,7 @@
 import AStar, { AStarNext } from "@/algorithms/AStar";
 import Dijkstra, { DijkstraNext } from "@/algorithms/Dijkstra";
 import Heuristics from "@/algorithms/Heuristics";
+import { clearWall, randomWall } from "@/algorithms/Patterns";
 import { swap } from "@/algorithms/uttils";
 import { comparePos } from "@/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
