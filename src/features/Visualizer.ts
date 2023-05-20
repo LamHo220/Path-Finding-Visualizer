@@ -1,4 +1,5 @@
 import AStar, { AStarNext } from "@/algorithms/AStar";
+import Dijkstra, { DijkstraNext } from "@/algorithms/Dijkstra";
 import Heuristics from "@/algorithms/Heuristics";
 import { swap } from "@/algorithms/uttils";
 import { comparePos } from "@/utils";
@@ -211,7 +212,8 @@ export const visualizerSlice = createSlice({
     nextStateOfSearchingAlgo: (state) => {
       if (state.algorithm === "A*") {
         AStarNext(state);
-      } else {
+      } else if (state.algorithm === "Dijkstra") {
+        DijkstraNext(state);
       }
     },
     setStatus: (state, action: PayloadAction<Status>) => {
@@ -261,12 +263,11 @@ export const visualizerSlice = createSlice({
       const node = state.solution.shift();
       if (node) {
         state.grid[node.pos.row][node.pos.col].isPath = true;
-        state.pathLength += 1
+        state.pathLength += 1;
       }
-      if (state.solution.length===0) {
-        state.status = "idle"
+      if (state.solution.length === 0) {
+        state.status = "answered";
       }
-      
     },
     setVisited: (state, action: PayloadAction<Pos>) => {
       const pos = action.payload;
