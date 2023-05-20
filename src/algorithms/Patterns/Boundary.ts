@@ -1,11 +1,11 @@
 import { Pos, VisualizerState } from "@/features/Visualizer/visualizerSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 
-export const makeBoundary = (state: VisualizerState) => {
+export const _generateBoundary = (state: VisualizerState) => {
   state.grid[0][0].isWall = true;
 };
 
-export const makeBoundaryNext = (
+export const _generateBoundaryNext = (
   state: VisualizerState,
   action: PayloadAction<Pos>
 ) => {

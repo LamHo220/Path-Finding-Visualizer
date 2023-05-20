@@ -6,7 +6,7 @@ import Dijkstra, { DijkstraNext } from "@/algorithms/Searching/Dijkstra";
 import { swap } from "@/algorithms/Searching/uttils";
 import _generateWall from "@/algorithms/Patterns/generate";
 import _generateWallNext from "@/algorithms/Patterns/next";
-import { makeBoundary, makeBoundaryNext } from "@/algorithms/Patterns/Boundary";
+import { _generateBoundary, _generateBoundaryNext } from "@/algorithms/Patterns/Boundary";
 
 export default {
   // set the prev node
@@ -177,9 +177,9 @@ export default {
     _generateWallNext(state,action)
   },
   generateBoundary: (state: VisualizerState) => {
-    makeBoundary(state);
+    _generateBoundary(state);
   },
   generateBoundaryNext: (state:VisualizerState, action: PayloadAction<Pos>) => {
-    makeBoundaryNext(state, action);
+    _generateBoundaryNext(state, action);
   },
 }
