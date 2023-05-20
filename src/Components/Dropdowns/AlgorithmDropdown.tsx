@@ -1,4 +1,4 @@
-import { Algorithm, algorithms, changeAlgorithm } from "@/features/Visualizer";
+import { Algorithm, algorithms, changeAlgorithm } from "@/features/Visualizer/visualizerSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Dropdown, Navbar } from "@nextui-org/react";
 

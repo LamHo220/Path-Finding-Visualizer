@@ -2,7 +2,7 @@ import { Col, Row } from "@nextui-org/react";
 import Node from "./Node";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { useEffect } from "react";
-import { generateBoundary, generateWall } from "@/features/Visualizer";
+import { generateBoundary, generateWall } from "@/features/Visualizer/visualizerSlice";
 
 export default function Grid() {
   const grid: number[][] = Array(20).fill(Array(50).fill(0));

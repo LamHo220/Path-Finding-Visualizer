@@ -1,4 +1,4 @@
-import { startVisualizeSearchingAlgo } from "@/features/Visualizer";
+import { startVisualizeSearchingAlgo } from "@/features/Visualizer/visualizerSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Button } from "@nextui-org/react";
 

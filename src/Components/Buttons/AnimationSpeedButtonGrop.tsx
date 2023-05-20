@@ -1,4 +1,4 @@
-import { setAnimationSpeed } from "@/features/Visualizer";
+import { setAnimationSpeed } from "@/features/Visualizer/visualizerSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Button } from "@nextui-org/react";
 

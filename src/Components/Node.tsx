@@ -5,6 +5,7 @@ import {
   TNode,
   VisualizerState,
   generateBoundaryNext,
+  generateWall,
   generateWallNext,
   getNode,
   handleMouseDown,
@@ -14,7 +15,7 @@ import {
   nextStateOfSearchingAlgo,
   setPath,
   setVisited,
-} from "@/features/Visualizer";
+} from "@/features/Visualizer/visualizerSlice";
 import { connect } from "react-redux";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 
@@ -71,6 +72,14 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
     if (isWall && status === "generating boundary") {
       setTimeout(() => {
         dispatch(generateBoundaryNext(node.pos));
+      }, 1);
+    }
+    if (
+      isWall &&
+      (status === "horizontal cutting" || status === "vertical cutting")
+    ) {
+      setTimeout(() => {
+        dispatch(generateWallNext(node.pos));
       }, 1);
     }
   }, [isWall, status]);

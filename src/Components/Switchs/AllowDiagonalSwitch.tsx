@@ -1,4 +1,4 @@
-import { setAllowDiagonal } from "@/features/Visualizer";
+import { setAllowDiagonal } from "@/features/Visualizer/visualizerSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Switch, SwitchEvent } from "@nextui-org/react";
 import { TbArrowsDiagonal } from "react-icons/tb";

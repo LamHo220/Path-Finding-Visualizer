@@ -1,4 +1,4 @@
-import { setGrid, setIsWeighted } from "@/features/Visualizer";
+import { setGrid, setIsWeighted } from "@/features/Visualizer/visualizerSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Switch, SwitchEvent } from "@nextui-org/react";
 import { useEffect } from "react";

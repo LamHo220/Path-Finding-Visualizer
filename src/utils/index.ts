@@ -1,4 +1,4 @@
-import { TNode } from "@/features/Visualizer";
+import { TNode } from "@/features/Visualizer/visualizerSlice";
 
 export const compare = (A: TNode, B: TNode) => {
   return A.pos.row === B.pos.row && A.pos.col === B.pos.col;

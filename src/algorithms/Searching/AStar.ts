@@ -1,4 +1,4 @@
-import { TNode, VisualizerState } from "@/features/Visualizer";
+import { TNode, VisualizerState } from "@/features/Visualizer/visualizerSlice";
 import Heuristics from "./Heuristics";
 import { distance, getNeighbours, getPath, resetSearching } from "./uttils";
 

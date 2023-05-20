@@ -1,4 +1,4 @@
-import { TNode, VisualizerState } from "@/features/Visualizer";
+import { TNode, VisualizerState } from "@/features/Visualizer/visualizerSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 
 export const getPath = (node: TNode, state: VisualizerState) => {
@@ -87,4 +87,8 @@ export const resetSearching = (state: VisualizerState) => {
       f.parent = undefined;
     });
   });
+};
+
+export const rand = (from: number, to: number) => {
+  return Math.floor(Math.random() * (to - from + 1) + from);
 };
