@@ -1,8 +1,21 @@
 import { Col, Row } from "@nextui-org/react";
 import Node from "./Node";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useEffect } from "react";
+import { generateWall } from "@/features/Visualizer";
+// import { setImplicitVisited, setWall } from "@/features/Visualizer";
 
 export default function Grid() {
   const grid: number[][] = Array(20).fill(Array(50).fill(0));
+  const status = useAppSelector(state=>state.visualizer.status);
+  const dispatch = useAppDispatch()
+  useEffect(()=>{
+    if (status === "generating walls") {
+      setTimeout(()=>{
+        dispatch(generateWall());
+      }, 1)
+    }
+  }, [status])
 
   return (
     <Row justify="center">

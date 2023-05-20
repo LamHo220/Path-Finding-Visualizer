@@ -1,7 +1,7 @@
 import AStar, { AStarNext } from "@/algorithms/AStar";
 import Dijkstra, { DijkstraNext } from "@/algorithms/Dijkstra";
 import Heuristics from "@/algorithms/Heuristics";
-import { clearWall, randomWall } from "@/algorithms/Patterns";
+import { clearWall, randomWall, randomWallNext } from "@/algorithms/Patterns";
 import { swap } from "@/algorithms/uttils";
 import { comparePos } from "@/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -24,7 +24,7 @@ export type Pos = { row: number; col: number };
 
 export type Grid = Array<Array<TNode>>;
 
-export type Status = "idle" | "searching" | "answering" | "answered" | "paused";
+export type Status = "idle" | "searching" | "answering" | "answered" | "paused" | "generating walls";
 export type Algorithm = "A*" | "Dijkstra";
 export type Heuristic = "Euclidean" | "Octile" | "Chebyshev" | "Manhattan";
 export type Pattern =
@@ -160,11 +160,6 @@ export const visualizerSlice = createSlice({
   name: "visualizer",
   initialState,
   reducers: {
-    // add a new wall or remove a wall
-    setWall: (state, action: PayloadAction<Pos>) => {
-      const { row, col } = action.payload;
-      state.grid[row][col].isWall = !state.grid[row][col].isWall;
-    },
     // set the prev node
     setPrev: (state, action: PayloadAction<TNode | undefined>) => {
       state.prev = action.payload;
@@ -202,10 +197,8 @@ export const visualizerSlice = createSlice({
     },
     changePattern: (state, action: PayloadAction<Pattern>) => {
       state.pattern = action.payload;
+      state.status = "generating walls"
       clearWall(state);
-      if (state.pattern === "Simple Random Walls") {
-        randomWall(state);
-      }
     },
     setIsBirectional: (state, action: PayloadAction<boolean>) => {
       state.isBidirectional = action.payload;
@@ -325,6 +318,16 @@ export const visualizerSlice = createSlice({
     setAnimationSpeed: (state, action: PayloadAction<10 | 100 | 500>) => {
       state.animationSpeed = action.payload;
     },
+    generateWall: (state)=> {
+      if (state.pattern === "Simple Random Walls" ) {
+        randomWall(state)
+      }
+    },
+    generateWallNext: (state, action:PayloadAction<Pos>) => {
+      if (state.pattern === "Simple Random Walls" ) {
+        randomWallNext(state, action)
+      }
+    }
   },
 });
 
@@ -332,7 +335,7 @@ export const getNode = (state: VisualizerState, ownProps: Pos) =>
   state.grid[ownProps.row][ownProps.col];
 
 export const {
-  setWall,
+  // setWall,
   setPrev,
   setExploredLength,
   setPathLength,
@@ -354,6 +357,8 @@ export const {
   setPath,
   setGrid,
   setAnimationSpeed,
+  generateWall,
+  generateWallNext,
 } = visualizerSlice.actions;
 
 export default visualizerSlice.reducer;

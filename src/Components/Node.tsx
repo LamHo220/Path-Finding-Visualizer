@@ -4,6 +4,7 @@ import {
   Pos,
   TNode,
   VisualizerState,
+  generateWallNext,
   getNode,
   handleMouseDown,
   handleMouseEnter,
@@ -57,6 +58,14 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
     }
   }, [isPath]);
 
+  useEffect(()=>{
+    if (_visited && status==="generating walls") {
+      setTimeout(()=>{
+        dispatch(generateWallNext(node.pos))
+      }, 1)
+    }
+  }, [status, _visited])
+
   const bg = isStart
     ? "$blue400"
     : isEnd
@@ -65,7 +74,7 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
     ? "$green400"
     : visited
     ? "$yellow400"
-    : _visited
+    : (_visited && status!=="generating walls")
     ? "$yellow200"
     : isWall
     ? "$gray400"
