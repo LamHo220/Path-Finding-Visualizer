@@ -186,7 +186,7 @@ export const visualizerSlice = createSlice({
     },
     changeAlgorithm: (state, action: PayloadAction<Algorithm>) => {
       state.algorithm = action.payload;
-      
+
       if (state.status === "answered") {
         state.status = "searching";
         AStar(state);
@@ -194,7 +194,7 @@ export const visualizerSlice = createSlice({
     },
     changeHeuristic: (state, action: PayloadAction<Heuristic>) => {
       state.heuristic = action.payload;
-      
+
       if (state.status === "answered") {
         state.status = "searching";
         AStar(state);
@@ -203,13 +203,13 @@ export const visualizerSlice = createSlice({
     changePattern: (state, action: PayloadAction<Pattern>) => {
       state.pattern = action.payload;
       clearWall(state);
-      if (state.pattern==="Simple Random Walls") {
+      if (state.pattern === "Simple Random Walls") {
         randomWall(state);
       }
     },
     setIsBirectional: (state, action: PayloadAction<boolean>) => {
       state.isBidirectional = action.payload;
-      
+
       if (state.status === "answered") {
         state.status = "searching";
         AStar(state);
@@ -217,7 +217,7 @@ export const visualizerSlice = createSlice({
     },
     setAllowDiagonal: (state, action: PayloadAction<boolean>) => {
       state.allowDiagonal = action.payload;
-      
+
       if (state.status === "answered") {
         state.status = "searching";
         AStar(state);
@@ -225,7 +225,7 @@ export const visualizerSlice = createSlice({
     },
     setIsWeighted: (state, action: PayloadAction<boolean>) => {
       state.isWeighted = action.payload;
-      
+
       if (state.status === "answered") {
         state.status = "searching";
         AStar(state);
@@ -307,24 +307,24 @@ export const visualizerSlice = createSlice({
       const pos = action.payload;
       state.grid[pos.row][pos.col].isPath = true;
     },
-    setGrid:(state)=>{
+    setGrid: (state) => {
       if (state.isWeighted) {
-        state.grid.forEach(e=>{
-          e.forEach((f)=>{
-            f.weight = Math.floor(Math.random()*10+1)
-          })
-        })
-      }else {
-        state.grid.forEach(e=>{
-          e.forEach((f)=>{
-            f.weight = 0
-          })
-        })
+        state.grid.forEach((e) => {
+          e.forEach((f) => {
+            f.weight = Math.floor(Math.random() * 10 + 1);
+          });
+        });
+      } else {
+        state.grid.forEach((e) => {
+          e.forEach((f) => {
+            f.weight = 0;
+          });
+        });
       }
     },
-    setAnimationSpeed: (state,  action: PayloadAction<10 | 100 |500>)=> {
-      state.animationSpeed = action.payload
-    }
+    setAnimationSpeed: (state, action: PayloadAction<10 | 100 | 500>) => {
+      state.animationSpeed = action.payload;
+    },
   },
 });
 
@@ -353,7 +353,7 @@ export const {
   setVisited,
   setPath,
   setGrid,
-  setAnimationSpeed
+  setAnimationSpeed,
 } = visualizerSlice.actions;
 
 export default visualizerSlice.reducer;

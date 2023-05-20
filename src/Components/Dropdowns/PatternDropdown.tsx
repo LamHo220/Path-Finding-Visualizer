@@ -44,7 +44,7 @@ export default function PatternDropdown() {
             },
           },
         }}
-        disabledKeys={pattern!=="No Walls"?[pattern]:[]}
+        disabledKeys={pattern !== "No Walls" ? [pattern] : []}
         onAction={(a) => dispatch(changePattern(a as Pattern))}
       >
         {patterns.map((e) => (

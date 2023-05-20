@@ -66,11 +66,11 @@ export default function ConfigDropdown() {
               <Col>
                 <Text weight="semibold">{e.key}:</Text>
               </Col>
-              <Col css={{ width: e.key === "Animation Speed" ? "100%":"auto" }}>
-                <Row justify="flex-end">
-                {e.item}
-                </Row>
-                </Col>
+              <Col
+                css={{ width: e.key === "Animation Speed" ? "100%" : "auto" }}
+              >
+                <Row justify="flex-end">{e.item}</Row>
+              </Col>
             </Row>
           </Dropdown.Item>
         ))}
