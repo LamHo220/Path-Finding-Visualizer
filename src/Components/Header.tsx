@@ -1,16 +1,12 @@
 import { FC } from "react";
-import { Button, Navbar, Text } from "@nextui-org/react";
+import { Navbar, Text } from "@nextui-org/react";
 import AlgorithmDropdown from "./Dropdowns/AlgorithmDropdown";
 import PatternDropdown from "./Dropdowns/PatternDropdown";
 import HeuristicDropdown from "./Dropdowns/HeuristicDropdown";
-import WeightedSwitch from "./Switchs/IsWeightedSwitch";
-import AllowDiagonalSwitch from "./Switchs/AllowDiagonalSwitch";
-import IsBidirectionalSwitch from "./Switchs/IsBidirectionalSwitch";
-import { useAppDispatch } from "@/hooks";
-import { startVisualizeSearchingAlgo } from "@/features/Visualizer";
+import StatusButton from "./Buttons/StatusButton";
+import ConfigDropdown from "./Dropdowns/ConfigDropdown";
 
 const Header: FC = () => {
-  const dispatch = useAppDispatch();
   return (
     <Navbar isBordered variant="floating">
       <Navbar.Brand>
@@ -20,14 +16,10 @@ const Header: FC = () => {
         <AlgorithmDropdown />
         <HeuristicDropdown />
         <PatternDropdown />
-        <WeightedSwitch />
-        <IsBidirectionalSwitch />
-        <AllowDiagonalSwitch />
+        <ConfigDropdown />
       </Navbar.Content>
       <Navbar.Content>
-        <Button onPress={() => dispatch(startVisualizeSearchingAlgo())}>
-          Start
-        </Button>
+        <StatusButton />
       </Navbar.Content>
     </Navbar>
   );

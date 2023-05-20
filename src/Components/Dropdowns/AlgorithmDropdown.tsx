@@ -25,7 +25,7 @@ export default function AlgorithmDropdown() {
         </Dropdown.Button>
       </Navbar.Item>
       <Dropdown.Menu
-        aria-label="ACME features"
+        aria-label="algorithm-dropdown"
         css={{
           $$dropdownMenuWidth: "340px",
           $$dropdownItemHeight: "70px",

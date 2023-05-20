@@ -321,7 +321,8 @@ export const {
   nextOfSolution,
   setVisited,
   setPath,
-  setGrid
+  setGrid,
+  setAnimationSpeed
 } = visualizerSlice.actions;
 
 export default visualizerSlice.reducer;

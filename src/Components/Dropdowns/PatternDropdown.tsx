@@ -26,7 +26,7 @@ export default function PatternDropdown() {
         </Dropdown.Button>
       </Navbar.Item>
       <Dropdown.Menu
-        aria-label="ACME features"
+        aria-label="pattern-dropdown"
         css={{
           $$dropdownMenuWidth: "340px",
           $$dropdownItemHeight: "70px",
