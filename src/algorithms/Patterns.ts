@@ -11,7 +11,7 @@ export const clearWall = (state: VisualizerState) => {
 export const randomWall = (state: VisualizerState) => {
   state.grid.forEach((e) => {
     e.forEach((f) => {
-      f.isWall = Math.random() < 0.3;
+      f.isWall = Math.random() < 0.3 && !f.isEnd && !f.isStart;
     });
   });
 };
