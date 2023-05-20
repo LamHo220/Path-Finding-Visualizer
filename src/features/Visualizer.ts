@@ -201,10 +201,6 @@ export const visualizerSlice = createSlice({
     },
     changePattern: (state, action: PayloadAction<Pattern>) => {
       state.pattern = action.payload;
-      clearWall(state);
-      if (state.pattern==="Simple Random Walls") {
-        randomWall(state);
-      }
     },
     setIsBirectional: (state, action: PayloadAction<boolean>) => {
       state.isBidirectional = action.payload;
