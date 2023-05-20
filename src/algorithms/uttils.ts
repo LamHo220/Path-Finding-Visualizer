@@ -25,8 +25,8 @@ export const getNeighbours = (node: TNode, state: VisualizerState) => {
   const maxRow = state.grid.length;
   const maxCol = state.grid[0].length;
 
-  let res = [];
-  let {
+  const res = [];
+  const {
     pos: { row, col },
   } = node;
 
