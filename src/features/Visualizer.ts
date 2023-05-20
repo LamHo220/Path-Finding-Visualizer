@@ -1,7 +1,13 @@
 import AStar, { AStarNext } from "@/algorithms/AStar";
 import Dijkstra, { DijkstraNext } from "@/algorithms/Dijkstra";
 import Heuristics from "@/algorithms/Heuristics";
-import { clearWall, randomWall, randomWallNext } from "@/algorithms/Patterns";
+import {
+  clearWall,
+  makeBoundary,
+  makeBoundaryNext,
+  randomWall,
+  randomWallNext,
+} from "@/algorithms/Patterns";
 import { swap } from "@/algorithms/uttils";
 import { comparePos } from "@/utils";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -24,7 +30,14 @@ export type Pos = { row: number; col: number };
 
 export type Grid = Array<Array<TNode>>;
 
-export type Status = "idle" | "searching" | "answering" | "answered" | "paused" | "generating walls";
+export type Status =
+  | "idle"
+  | "searching"
+  | "answering"
+  | "answered"
+  | "paused"
+  | "generating walls"
+  | "generating boundary";
 export type Algorithm = "A*" | "Dijkstra";
 export type Heuristic = "Euclidean" | "Octile" | "Chebyshev" | "Manhattan";
 export type Pattern =
@@ -196,9 +209,12 @@ export const visualizerSlice = createSlice({
       }
     },
     changePattern: (state, action: PayloadAction<Pattern>) => {
-      state.pattern = action.payload;
-      state.status = "generating walls"
       clearWall(state);
+      state.pattern = action.payload;
+      if (state.pattern === "No Walls") {
+        return;
+      }
+      state.status = "generating walls";
     },
     setIsBirectional: (state, action: PayloadAction<boolean>) => {
       state.isBidirectional = action.payload;
@@ -318,16 +334,36 @@ export const visualizerSlice = createSlice({
     setAnimationSpeed: (state, action: PayloadAction<10 | 100 | 500>) => {
       state.animationSpeed = action.payload;
     },
-    generateWall: (state)=> {
-      if (state.pattern === "Simple Random Walls" ) {
-        randomWall(state)
+    generateWall: (state) => {
+      switch (state.pattern) {
+        case "Simple Random Walls":
+          randomWall(state);
+          break;
+        case "Recursive Division":
+          if (state.grid[0][0].isWall){
+            return
+          }
+          state.status = "generating boundary";
+          break;
+        default:
+          break;
       }
     },
-    generateWallNext: (state, action:PayloadAction<Pos>) => {
-      if (state.pattern === "Simple Random Walls" ) {
-        randomWallNext(state, action)
+    generateWallNext: (state, action: PayloadAction<Pos>) => {
+      switch (state.pattern) {
+        case "Simple Random Walls":
+          randomWallNext(state, action);
+          break;
+        default:
+          break;
       }
-    }
+    },
+    generateBoundary: (state) => {
+      makeBoundary(state);
+    },
+    generateBoundaryNext: (state, action: PayloadAction<Pos>) => {
+      makeBoundaryNext(state, action);
+    },
   },
 });
 
@@ -359,6 +395,8 @@ export const {
   setAnimationSpeed,
   generateWall,
   generateWallNext,
+  generateBoundary,
+  generateBoundaryNext,
 } = visualizerSlice.actions;
 
 export default visualizerSlice.reducer;
