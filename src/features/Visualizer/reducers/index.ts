@@ -129,21 +129,27 @@ export default {
   handleMouseDown: (state: VisualizerState, action: PayloadAction<TNode>) => {
     const node = action.payload;
     state.prev = node;
+    const {row, col} = node.pos
     if (!(node.isStart || node.isEnd)) {
-      state.grid[node.pos.row][node.pos.col].isWall =
-        !state.grid[node.pos.row][node.pos.col].isWall;
+      state.grid[row][col].isWall = !state.grid[row][col].isWall;
     }
   },
   handleMouseEnter: (state: VisualizerState, action: PayloadAction<TNode>) => {
     const node = action.payload;
-    if (state.prev === undefined) {
+    if (state.prev === undefined ) {
       return;
+    }
+    if (state.prev.pos.row === node.pos.row && state.prev.pos.col === node.pos.col) {
+      return
     }
     if (
       !state.prev.isStart &&
       !state.prev.isEnd &&
+      !node.isStart &&
+      !node.isEnd &&
       state.prev.isWall === node.isWall
     ) {
+      console.log(213)
       state.grid[node.pos.row][node.pos.col].isWall =
         !state.grid[node.pos.row][node.pos.col].isWall;
     } else if (

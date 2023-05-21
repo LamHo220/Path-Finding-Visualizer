@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { Text, Card } from "@nextui-org/react";
+import { Text, Card, Tooltip, } from "@nextui-org/react";
 import {
   Pos,
   TNode,
@@ -20,6 +20,24 @@ import { connect } from "react-redux";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { GRID_MAX_COL } from "@/Constants";
 
+const ToolTipContent: FC<{ node: TNode; weight: number }> = ({
+  node,
+  weight,
+}) => (
+  <div>
+    <Text css={{ lineHeight: "1" }}>
+      <b>f:</b> {node.f === Infinity ? `∞` : node.f}
+    </Text>
+
+    <Text css={{ lineHeight: "1" }}>
+      <b>g:</b> {node.g === Infinity ? `∞` : node.g}
+    </Text>
+
+    <Text css={{ lineHeight: "1" }}>
+      <b>w:</b> {weight}
+    </Text>
+  </div>
+);
 const _Node: FC<{ node: TNode }> = ({ node }) => {
   const dispatch = useAppDispatch();
   const {
@@ -97,74 +115,125 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
     }
   }, [isWall, status, isBoundary, _visited]);
 
-  const bg = isStart
-    ? "$blue400"
+  const bg = isWall
+    ? "$gray800"
+    : isStart
+    ? "$blue500"
     : isEnd
     ? "$pink400"
     : isPath
     ? "$green400"
     : visited
-    ? "$yellow400"
+    ? "$yellow600"
     : _visited &&
       (status === "searching" ||
         status === "answering" ||
         status === "answered")
-    ? "$yellow200"
-    : isWall
-    ? "$gray400"
+    ? "$yellow400"
     : "";
+  const border = isWall
+    ? "1px $gray800 solid"
+    : isStart
+    ? "1px $blue500 solid"
+    : isEnd
+    ? "1px $pink400 solid"
+    : isPath
+    ? "1px $green400 solid"
+    : visited
+    ? "1px $yellow600 solid"
+    : _visited &&
+      (status === "searching" ||
+        status === "answering" ||
+        status === "answered")
+    ? "1px $yellow400 solid"
+    : "1px solid black";
 
   const _handleMouseDown = (event: React.MouseEvent<unknown, MouseEvent>) => {
     event = event || window.event;
     event.preventDefault();
-    dispatch(handleMouseDown(node));
+    if (status === "idle" || status === "answered") {
+      dispatch(handleMouseDown(node));
+    }
   };
 
   const _handleMouseEnter = (event: React.MouseEvent<unknown, MouseEvent>) => {
     event = event || window.event;
     event.preventDefault();
-    dispatch(handleMouseEnter(node));
+    if (status === "idle" || status === "answered") {
+      dispatch(handleMouseEnter(node));
+    }
   };
 
   const _handleMouseUp = (event: React.MouseEvent<unknown, MouseEvent>) => {
     event = event || window.event;
     event.preventDefault();
-    dispatch(handleMouseUp());
+    if (status === "idle" || status === "answered") {
+      dispatch(handleMouseUp());
+    }
   };
 
+
   return (
-    <Card
-      css={{
-        "&:hover": {
-          background: "$code",
-        },
-        cursor: "pointer",
-        border: "1px solid black",
-        borderRadius: "0",
-        bg: bg,
-        "@xs": {
-          height: `calc(650px/${GRID_MAX_COL})`,
-          width: `calc(650px/${GRID_MAX_COL})`,
-        },
-        "@sm": {
-          height: `calc(960px/${GRID_MAX_COL})`,
-          width: `calc(960px/${GRID_MAX_COL})`,
-        },
-        "@md": {
-          height: `calc(1280px/${GRID_MAX_COL})`,
-          width: `calc(1280px/${GRID_MAX_COL})`,
-        },
-        "@lg": {
-          height: `calc(1440px/${GRID_MAX_COL})`,
-          width: `calc(1440px/${GRID_MAX_COL})`,
-        },
-      }}
-      onMouseDown={_handleMouseDown}
-      onMouseOverCapture={_handleMouseEnter}
-      onMouseUp={_handleMouseUp}
+    <Tooltip
+      content={<ToolTipContent node={node} weight={weight} />}
+      color={undefined}
+      css={undefined}
+      contentColor={undefined}
     >
-      <Text css={{ textAlign: "center" }}>{weight ? weight : ""}</Text>
-    </Card>
+      <Card
+        css={{
+          "&:hover": {
+            border: "3px $code solid",
+          },
+          cursor: "pointer",
+          border: border,
+          borderRadius: "0",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          bg: bg,
+          "@xs": {
+            height: `calc(650px/${GRID_MAX_COL})`,
+            width: `calc(650px/${GRID_MAX_COL})`,
+          },
+          "@sm": {
+            height: `calc(960px/${GRID_MAX_COL})`,
+            width: `calc(960px/${GRID_MAX_COL})`,
+          },
+          "@md": {
+            height: `calc(1280px/${GRID_MAX_COL})`,
+            width: `calc(1280px/${GRID_MAX_COL})`,
+          },
+          "@lg": {
+            height: `calc(1440px/${GRID_MAX_COL})`,
+            width: `calc(1440px/${GRID_MAX_COL})`,
+          },
+          transition: "background-color 0.5s",
+        }}
+        onMouseDown={_handleMouseDown}
+        onMouseOverCapture={_handleMouseEnter}
+        onMouseUp={_handleMouseUp}
+      >
+        <div>
+            {!isWall ? (
+              <Text css={{ lineHeight: "1",userSelect:"none","-webkit-user-select":"none","-ms-user-select":"none"}}>
+                <b>f:</b> {node.f === Infinity ? `∞` : Math.round(node.f*10)/10}
+              </Text>
+            ) : undefined}
+          {!isWall ? (
+            <Text css={{ lineHeight: "1",userSelect:"none","-webkit-user-select":"none","-ms-user-select":"none"}}>
+              <b>g:</b> {node.g === Infinity ? `∞` :  Math.round(node.g*10)/10}
+            </Text>
+          ) : undefined}
+          {!isWall ? (
+            <Text css={{ lineHeight: "1",userSelect:"none","-webkit-user-select":"none","-ms-user-select":"none"}}>
+              <b>w:</b> {weight}
+            </Text>
+          ) : undefined}
+        </div>
+      </Card>
+    </Tooltip>
   );
 };
 

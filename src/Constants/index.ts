@@ -1,2 +1,2 @@
-export const GRID_MAX_ROW = 13;
-export const GRID_MAX_COL = 25;
+export const GRID_MAX_ROW = 11;
+export const GRID_MAX_COL = 21;
