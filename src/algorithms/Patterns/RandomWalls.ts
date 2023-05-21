@@ -1,3 +1,4 @@
+import { GRID_MAX_COL, GRID_MAX_ROW } from "@/Constants";
 import { Pos, VisualizerState } from "@/features/Visualizer/visualizerSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 
@@ -18,7 +19,7 @@ export const randomWallNext = (
   const { row, col } = action.payload;
   let _row = row;
   let _col = col + 1;
-  if (_col >= 50) {
+  if (_col >= GRID_MAX_COL) {
     _col = 0;
     _row += 1;
   }
@@ -31,7 +32,7 @@ export const randomWallNext = (
       state.grid[_row][_col].isWall = !state.grid[_row][_col].isWall;
     }
   }
-  if (row === 19 && col === 49) {
+  if (row === GRID_MAX_ROW - 1 && col === GRID_MAX_COL - 1) {
     state.status = "idle";
     state.grid.forEach((row) => {
       row.forEach((node) => {

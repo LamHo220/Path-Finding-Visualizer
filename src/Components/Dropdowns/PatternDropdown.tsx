@@ -1,4 +1,8 @@
-import { Pattern, changePattern, patterns } from "@/features/Visualizer/visualizerSlice";
+import {
+  Pattern,
+  changePattern,
+  patterns,
+} from "@/features/Visualizer/visualizerSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Dropdown, Navbar } from "@nextui-org/react";
 

@@ -1,34 +1,57 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { Algorithm, Heuristic, Pattern, Pos, Status, TNode, VisualizerState } from "../visualizerSlice";
+import {
+  Algorithm,
+  Heuristic,
+  Pattern,
+  Pos,
+  Status,
+  TNode,
+  VisualizerState,
+} from "../visualizerSlice";
 import AStar, { AStarNext } from "@/algorithms/Searching/AStar";
 import { clearWall } from "@/algorithms/Patterns/utils";
 import Dijkstra, { DijkstraNext } from "@/algorithms/Searching/Dijkstra";
 import { swap } from "@/algorithms/Searching/uttils";
 import _generateWall from "@/algorithms/Patterns/generate";
 import _generateWallNext from "@/algorithms/Patterns/next";
-import { _generateBoundary, _generateBoundaryNext } from "@/algorithms/Patterns/Boundary";
+import {
+  _generateBoundary,
+  _generateBoundaryNext,
+} from "@/algorithms/Patterns/Boundary";
 
 export default {
   // set the prev node
-  setPrev: (state:VisualizerState, action: PayloadAction<TNode | undefined>) => {
+  setPrev: (
+    state: VisualizerState,
+    action: PayloadAction<TNode | undefined>
+  ) => {
     state.prev = action.payload;
   },
   // set the length of explored nodes (Array)
-  setExploredLength: (state:VisualizerState, action: PayloadAction<number>) => {
+  setExploredLength: (
+    state: VisualizerState,
+    action: PayloadAction<number>
+  ) => {
     state.exploredLength = action.payload;
   },
   // set the length of final path (Array)
-  setPathLength: (state:VisualizerState, action: PayloadAction<number>) => {
+  setPathLength: (state: VisualizerState, action: PayloadAction<number>) => {
     state.pathLength = action.payload;
   },
   // set the status of visualizer
-  setVisualizeStatus: (state:VisualizerState, action: PayloadAction<Status>) => {
+  setVisualizeStatus: (
+    state: VisualizerState,
+    action: PayloadAction<Status>
+  ) => {
     if (state.status === action.payload) {
       console.warn("status equals to action payload");
     }
     state.status = action.payload;
   },
-  changeAlgorithm: (state:VisualizerState, action: PayloadAction<Algorithm>) => {
+  changeAlgorithm: (
+    state: VisualizerState,
+    action: PayloadAction<Algorithm>
+  ) => {
     state.algorithm = action.payload;
 
     if (state.status === "answered") {
@@ -36,7 +59,10 @@ export default {
       AStar(state);
     }
   },
-  changeHeuristic: (state:VisualizerState, action: PayloadAction<Heuristic>) => {
+  changeHeuristic: (
+    state: VisualizerState,
+    action: PayloadAction<Heuristic>
+  ) => {
     state.heuristic = action.payload;
 
     if (state.status === "answered") {
@@ -44,7 +70,7 @@ export default {
       AStar(state);
     }
   },
-  changePattern: (state:VisualizerState, action: PayloadAction<Pattern>) => {
+  changePattern: (state: VisualizerState, action: PayloadAction<Pattern>) => {
     clearWall(state);
     state.pattern = action.payload;
     if (state.pattern === "No Walls") {
@@ -52,7 +78,10 @@ export default {
     }
     state.status = "generating walls";
   },
-  setIsBirectional: (state:VisualizerState, action: PayloadAction<boolean>) => {
+  setIsBirectional: (
+    state: VisualizerState,
+    action: PayloadAction<boolean>
+  ) => {
     state.isBidirectional = action.payload;
 
     if (state.status === "answered") {
@@ -60,7 +89,10 @@ export default {
       AStar(state);
     }
   },
-  setAllowDiagonal: (state:VisualizerState, action: PayloadAction<boolean>) => {
+  setAllowDiagonal: (
+    state: VisualizerState,
+    action: PayloadAction<boolean>
+  ) => {
     state.allowDiagonal = action.payload;
 
     if (state.status === "answered") {
@@ -68,7 +100,7 @@ export default {
       AStar(state);
     }
   },
-  setIsWeighted: (state:VisualizerState, action: PayloadAction<boolean>) => {
+  setIsWeighted: (state: VisualizerState, action: PayloadAction<boolean>) => {
     state.isWeighted = action.payload;
 
     if (state.status === "answered") {
@@ -91,10 +123,10 @@ export default {
       DijkstraNext(state);
     }
   },
-  setStatus: (state:VisualizerState, action: PayloadAction<Status>) => {
+  setStatus: (state: VisualizerState, action: PayloadAction<Status>) => {
     state.status = action.payload;
   },
-  handleMouseDown: (state:VisualizerState, action: PayloadAction<TNode>) => {
+  handleMouseDown: (state: VisualizerState, action: PayloadAction<TNode>) => {
     const node = action.payload;
     state.prev = node;
     if (!(node.isStart || node.isEnd)) {
@@ -102,7 +134,7 @@ export default {
         !state.grid[node.pos.row][node.pos.col].isWall;
     }
   },
-  handleMouseEnter: (state:VisualizerState, action: PayloadAction<TNode>) => {
+  handleMouseEnter: (state: VisualizerState, action: PayloadAction<TNode>) => {
     const node = action.payload;
     if (state.prev === undefined) {
       return;
@@ -144,11 +176,11 @@ export default {
       state.status = "answered";
     }
   },
-  setVisited: (state:VisualizerState, action: PayloadAction<Pos>) => {
+  setVisited: (state: VisualizerState, action: PayloadAction<Pos>) => {
     const pos = action.payload;
     state.grid[pos.row][pos.col].visited = true;
   },
-  setPath: (state:VisualizerState, action: PayloadAction<Pos>) => {
+  setPath: (state: VisualizerState, action: PayloadAction<Pos>) => {
     const pos = action.payload;
     state.grid[pos.row][pos.col].isPath = true;
   },
@@ -167,19 +199,25 @@ export default {
       });
     }
   },
-  setAnimationSpeed: (state:VisualizerState, action: PayloadAction<10 | 100 | 500>) => {
+  setAnimationSpeed: (
+    state: VisualizerState,
+    action: PayloadAction<10 | 100 | 500>
+  ) => {
     state.animationSpeed = action.payload;
   },
   generateWall: (state: VisualizerState) => {
-    _generateWall(state)
+    _generateWall(state);
   },
-  generateWallNext: (state:VisualizerState, action: PayloadAction<Pos>) => {
-    _generateWallNext(state,action)
+  generateWallNext: (state: VisualizerState, action: PayloadAction<Pos>) => {
+    _generateWallNext(state, action);
   },
   generateBoundary: (state: VisualizerState) => {
     _generateBoundary(state);
   },
-  generateBoundaryNext: (state:VisualizerState, action: PayloadAction<Pos>) => {
+  generateBoundaryNext: (
+    state: VisualizerState,
+    action: PayloadAction<Pos>
+  ) => {
     _generateBoundaryNext(state, action);
   },
-}
+};

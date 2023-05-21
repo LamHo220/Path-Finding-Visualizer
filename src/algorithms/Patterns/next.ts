@@ -1,7 +1,7 @@
 import { Pos, VisualizerState } from "@/features/Visualizer/visualizerSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { randomWallNext } from "./RandomWalls";
-import { Cut, RecursiveDivision } from "./RecursiveDivision";
+import { Cut } from "./RecursiveDivision";
 
 export default function _generateWallNext(
   state: VisualizerState,
@@ -12,11 +12,7 @@ export default function _generateWallNext(
       randomWallNext(state, action);
       break;
     case "Recursive Division":
-      if (state.status === "cutting") {
-        RecursiveDivision(state);
-      } else {
-        Cut(state);
-      }
+      Cut(state);
       break;
     default:
       break;

@@ -8,6 +8,7 @@ import _generateWallNext from "@/algorithms/Patterns/next";
 import { comparePos } from "@/utils";
 import { createSlice } from "@reduxjs/toolkit";
 import reducers from "./reducers";
+import { GRID_MAX_COL, GRID_MAX_ROW } from "@/Constants";
 
 export interface TNode {
   isStart: boolean;
@@ -21,6 +22,7 @@ export interface TNode {
   g: number;
   f: number;
   weight: number;
+  isBoundary: boolean;
 }
 
 export type Pos = { row: number; col: number };
@@ -35,6 +37,7 @@ export type Status =
   | "paused"
   | "generating walls"
   | "cutting"
+  | "cutted"
   | "horizontal cutting"
   | "vertical cutting"
   | "generating boundary";
@@ -107,6 +110,7 @@ export interface VisualizerState {
   solution: TNode[];
   animationSpeed: 10 | 100 | 500;
   RDParam: TRecursizeDivision;
+  memo: TRecursizeDivision[];
 }
 
 const initStartNode: TNode = {
@@ -119,7 +123,8 @@ const initStartNode: TNode = {
   visited: false,
   weight: 0,
   f: Infinity,
-  pos: { row: 10, col: 10 },
+  isBoundary: true,
+  pos: { row: Math.floor(GRID_MAX_ROW / 2), col: Math.floor(GRID_MAX_COL / 3) },
 };
 
 const initEndNode: TNode = {
@@ -132,13 +137,17 @@ const initEndNode: TNode = {
   visited: false,
   weight: 0,
   f: Infinity,
-  pos: { row: 10, col: 40 },
+  isBoundary: true,
+  pos: {
+    row: Math.floor(GRID_MAX_ROW / 2),
+    col: Math.floor((2 * GRID_MAX_COL) / 3),
+  },
 };
 
-const initGrid = Array(20)
+const initGrid = Array(GRID_MAX_ROW)
   .fill(0)
   .map((_, i) =>
-    Array(50)
+    Array(GRID_MAX_COL)
       .fill(0)
       .map((_, j) => ({
         pos: { row: i, col: j },
@@ -150,7 +159,9 @@ const initGrid = Array(20)
         _visited: false,
         weight: 0,
         f: Infinity,
+        isBoundary: true,
         isWall: false,
+        isHole: false,
       }))
   );
 
@@ -169,6 +180,7 @@ const initialState: VisualizerState = {
   solution: [],
   animationSpeed: 10,
   RDParam: initRecursizeDivision,
+  memo: [],
 };
 
 export const visualizerSlice = createSlice({
