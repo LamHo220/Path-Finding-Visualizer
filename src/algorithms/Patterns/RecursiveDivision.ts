@@ -48,11 +48,11 @@ export const initRecursizeDivision: TRecursizeDivision = {
 
 // status == cutting
 export const RecursiveDivision = (state: VisualizerState) => {
-  if (state.memo.length===0 && state.RDParam.flag) {
-    state.status = "idle"
-    return
+  if (state.memo.length === 0 && state.RDParam.flag) {
+    state.status = "idle";
+    return;
   }
-  
+
   const param = state.memo.shift();
 
   const param2 = state.RDParam;
@@ -64,9 +64,9 @@ export const RecursiveDivision = (state: VisualizerState) => {
       // state.status = "cutting";
       state.RDParam = {
         ...state.RDParam,
-        flag:true
-      }
-      RecursiveDivision(state)
+        flag: true,
+      };
+      RecursiveDivision(state);
       return;
     }
 
@@ -107,9 +107,9 @@ export const RecursiveDivision = (state: VisualizerState) => {
       // state.status = "cutting";
       state.RDParam = {
         ...state.RDParam,
-        flag:true
-      }
-      RecursiveDivision(state)
+        flag: true,
+      };
+      RecursiveDivision(state);
       return;
     }
 
