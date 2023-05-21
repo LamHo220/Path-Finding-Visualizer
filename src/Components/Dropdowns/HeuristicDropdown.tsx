@@ -1,4 +1,8 @@
-import { Heuristic, changeHeuristic, heuristics } from "@/features/Visualizer";
+import {
+  Heuristic,
+  changeHeuristic,
+  heuristics,
+} from "@/features/Visualizer/visualizerSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Dropdown, Navbar } from "@nextui-org/react";
 

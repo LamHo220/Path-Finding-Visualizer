@@ -1,4 +1,8 @@
-import { Pattern, changePattern, patterns } from "@/features/Visualizer";
+import {
+  Pattern,
+  changePattern,
+  patterns,
+} from "@/features/Visualizer/visualizerSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Dropdown, Navbar } from "@nextui-org/react";
 
@@ -44,7 +48,7 @@ export default function PatternDropdown() {
             },
           },
         }}
-        disabledKeys={[pattern]}
+        disabledKeys={pattern !== "No Walls" ? [pattern] : []}
         onAction={(a) => dispatch(changePattern(a as Pattern))}
       >
         {patterns.map((e) => (

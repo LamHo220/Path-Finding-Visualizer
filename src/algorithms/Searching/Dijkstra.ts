@@ -1,4 +1,4 @@
-import { VisualizerState } from "@/features/Visualizer";
+import { VisualizerState } from "@/features/Visualizer/visualizerSlice";
 import { distance, getNeighbours, getPath, resetSearching } from "./uttils";
 
 export default function Dijkstra(state: VisualizerState) {
