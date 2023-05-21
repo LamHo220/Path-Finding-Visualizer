@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { Text, Card, Tooltip, } from "@nextui-org/react";
+import { Text, Card, Tooltip } from "@nextui-org/react";
 import {
   Pos,
   TNode,
@@ -49,6 +49,7 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
     weight,
     _visited,
     isBoundary,
+    inQueue,
   } = node;
   const status = useAppSelector((state) => state.visualizer.status);
   const animationSpeed = useAppSelector(
@@ -100,6 +101,12 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
         dispatch(generateWallNext(node.pos));
       }, 1);
     }
+    if (_visited && (status === "removing walls"|| status === "removing walls II")) {
+      console.log(23);
+      setTimeout(() => {
+        dispatch(generateWallNext(node.pos));
+      }, 1);
+    }
   }, [status, _visited]);
 
   useEffect(() => {
@@ -115,12 +122,14 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
     }
   }, [isWall, status, isBoundary, _visited]);
 
-  const bg = isWall
-    ? "$gray800"
-    : isStart
+  const bg = isStart
     ? "$blue500"
     : isEnd
     ? "$pink400"
+    : inQueue
+    ? "$purple800"
+    : isWall
+    ? "$gray800"
     : isPath
     ? "$green400"
     : visited
@@ -131,12 +140,14 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
         status === "answered")
     ? "$yellow400"
     : "";
-  const border = isWall
-    ? "1px $gray800 solid"
-    : isStart
+  const border = isStart
     ? "1px $blue500 solid"
     : isEnd
     ? "1px $pink400 solid"
+    : inQueue
+    ? "$purple800"
+    : isWall
+    ? "1px $gray800 solid"
     : isPath
     ? "1px $green400 solid"
     : visited
@@ -171,7 +182,6 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
       dispatch(handleMouseUp());
     }
   };
-
 
   return (
     <Tooltip
@@ -216,18 +226,41 @@ const _Node: FC<{ node: TNode }> = ({ node }) => {
         onMouseUp={_handleMouseUp}
       >
         <div>
-            {!isWall ? (
-              <Text css={{ lineHeight: "1",userSelect:"none","-webkit-user-select":"none","-ms-user-select":"none"}}>
-                <b>f:</b> {node.f === Infinity ? `∞` : Math.round(node.f*10)/10}
-              </Text>
-            ) : undefined}
           {!isWall ? (
-            <Text css={{ lineHeight: "1",userSelect:"none","-webkit-user-select":"none","-ms-user-select":"none"}}>
-              <b>g:</b> {node.g === Infinity ? `∞` :  Math.round(node.g*10)/10}
+            <Text
+              css={{
+                lineHeight: "1",
+                userSelect: "none",
+                "-webkit-user-select": "none",
+                "-ms-user-select": "none",
+              }}
+            >
+              <b>f:</b>{" "}
+              {node.f === Infinity ? `∞` : Math.round(node.f * 10) / 10}
             </Text>
           ) : undefined}
           {!isWall ? (
-            <Text css={{ lineHeight: "1",userSelect:"none","-webkit-user-select":"none","-ms-user-select":"none"}}>
+            <Text
+              css={{
+                lineHeight: "1",
+                userSelect: "none",
+                "-webkit-user-select": "none",
+                "-ms-user-select": "none",
+              }}
+            >
+              <b>g:</b>{" "}
+              {node.g === Infinity ? `∞` : Math.round(node.g * 10) / 10}
+            </Text>
+          ) : undefined}
+          {!isWall ? (
+            <Text
+              css={{
+                lineHeight: "1",
+                userSelect: "none",
+                "-webkit-user-select": "none",
+                "-ms-user-select": "none",
+              }}
+            >
               <b>w:</b> {weight}
             </Text>
           ) : undefined}

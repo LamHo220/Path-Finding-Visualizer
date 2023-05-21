@@ -25,6 +25,11 @@ export default function Grid() {
         dispatch(generateBoundary());
       }, 1);
     }
+    if (status === "reversed") {
+      setTimeout(() => {
+        dispatch(generateWall());
+      }, 1);
+    }
   }, [status]);
 
   return (

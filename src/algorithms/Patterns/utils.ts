@@ -15,3 +15,13 @@ export const clearWall = (state: VisualizerState) => {
   });
   state.status = "idle";
 };
+
+export const reverse = (state: VisualizerState) => {
+  state.grid.forEach((e) => {
+    e.forEach((f) => {
+      f.isWall = true;
+      f.isBoundary = true;
+    });
+  });
+  state.status = "reversed";
+};
