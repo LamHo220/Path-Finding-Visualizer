@@ -18,6 +18,7 @@ export interface TNode {
   pos: Pos;
   visited: boolean;
   _visited: boolean;
+  inQueue: boolean;
   parent?: TNode;
   g: number;
   f: number;
@@ -40,6 +41,9 @@ export type Status =
   | "cutted"
   | "horizontal cutting"
   | "vertical cutting"
+  | "reversed"
+  | "removing walls"
+  | "removing walls II"
   | "generating boundary";
 export type Algorithm = "A*" | "Dijkstra";
 export type Heuristic = "Euclidean" | "Octile" | "Chebyshev" | "Manhattan";
@@ -110,6 +114,7 @@ export interface VisualizerState {
   solution: TNode[];
   animationSpeed: 10 | 100 | 500;
   RDParam: TRecursizeDivision;
+  primStarted: boolean;
   memo: TRecursizeDivision[];
 }
 
@@ -122,9 +127,10 @@ const initStartNode: TNode = {
   g: Infinity,
   visited: false,
   weight: 0,
+  inQueue: false,
   f: Infinity,
   isBoundary: true,
-  pos: { row: Math.floor(GRID_MAX_ROW / 2), col: Math.floor(GRID_MAX_COL / 3) },
+  pos: { row: Math.floor(GRID_MAX_ROW / 2), col: Math.floor(GRID_MAX_COL / 5) },
 };
 
 const initEndNode: TNode = {
@@ -136,11 +142,12 @@ const initEndNode: TNode = {
   g: Infinity,
   visited: false,
   weight: 0,
+  inQueue: false,
   f: Infinity,
   isBoundary: true,
   pos: {
     row: Math.floor(GRID_MAX_ROW / 2),
-    col: Math.floor((2 * GRID_MAX_COL) / 3),
+    col: Math.floor((4 * GRID_MAX_COL) / 5),
   },
 };
 
@@ -158,6 +165,7 @@ const initGrid = Array(GRID_MAX_ROW)
         visited: false,
         _visited: false,
         weight: 0,
+        inQueue: false,
         f: Infinity,
         isBoundary: true,
         isWall: false,
@@ -180,6 +188,7 @@ const initialState: VisualizerState = {
   solution: [],
   animationSpeed: 10,
   RDParam: initRecursizeDivision,
+  primStarted: false,
   memo: [],
 };
 
@@ -193,7 +202,6 @@ export const getNode = (state: VisualizerState, ownProps: Pos) =>
   state.grid[ownProps.row][ownProps.col];
 
 export const {
-  // setWall,
   setPrev,
   setExploredLength,
   setPathLength,
